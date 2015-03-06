@@ -24,7 +24,12 @@ Wvr.register(function(system, app, auth, database) {
     menu: 'main'
   });
   
-  Wvr.aggregateAsset('css', 'wvr.css');
+  //Wvr.aggregateAsset('css', 'wvr.css');
+  //Wvr.aggregateAsset('css', 'soon.css');
+
+  /*Wvr.aggregateAsset('js', 'plugins.js');
+  Wvr.aggregateAsset('js', 'jquery.themepunch.revolution.min.js');
+  Wvr.aggregateAsset('js', 'custom.js');*/
 
   /**
     //Uncomment to use. Requires meanio@0.3.7 or above

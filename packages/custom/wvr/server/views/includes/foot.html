@@ -1,6 +1,10 @@
 {% for file in aggregatedassets.footer.js %}
   <script type="text/javascript" src="{{file}}"></script>
 {% endfor %}
+<!-- <script src="assets/js/soon/plugins.js"></script>
+<script src="assets/js/soon/jquery.themepunch.revolution.min.js"></script>
+<script src="assets/js/soon/custom.js"></script> -->
+
 
 {% if (process.env.NODE_ENV == 'development') %}
   <!-- Livereload script rendered -->
