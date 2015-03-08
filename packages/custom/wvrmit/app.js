@@ -18,8 +18,8 @@ Wvrmit.register(function(app, auth, database) {
 
   //We are adding a link to the main menu for all authenticated users
   Wvrmit.menus.add({
-    title: 'wvrmit example page',
-    link: 'wvrmit example page',
+    title: 'wvrmit',
+    link: 'wvrmit',
     roles: ['authenticated'],
     menu: 'main'
   });
