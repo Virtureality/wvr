@@ -1,15 +1,29 @@
 'use strict';
 
-/*angular.module('mean.wvrmit').config(['$stateProvider',
-  function($stateProvider) {
-    $stateProvider.state('wvrmit', {
-      url: '/wvrmit',
-      templateUrl: 'wvrmit/views/index.html'
-    });
-  }
-]);*/
-
 angular.module('mean.wvrmit')
+.run(function ($rootScope, $state, $stateParams) {
+    $rootScope.$state = $state;
+    $rootScope.$stateParams = $stateParams;
+})
+.config([
+	'$stateProvider',
+	'$urlRouterProvider',
+    function($stateProvider, $urlRouterProvider) {
+      $stateProvider
+      .state('wvrmit', {
+        url: '/wvrmit',
+        templateUrl: 'wvrmit/views/index.html'
+      })
+      .state('mit', {
+        url: '/wvrmit/mit/{mname}',
+        templateUrl: 'wvrmit/views/mit.html'
+      });
+
+      $urlRouterProvider.otherwise('wvrmit');
+    }
+]);
+
+/*angular.module('mean.wvrmit')
 .run(function ($rootScope, $state, $stateParams) {
     $rootScope.$state = $state;
     $rootScope.$stateParams = $stateParams;
@@ -24,7 +38,7 @@ angular.module('mean.wvrmit')
       templateUrl: 'wvrmit/views/mit.html'
     });
   }
-]);
+]);*/
 
 /*angular.module('mean.wvrmit')
 .run(function ($rootScope, $state, $stateParams) {
