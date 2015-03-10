@@ -19,7 +19,7 @@ angular.module('mean.wvrmit')
         templateUrl: 'wvrmit/views/mit.html'
       });
 
-      $urlRouterProvider.otherwise('wvrmit');
+      //$urlRouterProvider.otherwise('wvrmit');
     }
 ]);
 

@@ -21,7 +21,7 @@ Wvrmit.register(function(app, auth, database) {
     title: 'wvrmit',
     link: 'wvrmit',
     roles: ['authenticated'],
-    menu: 'main'
+    menu: 'wvr'
   });
   
   Wvrmit.aggregateAsset('css', 'wvrmit.css');

@@ -2,8 +2,13 @@
 
 angular.module('mean.wvr').config(['$stateProvider',
   function($stateProvider) {
-    $stateProvider.state('wvr example page', {
-      url: '/wvr/example',
+    $stateProvider
+    .state('wvrhome', {
+      url: '/',
+      templateUrl: 'wvr/views/index.html'
+    })
+    .state('wvr', {
+      url: '/wvr',
       templateUrl: 'wvr/views/index.html'
     });
   }

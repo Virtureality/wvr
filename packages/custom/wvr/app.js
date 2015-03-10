@@ -17,12 +17,12 @@ Wvr.register(function(system, app, auth, database) {
   Wvr.routes(app, auth, database);
 
   //We are adding a link to the main menu for all authenticated users
-  Wvr.menus.add({
+/*  Wvr.menus.add({
     title: 'wvr example page',
     link: 'wvr example page',
     roles: ['authenticated'],
-    menu: 'main'
-  });
+    menu: 'wvr'
+  });*/
   
   //Wvr.aggregateAsset('css', 'wvr.css');
   //Wvr.aggregateAsset('css', 'soon.css');
