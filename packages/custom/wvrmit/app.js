@@ -25,6 +25,7 @@ Wvrmit.register(function(app, auth, database) {
   });
   
   Wvrmit.aggregateAsset('css', 'wvrmit.css');
+  Wvrmit.aggregateAsset('css', 'masonry.css');
 
   /**
     //Uncomment to use. Requires meanio@0.3.7 or above
