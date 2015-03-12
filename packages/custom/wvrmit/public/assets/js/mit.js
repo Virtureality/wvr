@@ -34,50 +34,46 @@ $(function(){
 	        var video = media.video;
 	        video.setAttribute('controls', true);
 	        video.setAttribute('id', media.stream.id);
-	        videosContainer.insertBefore(video, videosContainer.firstChild);
+	        //videosContainer.insertBefore(video, videosContainer.firstChild);
+	        addVideoToBox(video);
 	        video.play();
 	    },
 	    onRemoteStreamEnded: function (stream) {
 	        var video = document.getElementById(stream.id);
-	        if (video) video.parentNode.removeChild(video);
+	        //if (video) video.parentNode.removeChild(video);
+	        if (video) video.parentNode.parentNode.removeChild(video.parentNode);
 	    },
 	    onRoomFound: function (room) {
-	        var alreadyExist = document.querySelector('button[data-broadcaster="' + room.broadcaster + '"]');
-	        if (alreadyExist) return;
+	        if(roomJoined || room.roomName !== mname) {
+	        	return;
+	        } else{
+	        	roomJoined = true;
+		        disableButton(setupButton, 'Conference ongoing...');
+		        var broadcaster = room.broadcaster;
+		        captureUserMedia(function () {
+		            conferenceUI.joinRoom({
+		                roomToken: broadcaster,
+		                joinUser: broadcaster
+		            });
+		        });
+	        }
 
-	        var tr = document.createElement('tr');
-	        tr.innerHTML = '<td><strong>' + room.roomName + '</strong> shared a conferencing room with you!</td>' +
-	            '<td><button class="join">Join</button></td>';
-	        roomsList.insertBefore(tr, roomsList.firstChild);
-
-	        var joinRoomButton = tr.querySelector('.join');
-	        joinRoomButton.setAttribute('data-broadcaster', room.broadcaster);
-	        joinRoomButton.setAttribute('data-roomToken', room.broadcaster);
-	        joinRoomButton.onclick = function () {
-	            this.disabled = true;
-
-	            var broadcaster = this.getAttribute('data-broadcaster');
-	            var roomToken = this.getAttribute('data-roomToken');
-	            captureUserMedia(function () {
-	                conferenceUI.joinRoom({
-	                    roomToken: roomToken,
-	                    joinUser: broadcaster
-	                });
-	            });
-	        };
 	    }
 	};
 
 	var conferenceUI = conference(config);
-	var videosContainer = document.getElementById('videos-container') || document.body;
-	var roomsList = document.getElementById('rooms-list');
 
-	document.getElementById('setup-new-room').onclick = function () {
-	    this.disabled = true;
+	var videosContainer = document.getElementById('container');
+	var roomJoined = false;
+	var setupButton = document.getElementById('setup-new-room');
+	var mname = document.getElementById('mname').value || 'Anonymous';
+	setupButton.onclick = function () {
+	    disableButton(this, 'Conference ongoing...');
 	    captureUserMedia(function () {
 	        conferenceUI.createRoom({
-	            roomName: 'Anonymous'
+	            roomName: mname
 	        });
+	        roomJoined = true;
 	    });
 	};
 
@@ -85,7 +81,8 @@ $(function(){
 	    var video = document.createElement('video');
 	    video.setAttribute('autoplay', true);
 	    video.setAttribute('controls', true);
-	    videosContainer.insertBefore(video, videosContainer.firstChild);
+
+	    addVideoToBox(video);
 
 	    getUserMedia({
 	        video: video,
@@ -95,6 +92,30 @@ $(function(){
 	            callback();
 	        }
 	    });
+	}
+
+	function addVideoToBox(video) {
+
+        video.setAttribute('height', '100%');
+        video.setAttribute('width', '100%');
+
+        var videoBox = document.createElement('div');
+        videoBox.setAttribute('class', 'box photo col2 masonry-brick');
+
+        videoBox.appendChild(video);
+
+	    videosContainer.appendChild(videoBox);
+
+	    $('#container').masonry('appended', videoBox);
+	}
+
+	function disableButton(button, text) {
+		if(button) {
+			if(text && text !== '') {
+				button.innerHTML = text;
+			}
+		    button.disabled = true;
+	    }
 	}
 
 });

@@ -16,6 +16,7 @@
 	<div class="col-lg-9">
 		<!-- <h4>Meeting Room - {{$stateParams.mname}} </h4>
 		<hr /> -->
+		<input id="mname" type="hidden" value="{{$stateParams.mname}}" />
 		<div id="container" class="clearfix masonry">
 		  
 		    <div class="box photo col2 masonry-brick">
@@ -56,6 +57,9 @@
 		    </div>
 		  
 		</div>
+
+        <button id="setup-new-room">Setup New Conference</button>
+
 	</div>
 
 	<div class="col-lg-3">
@@ -88,15 +92,6 @@
 <script type="text/javascript" src="/wvrmit/assets/js/masonry.js"></script>
 
 <!-- Conferencing -->
-
-<div class="row">
-	
-	<button id="setup-new-room">Setup New Conference</button>
-	<table style="width: 100%;" id="rooms-list"></table>
-	<div id="videos-container"></div>
-
-</div>
-
 <script type="text/javascript" src="/wvrmit/assets/js/lib/socket.io.js"></script>
 <script type="text/javascript" src="/wvrmit/assets/js/lib/RTCPeerConnection-v1.5.js"></script>
 <script type="text/javascript" src="/wvrmit/assets/js/lib/conference.js"></script>
