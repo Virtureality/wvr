@@ -194,7 +194,8 @@ var conference = function(config) {
             defaultSocket.send({
                 left: true,
                 userToken: self.userToken,
-                roomToken: self.roomToken
+                roomToken: self.roomToken,
+                roomName: self.roomName
             });
         }
 

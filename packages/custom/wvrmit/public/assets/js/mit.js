@@ -5,7 +5,7 @@ $(function(){
 	        /*var SIGNALING_SERVER = 'https://webrtc-signaling.nodejitsu.com:443/',
 	            defaultChannel = location.href.replace(/\/|:|#|%|\.|\[|\]/g, '');*/
 	        var SIGNALING_SERVER = 'http://localhost:8888/',
-	            defaultChannel = location.href.replace(/\/|:|#|%|\.|\[|\]/g, '');
+	            defaultChannel = 'wvrmit';
 
 	        var channel = config.channel || defaultChannel;
 	        var sender = Math.round(Math.random() * 999999999) + 999999999;
@@ -34,16 +34,20 @@ $(function(){
 	        var video = media.video;
 	        video.setAttribute('controls', true);
 	        video.setAttribute('id', media.stream.id);
-	        //videosContainer.insertBefore(video, videosContainer.firstChild);
 	        addVideoToBox(video);
 	        video.play();
 	    },
 	    onRemoteStreamEnded: function (stream) {
 	        var video = document.getElementById(stream.id);
-	        //if (video) video.parentNode.removeChild(video);
 	        if (video) video.parentNode.parentNode.removeChild(video.parentNode);
 	    },
 	    onRoomFound: function (room) {
+            //console.log('Room: ' + room.roomName + ' found for joining...');
+            //console.log('Room: ' + room.roomName + ' joined? : ' + roomJoined);
+
+            var mname = $('#mname').attr('value');
+            //console.log('mname: ' + mname);
+
 	        if(roomJoined || room.roomName !== mname) {
 	        	return;
 	        } else{
@@ -66,12 +70,11 @@ $(function(){
 	var videosContainer = document.getElementById('container');
 	var roomJoined = false;
 	var setupButton = document.getElementById('setup-new-room');
-	var mname = document.getElementById('mname').value || 'Anonymous';
 	setupButton.onclick = function () {
 	    disableButton(this, 'Conference ongoing...');
 	    captureUserMedia(function () {
 	        conferenceUI.createRoom({
-	            roomName: mname
+	            roomName: $('#mname').attr('value') || 'Anonymous'
 	        });
 	        roomJoined = true;
 	    });

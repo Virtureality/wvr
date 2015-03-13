@@ -2,7 +2,6 @@
 	<a class="pull-right" ui-sref="WVR - MIT help page" target="_blank">Help</a>
 </legend> -->
 <div class="row">
-	<!-- <a class="pull-left" target="_blank" href="{{$location}}">Share</a> -->
 	<a id="shareLink" class="pull-left" target="_blank">Share</a>
 	<script type="text/javascript">
 	    document.getElementById('shareLink').href = location.href;
@@ -10,13 +9,11 @@
 	<hr/>
 </div>
 
-<!-- <div class="row" data-ng-controller="MeanSocketController"> -->
 <div class="row">
 
 	<div class="col-lg-9">
-		<!-- <h4>Meeting Room - {{$stateParams.mname}} </h4>
-		<hr /> -->
-		<input id="mname" type="hidden" value="{{$stateParams.mname}}" />
+
+		<input id="mname" type="hidden" name="mname" value="{{$stateParams.mname}}" />
 		<div id="container" class="clearfix masonry">
 		  
 		    <div class="box photo col2 masonry-brick">
@@ -65,25 +62,13 @@
 	<div class="col-lg-3">
 
 		<div class="input-group">
-			<input class="form-control" type="text" data-ng-model="$parent.message.title" placeholder="type message here"/>
+			<input class="form-control" type="text" placeholder="type message here"/>
 			<span class="input-group-btn">
 			  <button class="btn btn-info">Send</button>
-			<!-- <div mean-socket
-					message="{message:$parent.message.title, channel: activeChannel}"
-					after-send="socketAfterSend(message)"></div> -->
 			</span>
 		</div>
 
 		<hr />
-
-		<!-- <div data-ng-repeat="message in messages">
-			<blockquote>
-				<div>
-				{{message.message}}
-				</div>
-				<small class="pull-right">{{message.user.name}} at {{message.time | date:'medium'}}</small>
-			</blockquote>
-		</div> -->
 
 	</div>
 

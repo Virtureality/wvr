@@ -1,48 +1,31 @@
-<legend>
-	<!-- WVR - MIT : Meeting within the World Virtual Reality! -->
-	<a class="pull-right" ui-sref="WVR - MIT help page" target="_blank">Help</a>
-</legend>
-
-<div class="row" data-ng-controller="MeanSocketController">
-
-	<div class="col-lg-4 col-lg-offset-2">
-
-		<h4>Let's go >>> </h4>
-
-		<hr />
-		<use-mean-socket after-join="socketAfterJoin(channel, messages)"
-								mean-socket-after-get="socketAfterGet(message)"
-								mean-socket-after-get-all-channels="socketAfterGetChannels(channels)"
-								join-to-channel="activeChannel"/>
-
-		<form data-ng-submit="createNewChannel(newChannel)">
-			<div class="input-group">
-				<input type="text" class="form-control" data-ng-model="newChannel" placeholder="type here new meeting please ..."/>
-				<span class="input-group-btn">
-					<button class="btn btn-info">Create</button>
-				</span>
-			</div>
-		</form>
-
+<div class="row">
+    <div class="col-lg-7">
+	    <h4>What's going on ... </h4>
 	</div>
-
 	<div class="col-lg-4">
-
-		<h4>What's going on ... </h4>
-
-		<hr />
-		<ul class="nav nav-pills nav-stacked">
-			<li data-ng-repeat="channel in channels"
-			    data-ng-click="createNewChannel(channel)"
-					data-ng-class="{active: channel === activeChannel}">
-				<a href="#!/wvrmit/mit/{{channel}}" target="_blank">{{channel}}</a>
-			</li>
-		</ul>
-
+		<div class="input-group">
+			<input id="new-name" type="text" class="form-control" placeholder="type here new meeting please ..."/>
+			<span class="input-group-btn">
+				<button id="setup-new-meeting" class="btn btn-info">Create</button>
+			</span>
+		</div>
 	</div>
-
+	<div class="col-lg-1 pull-right">
+    	<legend>
+		    <a ui-sref="WVR - MIT help page" target="_blank">Help</a>
+	    </legend>
+    </div>
+    <div class="row">
+        <hr/>
+    </div>
 </div>
+<div class="row" id="meetingsContainer"></div>
 
-<!-- <legend>
-	Footer Here, Please...
-</legend> -->
+<script type="text/javascript" src="/wvrmit/assets/js/masonry.js"></script>
+
+<!-- Ongoing Conferences. -->
+<script type="text/javascript" src="/wvrmit/assets/js/lib/socket.io.js"></script>
+<script type="text/javascript" src="/wvrmit/assets/js/lib/RTCPeerConnection-v1.5.js"></script>
+<script type="text/javascript" src="/wvrmit/assets/js/lib/conference.js"></script>
+
+<script type="text/javascript" src="/wvrmit/assets/js/home.js"></script>
