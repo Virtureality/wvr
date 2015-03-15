@@ -24,6 +24,9 @@ var conference = function(config) {
     }
 
     function onDefaultSocketResponse(response) {
+        
+        console.log('Called back for video-conferencing message: ' + JSON.stringify(response));
+
         if (response.userToken == self.userToken) return;
 
         if (isGetNewRoom && response.roomToken && response.broadcaster) config.onRoomFound(response);
@@ -247,6 +250,7 @@ var conference = function(config) {
     openDefaultSocket();
     return {
         createRoom: function(_config) {
+            console.log('createRoom for video-conferencing');
             self.roomName = _config.roomName || 'Anonymous';
             self.roomToken = uniqueToken();
 
@@ -255,6 +259,7 @@ var conference = function(config) {
             startBroadcasting();
         },
         joinRoom: function(_config) {
+            console.log('joinRoom for video-conferencing');
             self.roomToken = _config.roomToken;
             isGetNewRoom = false;
 

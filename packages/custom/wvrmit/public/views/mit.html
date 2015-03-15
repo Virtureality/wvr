@@ -14,6 +14,7 @@
 	<div class="col-lg-9">
 
 		<input id="mname" type="hidden" name="mname" value="{{$stateParams.mname}}" />
+		<input id="user" type="hidden" name="user" value="{{global.user.name}}" />
 		<div id="container" class="clearfix masonry">
 		  
 		    <div class="box photo col2 masonry-brick">
@@ -62,13 +63,13 @@
 	<div class="col-lg-3">
 
 		<div class="input-group">
-			<input class="form-control" type="text" placeholder="type message here"/>
+			<input id="message-text" class="form-control" type="text" placeholder="type message here"/>
 			<span class="input-group-btn">
-			  <button class="btn btn-info">Send</button>
+			  <button id="send-msg-btn" class="btn btn-info">Send</button>
 			</span>
 		</div>
-
 		<hr />
+		<div id="message-area"></div>
 
 	</div>
 
@@ -80,5 +81,7 @@
 <script type="text/javascript" src="/wvrmit/assets/js/lib/socket.io.js"></script>
 <script type="text/javascript" src="/wvrmit/assets/js/lib/RTCPeerConnection-v1.5.js"></script>
 <script type="text/javascript" src="/wvrmit/assets/js/lib/conference.js"></script>
+<!-- <script type="text/javascript" src="/wvrmit/assets/js/lib/firebase.js"></script> -->
+<script type="text/javascript" src="/wvrmit/assets/js/lib/data-connection.js"></script>
 
 <script type="text/javascript" src="/wvrmit/assets/js/mit.js"></script>
