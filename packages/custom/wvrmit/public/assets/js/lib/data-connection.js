@@ -282,6 +282,7 @@
                 forwardParticipant(e);
             },
             onmessage: function(e) {
+                console.log('on data message: ' + e.data);
                 var message = e.data;
                 if (!message.size)
                     message = JSON.parse(message);
@@ -476,18 +477,12 @@
                 onSocketMessage(message);
             });*/
             var dataSocket = root.openSignalingChannel({
-                onmessage: function(message) {
-                    message = JSON.parse(message);
-                    onSocketMessage(message);
-                }
-            });
-
-            /*dataSocket.send = function (message) {
-                dataSocket.emit('message', {
-                    sender: userid,
-                    data: message
-                });
-            };*/
+                    onmessage: function(message) {
+                        message = JSON.parse(message);
+                        onSocketMessage(message);
+                    },
+                    channel: 'wvrmit-data'
+                }, true);
 
             // method to signal the data
             this.signal = function(data) {
@@ -496,7 +491,6 @@
                     console.log(dataItem + ': ' + data[dataItem]);
                 }
                 data.userid = userid;
-                console.log('Signaling data: ' + JSON.stringify(data));
                 dataSocket.send(JSON.stringify(data));
             };
         }
@@ -950,12 +944,12 @@
     // TextSender.send(config);
     var TextSender = {
         send: function(config) {
-            console.log('TextSender is sending message with config: ' + JSON.stringify(config));
+            /*console.log('TextSender is sending message with config: ' + JSON.stringify(config));
             if (config.channel) {
                 console.log('Sending to channel: ' + config.channel);
             } else {
                 console.log('Sending to channels: ' + config.root.channels || { });
-            }
+            }*/
             var root = config.root;
 
             function send(message) {
@@ -967,6 +961,7 @@
                 // share data with all connected users
                 var channels = root.channels || { };
                 for (var channel in channels) {
+                    console.log('Sending to channel: ' + channel + ' with message: ' + message);
                     channels[channel].channel.send(message);
                 }
             }

@@ -1,7 +1,7 @@
 $(function(){
 
 	var config = {
-	    openSocket: function (socketConfig) {
+	    /*openSocket: function (socketConfig) {
 
 	        var channel = socketConfig.channel || defaultChannel;
 
@@ -24,7 +24,8 @@ $(function(){
 	        };
 
 	        socket.on('message', socketConfig.onmessage);
-	    },
+	    },*/
+	    openSocket: openSignaling,
 	    onRemoteStream: function (media) {
 	        var video = media.video;
 	        video.setAttribute('controls', true);
@@ -37,12 +38,10 @@ $(function(){
 	        if (video) video.parentNode.parentNode.removeChild(video.parentNode);
 	    },
 	    onRoomFound: function (room) {
-            //console.log('Room: ' + room.roomName + ' found for joining...');
-            //console.log('Room: ' + room.roomName + ' joined? : ' + roomJoined);
-            console.log('Room found: ');
+            /*console.log('Room found: ');
             for (var item in room) {
             	console.log(item + ': ' + room[item]);
-            }
+            }*/
 
             var mname = $('#mname').attr('value');
             //console.log('mname: ' + mname);
@@ -59,7 +58,6 @@ $(function(){
 		                joinUser: broadcaster
 		            });
 		            dataCon.check(mname);
-		            //dataCon.join(room);
 		        });
 	        }
 
@@ -68,23 +66,20 @@ $(function(){
 
     var SIGNALING_SERVER = 'http://localhost:8888/';
 	var defaultChannel = 'wvrmit';
-	var sender = Math.round(Math.random() * 999999999) + 999999999;
+    
+	var loginUser = $('#user').attr('value');
+	var sender;
+	if (loginUser && loginUser != '{{global.user.name}}') {
+		sender = loginUser;
+	} else{
+		sender = Math.round(Math.random() * 999999999) + 999999999;
+	}
 	var conferenceUI = conference(config);
 
+	//var dataCon = new DataConnection(defaultChannel);
+
 	var dataCon = new DataConnection('wvrmit-data');
-	/*dataCon.openSignalingChannel = function(callback) {
-	    return io.connect(SIGNALING_SERVER + defaultChannel).on('message', callback);
-	};*/
-	/*dataCon.openSignalingChannel = function(callback) {
-        io.connect(SIGNALING_SERVER).emit('new-channel', {
-            channel: 'wvrmit-data',
-            sender: sender
-        });
-		//return io.connect(SIGNALING_SERVER).on('message', callback);
-		return io.connect(SIGNALING_SERVER + 'wvrmit-data').on('message', callback);
-	};*/
-	dataCon.openSignalingChannel = function (socketConfig) {
-		//console.log('socketConfig for the data connection: ' + JSON.stringify(socketConfig));
+	/*dataCon.openSignalingChannel = function (socketConfig) {
 		console.log('socketConfig for the data connection: ' + socketConfig);
 		console.log('socketConfig.onmessage: ' + socketConfig.onmessage);
 
@@ -97,10 +92,6 @@ $(function(){
 
         var socket = io.connect(SIGNALING_SERVER + channel);
         socket.channel = channel;
-        /*
-        socket.on('connect', function () {
-            if (socketConfig.callback) socketConfig.callback(socket);
-        });*/
 
         socket.send = function (message) {
             socket.emit('message', {
@@ -112,20 +103,18 @@ $(function(){
         socket.on('message', socketConfig.onmessage);
 
         return socket;
-    }
+    };*/
+    dataCon.openSignalingChannel = openSignaling;
+
 	// "chat" is your firebase id
     //dataCon.firebase = 'signaling';
-	/*var user = $('#user').attr('value');
-	if (user && user !== '') {
-		dataCon.userid = user;
-	}*/
 	dataCon.userid = sender;
 	var messageArea = $('#message-area');
 	/*dataCon.onopen = function(e) {
 		console.log('Data connection opened between you and ' + e.userid);
 	};*/
 	dataCon.onmessage = function(message, userid) {
-		console.log(' message received from ' + userid + ': ' + message);
+		//console.log(' message received from ' + userid + ': ' + message);
 		messageArea.append($('<div>').append(userid + ': ' + message));
 	};
 	dataCon.onerror = function(e) {
@@ -138,9 +127,6 @@ $(function(){
 		console.log('User left. Target user id: ' + e.userid);
 	};
 
-	// check pre-created data connections
-    //dataCon.check('wvrmit');
-
 	var videosContainer = document.getElementById('container');
 	var roomJoined = false;
 	var setupButton = document.getElementById('setup-new-room');
@@ -151,9 +137,7 @@ $(function(){
 	        conferenceUI.createRoom({
 	            roomName: mname
 	        });
-	        //setupDataCon(dataCon, mname);
 	        dataCon.setup(mname);
-	        //dataCon.check(mname);
 	        roomJoined = true;
 	    });
 	};
@@ -161,14 +145,48 @@ $(function(){
 	$('#send-msg-btn').on('click', function() {
 		var msgBody = $('#message-text').val() || '';
 		if (msgBody && msgBody !== '') {
-			console.log('Sending message: ' + msgBody);
+			//console.log('Sending message: ' + msgBody);
 			dataCon.send(msgBody);
-			//dataCon.send(msgBody, defaultChannel);
 			messageArea.append($('<div>').append('Me: ' + msgBody));
 		} else{
 			alert('Please input message content correctly!');
 		}
 	});
+
+	function openSignaling(socketConfig, forLibrary) {
+		console.log('openSignaling with config: ');
+		for (var item in socketConfig) {
+			console.log(item + ': ' + socketConfig[item]);
+		}
+		console.log('forLibrary: ' + forLibrary);
+
+        var channel = socketConfig.channel || 'wvrmit';
+
+        io.connect(SIGNALING_SERVER).emit('new-channel', {
+            channel: channel,
+            sender: sender
+        });
+
+        var socket = io.connect(SIGNALING_SERVER + channel);
+        socket.channel = channel;
+
+        socket.send = function (message) {
+            socket.emit('message', {
+                sender: sender,
+                data: message
+            });
+        };
+
+        socket.on('message', socketConfig.onmessage);
+        
+        if (forLibrary) {
+            return socket;
+        } else{
+	        socket.on('connect', function () {
+	            if (socketConfig.callback) socketConfig.callback(socket);
+	        });
+        }
+    }
 
 	function captureUserMedia(callback) {
 	    var video = document.createElement('video');
@@ -186,14 +204,6 @@ $(function(){
 	        }
 	    });
 	}
-
-	function setupDataCon(connection, roomid) {
-		console.log('Setting up data connection{user: ' + connection.userid + '}, channel: ' + connection.channel + ' for room: ' + roomid);
-
-		connection.setup(roomid);
-		// check pre-created data connections
-        //connection.check(roomid);
-	};
 
 	function addVideoToBox(video) {
 
