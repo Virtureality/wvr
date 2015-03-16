@@ -14,7 +14,8 @@
 	<div class="col-lg-9">
 
 		<input id="mname" type="hidden" name="mname" value="{{$stateParams.mname}}" />
-		<input id="user" type="hidden" name="user" value="{{global.user.name}}" />
+		<input id="user" type="hidden" name="user" value="{{global.user.name}}-{{global.user._id}}" />
+		<input id="user" type="hidden" name="global.user" value="{{global.user}}" />
 		<div id="container" class="clearfix masonry">
 		  
 		    <div class="box photo col2 masonry-brick">

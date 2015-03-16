@@ -1,30 +1,6 @@
 $(function(){
 
 	var config = {
-	    /*openSocket: function (socketConfig) {
-
-	        var channel = socketConfig.channel || defaultChannel;
-
-	        io.connect(SIGNALING_SERVER).emit('new-channel', {
-	            channel: channel,
-	            sender: sender
-	        });
-
-	        var socket = io.connect(SIGNALING_SERVER + channel);
-	        socket.channel = channel;
-	        socket.on('connect', function () {
-	            if (socketConfig.callback) socketConfig.callback(socket);
-	        });
-
-	        socket.send = function (message) {
-	            socket.emit('message', {
-	                sender: sender,
-	                data: message
-	            });
-	        };
-
-	        socket.on('message', socketConfig.onmessage);
-	    },*/
 	    openSocket: openSignaling,
 	    onRemoteStream: function (media) {
 	        var video = media.video;
@@ -44,7 +20,9 @@ $(function(){
             }*/
 
             var mname = $('#mname').attr('value');
-            //console.log('mname: ' + mname);
+
+            /*sender = setSender(sender);
+            console.log('Sender set to: ' + sender);*/
 
 	        if(roomJoined || room.roomName !== mname) {
 	        	return;
@@ -57,6 +35,7 @@ $(function(){
 		                roomToken: broadcaster,
 		                joinUser: broadcaster
 		            });
+		            dataCon.userid = sender;
 		            dataCon.check(mname);
 		        });
 	        }
@@ -64,51 +43,42 @@ $(function(){
 	    }
 	};
 
-    var SIGNALING_SERVER = 'http://localhost:8888/';
+    //var SIGNALING_SERVER = 'http://localhost:8888/';
+    var SIGNALING_SERVER = 'http://192.168.0.109:8888/';
 	var defaultChannel = 'wvrmit';
     
-	var loginUser = $('#user').attr('value');
+	/*var loginUser = $('#user').attr('value');
 	var sender;
+	console.log('global.user.name:' + '{{global.user.name}}');
 	if (loginUser && loginUser != '{{global.user.name}}') {
 		sender = loginUser;
 	} else{
 		sender = Math.round(Math.random() * 999999999) + 999999999;
-	}
-	var conferenceUI = conference(config);
+	}*/
+	var sender = Math.round(Math.random() * 999999999) + 999999999;
+	console.log('Sender is: ' + sender);
+
+    /*sender = setSender(sender);
+    console.log('Sender set to: ' + sender);
+
+	var conferenceUI = conference(config);*/
+
+    var conferenceUI;
+    function launch() {
+    	sender = setSender(sender);
+    	conferenceUI = conference(config);
+        console.log('Sender set to: ' + sender);
+    }
+	setTimeout(launch, 1000);
 
 	//var dataCon = new DataConnection(defaultChannel);
 
 	var dataCon = new DataConnection('wvrmit-data');
-	/*dataCon.openSignalingChannel = function (socketConfig) {
-		console.log('socketConfig for the data connection: ' + socketConfig);
-		console.log('socketConfig.onmessage: ' + socketConfig.onmessage);
-
-        var channel = socketConfig.channel || 'wvrmit-data';
-
-        io.connect(SIGNALING_SERVER).emit('new-channel', {
-            channel: channel,
-            sender: sender
-        });
-
-        var socket = io.connect(SIGNALING_SERVER + channel);
-        socket.channel = channel;
-
-        socket.send = function (message) {
-            socket.emit('message', {
-                sender: sender,
-                data: message
-            });
-        };
-
-        socket.on('message', socketConfig.onmessage);
-
-        return socket;
-    };*/
     dataCon.openSignalingChannel = openSignaling;
 
 	// "chat" is your firebase id
     //dataCon.firebase = 'signaling';
-	dataCon.userid = sender;
+	//dataCon.userid = sender;
 	var messageArea = $('#message-area');
 	/*dataCon.onopen = function(e) {
 		console.log('Data connection opened between you and ' + e.userid);
@@ -132,11 +102,15 @@ $(function(){
 	var setupButton = document.getElementById('setup-new-room');
 	setupButton.onclick = function () {
 		var mname = $('#mname').attr('value') || 'Anonymous';
+
+        /*sender = setSender(sender);
+        console.log('Sender set to: ' + sender);*/
 	    disableButton(this, 'Conference ongoing...');
 	    captureUserMedia(function () {
 	        conferenceUI.createRoom({
 	            roomName: mname
 	        });
+	        dataCon.userid = sender;
 	        dataCon.setup(mname);
 	        roomJoined = true;
 	    });
@@ -155,6 +129,7 @@ $(function(){
 
 	function openSignaling(socketConfig, forLibrary) {
 		console.log('openSignaling with config: ');
+
 		for (var item in socketConfig) {
 			console.log(item + ': ' + socketConfig[item]);
 		}
@@ -171,6 +146,7 @@ $(function(){
         socket.channel = channel;
 
         socket.send = function (message) {
+        	console.log('sender: ' + sender);
             socket.emit('message', {
                 sender: sender,
                 data: message
@@ -186,6 +162,17 @@ $(function(){
 	            if (socketConfig.callback) socketConfig.callback(socket);
 	        });
         }
+    }
+
+    function setSender(sender) {
+    	var loginUser = $('#user').attr('value');
+		console.log('loginUser: ' + loginUser);
+		if (loginUser && loginUser != '-') {
+			sender = loginUser;
+            console.log('Sender set to the loginUser: ' + sender);
+		}
+
+		return sender;
     }
 
 	function captureUserMedia(callback) {

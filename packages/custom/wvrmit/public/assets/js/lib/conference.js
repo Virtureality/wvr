@@ -25,7 +25,8 @@ var conference = function(config) {
 
     function onDefaultSocketResponse(response) {
         
-        console.log('Called back for video-conferencing message: ' + JSON.stringify(response));
+        console.log('onDefaultSocketResponse called back for message: ' + JSON.stringify(response));
+        console.log('self.userToken: ' + self.userToken);
 
         if (response.userToken == self.userToken) return;
 
