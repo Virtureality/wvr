@@ -1,5 +1,15 @@
 $(function(){
 
+	function uniqueToken() {
+        var s4 = function() {
+            return Math.floor(Math.random() * 0x10000).toString(16);
+        };
+        return s4() + s4() + "-" + s4() + "-" + s4() + "-" + s4() + "-" + s4() + s4() + s4();
+    }
+
+	//var userToken = Math.round(Math.random() * 999999999) + 999999999;
+	var userToken = uniqueToken();
+
 	var confOnGoing = false;
 
     var actionArea = $('#action-area');
@@ -56,8 +66,8 @@ $(function(){
 
 	var dataConnectionJoined = false;
 
-	//var SIGNALING_SERVER = 'http://localhost:8888/';
-	var SIGNALING_SERVER = '127.0.0.1:8888/';
+	var SIGNALING_SERVER = 'http://localhost:8888/';
+	//var SIGNALING_SERVER = '127.0.0.1:8888/';
     //var SIGNALING_SERVER = 'http://192.168.0.109:8888/';
 	var defaultChannel = 'wvrmit';
     
@@ -69,15 +79,16 @@ $(function(){
 	} else{
 		sender = Math.round(Math.random() * 999999999) + 999999999;
 	}*/
-	var userToken = Math.round(Math.random() * 999999999) + 999999999;
 
 	watch();
 
 	function setup() {
 
 		setButton(actionButton, 'Setup', false);
-		
-		actionButton.on('click', function() {
+
+		actionButton.bind('click', doSetup);
+
+		function doSetup() {
 
 		    setButton(actionButton, 'Setting up ...', true);
 
@@ -85,17 +96,34 @@ $(function(){
 
 		    setupVideoConf(mname, userToken);
 
-		    setupDataConnection(mname, userToken);
+		    /*setupDataConnection(mname, userToken);
 
-		    enableShare(mname);
+		    enableShare(mname);*/
 
-		});
+		    actionButton.unbind('click', doSetup);
+
+		    console.log('setup event handler execution ended.');
+
+		}
+		
+		/*actionButton.on('click', function() {
+
+		    setButton(actionButton, 'Setting up ...', true);
+
+		    var mname = $('#mname').attr('value') || 'Anonymous';
+
+		    setupVideoConf(mname, userToken);
+
+		    console.log('setup event handler execution ended.');
+
+		});*/
 
 		function setupVideoConf(mname, setter) {
 
-		    //videoConfUI = conference(videoConfConfig);
+			console.log('Setting up videoConf...');
 
 			captureUserMedia(function () {
+				console.log('createRoom ongoing...');
 		        videoConfUI.createRoom({
 		            roomName: mname,
 		            userToken: userToken
@@ -107,11 +135,11 @@ $(function(){
 		}
 
 		function setupDataConnection(mname, setter){
-			;
+			return;
 		}
 
 		function enableShare(mname){
-			;
+			return;
 		}
 
 	}
@@ -123,7 +151,7 @@ $(function(){
 
 		setButton(actionButton, 'Watch', false);
 
-		actionButton.on('click', function() {
+		/*actionButton.on('click', function() {
 
 		    var mname = $('#mname').attr('value') || 'Anonymous';
 
@@ -131,18 +159,25 @@ $(function(){
 
 		    setButton(actionButton, 'Watching ...', true);
 
-		    setTimeout(checkForSetup, 3000);
+		});*/
 
-		    function checkForSetup() {
-		    	if (!confOnGoing) {
-		    		setup();
-		    	}
-		    }
+		actionButton.bind('click', doWatch);
 
-		});
+		function doWatch() {
+
+		    var mname = $('#mname').attr('value') || 'Anonymous';
+
+	        startWatching(mname);
+
+	        actionButton.unbind('click', doWatch);
+
+		    setButton(actionButton, 'Watching ...', true);
+
+		}
 
 		function startWatching(mname) {
-			videoConfUI = conference(videoConfConfig);
+			//videoConfUI = conference(videoConfConfig);
+			videoConfUI = conference(videoConfConfig, userToken);
 		};
 
 	}
@@ -172,10 +207,17 @@ $(function(){
             sender: userToken
         });
 
+        console.log('io connecting to: ' + SIGNALING_SERVER);
+        /*console.log('Emitted new-channel event: ' + ' channel-' + channel + ' sender-' + userToken);*/
+
         var socket = io.connect(SIGNALING_SERVER + channel);
+        console.log('io connecting to: ' + SIGNALING_SERVER + channel);
         socket.channel = channel;
 
         socket.send = function (message) {
+
+        	console.log('sender: ' + userToken + ' is sending event with message: ' + message);
+
             socket.emit('message', {
                 sender: userToken,
                 data: message
@@ -188,11 +230,33 @@ $(function(){
         if (forLibrary) {
             return socket;
         } else{
+        	var connected = false;
+
 	        socket.on('connect', function () {
-	        	console.log('connected message received.');
-	            if (socketConfig.callback) socketConfig.callback(socket);
+	        	if (!connected) {
+	        		connected = true;
+		        	console.log('connected message received.');
+
+		            if (socketConfig.callback) socketConfig.callback(socket);
+
+		            /*console.log('socketConfig.callback: ' + socketConfig.callback);
+
+	                console.log('socket:' + socket);
+		            for (var item in socket) {
+		                console.log(item + ':' + socket[item]);
+		            }*/
+
+		        	//setTimeout(checkForSetup, 3000);
+		        	checkForSetup();
+	        	}
 	        });
         }
+    }
+
+    function checkForSetup() {
+    	if (!confOnGoing) {
+    		setup();
+    	}
     }
 
     function setUserToken(userToken) {

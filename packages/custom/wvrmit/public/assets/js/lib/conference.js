@@ -5,14 +5,22 @@
 // This library is known as multi-user connectivity wrapper!
 // It handles connectivity tasks to make sure two or more users can interconnect!
 
-var conference = function(config) {
+var conference = function(config, userToken) {
     var self = {
-        userToken: uniqueToken()
+        //userToken: uniqueToken()
+        userToken: userToken || uniqueToken()
     };
     var channels = '--', isbroadcaster;
     var isGetNewRoom = true;
     var sockets = [];
     var defaultSocket = { };
+    /*var defaultSocket = {
+        name: 'defaultSocketName'
+    };
+    console.log('Initial defaultSocket: ');
+    for (var item in defaultSocket) {
+        console.log(item + ':' + defaultSocket[item]);
+    }*/
 
     function openDefaultSocket() {
         defaultSocket = config.openSocket({
@@ -253,12 +261,19 @@ var conference = function(config) {
     return {
         createRoom: function(_config) {
             console.log('createRoom for video-conferencing with name: ' + _config.roomName);
+            console.log('self.defaultSocket:' + self.defaultSocket);
+            for (var item in self.defaultSocket) {
+                console.log(item + ':' + self.defaultSocket[item]);
+            }
+
             self.roomName = _config.roomName || 'Anonymous';
             self.roomToken = uniqueToken();
 
             if (_config.userToken && self.userToken !== _config.userToken) {
                 self.userToken = _config.userToken;
             }
+
+            console.log('self.userToken:' + self.userToken);
 
             isbroadcaster = true;
             isGetNewRoom = false;
