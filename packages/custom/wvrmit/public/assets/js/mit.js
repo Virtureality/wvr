@@ -1,13 +1,27 @@
 $(function(){
 
-	var config = {
+	var confOnGoing = false;
+
+    var actionArea = $('#action-area');
+    var actionButton = $('#action-button');
+
+	var container = $('#container');
+
+	var videoConfJoined = false;
+    var videoConfUI;
+	var videoConfConfig = {
+
 	    openSocket: openSignaling,
 	    onRemoteStream: function (media) {
-	        var video = media.video;
+	        /*var video = media.video;
 	        video.setAttribute('controls', true);
 	        video.setAttribute('id', media.stream.id);
-	        addVideoToBox(video);
-	        video.play();
+	        video.setAttribute('muted', true);
+	        addVideo($(video), container);
+	        video.play();*/
+	        var video = $(media.video).attr('id', media.stream.id).attr('controls', true);
+	        media.video.play();
+	        addVideo(video, container);
 	    },
 	    onRemoteStreamEnded: function (stream) {
 	        var video = document.getElementById(stream.id);
@@ -18,33 +32,33 @@ $(function(){
             for (var item in room) {
             	console.log(item + ': ' + room[item]);
             }*/
+            var mname = $('#mname').attr('value') || 'Anonymous';
 
-            var mname = $('#mname').attr('value');
-
-            /*sender = setSender(sender);
-            console.log('Sender set to: ' + sender);*/
-
-	        if(roomJoined || room.roomName !== mname) {
+	        if(videoConfJoined || room.roomName !== mname) {
 	        	return;
 	        } else{
-	        	roomJoined = true;
-		        disableButton(setupButton, 'Conference ongoing...');
+	        	confOnGoing = true;
+
+	        	videoConfJoined = true;
+		        setButton(actionButton, 'Video Conference Ongoing...', true);
+
 		        var broadcaster = room.broadcaster;
 		        captureUserMedia(function () {
-		            conferenceUI.joinRoom({
+		            videoConfUI.joinRoom({
 		                roomToken: broadcaster,
 		                joinUser: broadcaster
 		            });
-		            dataCon.userid = sender;
-		            dataCon.check(mname);
 		        });
 	        }
 
 	    }
 	};
 
-    //var SIGNALING_SERVER = 'http://localhost:8888/';
-    var SIGNALING_SERVER = 'http://192.168.0.109:8888/';
+	var dataConnectionJoined = false;
+
+	//var SIGNALING_SERVER = 'http://localhost:8888/';
+	var SIGNALING_SERVER = '127.0.0.1:8888/';
+    //var SIGNALING_SERVER = 'http://192.168.0.109:8888/';
 	var defaultChannel = 'wvrmit';
     
 	/*var loginUser = $('#user').attr('value');
@@ -55,102 +69,118 @@ $(function(){
 	} else{
 		sender = Math.round(Math.random() * 999999999) + 999999999;
 	}*/
-	var sender = Math.round(Math.random() * 999999999) + 999999999;
-	console.log('Sender is: ' + sender);
+	var userToken = Math.round(Math.random() * 999999999) + 999999999;
 
-    /*sender = setSender(sender);
-    console.log('Sender set to: ' + sender);
+	watch();
 
-	var conferenceUI = conference(config);*/
+	function setup() {
 
-    var conferenceUI;
-    function launch() {
-    	sender = setSender(sender);
-    	conferenceUI = conference(config);
-        console.log('Sender set to: ' + sender);
-    }
-	setTimeout(launch, 1000);
+		setButton(actionButton, 'Setup', false);
+		
+		actionButton.on('click', function() {
 
-	//var dataCon = new DataConnection(defaultChannel);
+		    setButton(actionButton, 'Setting up ...', true);
 
-	var dataCon = new DataConnection('wvrmit-data');
-    dataCon.openSignalingChannel = openSignaling;
+		    var mname = $('#mname').attr('value') || 'Anonymous';
 
-	// "chat" is your firebase id
-    //dataCon.firebase = 'signaling';
-	//dataCon.userid = sender;
-	var messageArea = $('#message-area');
-	/*dataCon.onopen = function(e) {
-		console.log('Data connection opened between you and ' + e.userid);
-	};*/
-	dataCon.onmessage = function(message, userid) {
-		//console.log(' message received from ' + userid + ': ' + message);
-		messageArea.append($('<div>').append(userid + ': ' + message));
-	};
-	dataCon.onerror = function(e) {
-		console.debug('Error in data connection. Target user id', e.userid, 'Error', e);
-	};
-	dataCon.onclose = function(e) {
-		console.log('Data connection closed. Target user id: ' + e.userid);
-	};
-	dataCon.onuserleft = function(e) {
-		console.log('User left. Target user id: ' + e.userid);
-	};
+		    setupVideoConf(mname, userToken);
 
-	var videosContainer = document.getElementById('container');
-	var roomJoined = false;
-	var setupButton = document.getElementById('setup-new-room');
-	setupButton.onclick = function () {
-		var mname = $('#mname').attr('value') || 'Anonymous';
+		    setupDataConnection(mname, userToken);
 
-        /*sender = setSender(sender);
-        console.log('Sender set to: ' + sender);*/
-	    disableButton(this, 'Conference ongoing...');
-	    captureUserMedia(function () {
-	        conferenceUI.createRoom({
-	            roomName: mname
-	        });
-	        dataCon.userid = sender;
-	        dataCon.setup(mname);
-	        roomJoined = true;
-	    });
-	};
+		    enableShare(mname);
 
-	$('#send-msg-btn').on('click', function() {
-		var msgBody = $('#message-text').val() || '';
-		if (msgBody && msgBody !== '') {
-			//console.log('Sending message: ' + msgBody);
-			dataCon.send(msgBody);
-			messageArea.append($('<div>').append('Me: ' + msgBody));
-		} else{
-			alert('Please input message content correctly!');
+		});
+
+		function setupVideoConf(mname, setter) {
+
+		    //videoConfUI = conference(videoConfConfig);
+
+			captureUserMedia(function () {
+		        videoConfUI.createRoom({
+		            roomName: mname,
+		            userToken: userToken
+		        });
+		        setButton(actionButton, 'Video Conference Ongoing...', true);
+
+		        videoConfJoined = true;
+		    });
 		}
-	});
+
+		function setupDataConnection(mname, setter){
+			;
+		}
+
+		function enableShare(mname){
+			;
+		}
+
+	}
+
+	function watch() {
+		    
+    	userToken = setUserToken(userToken);
+        console.log('userToken set to: ' + userToken);
+
+		setButton(actionButton, 'Watch', false);
+
+		actionButton.on('click', function() {
+
+		    var mname = $('#mname').attr('value') || 'Anonymous';
+
+	        startWatching(mname);
+
+		    setButton(actionButton, 'Watching ...', true);
+
+		    setTimeout(checkForSetup, 3000);
+
+		    function checkForSetup() {
+		    	if (!confOnGoing) {
+		    		setup();
+		    	}
+		    }
+
+		});
+
+		function startWatching(mname) {
+			videoConfUI = conference(videoConfConfig);
+		};
+
+	}
+
+	function setButton(button, text, disable) {
+		if(button) {
+			if(text && text !== '') {
+				button.text(text);
+			}
+
+		    button.attr('disabled', disable);
+	    }
+	}
 
 	function openSignaling(socketConfig, forLibrary) {
-		console.log('openSignaling with config: ');
+		/*console.log('openSignaling with config: ');
 
 		for (var item in socketConfig) {
 			console.log(item + ': ' + socketConfig[item]);
 		}
-		console.log('forLibrary: ' + forLibrary);
+		console.log('forLibrary: ' + forLibrary);*/
 
-        var channel = socketConfig.channel || 'wvrmit';
+        var channel = socketConfig.channel || defaultChannel;
 
         io.connect(SIGNALING_SERVER).emit('new-channel', {
             channel: channel,
-            sender: sender
+            sender: userToken
         });
 
         var socket = io.connect(SIGNALING_SERVER + channel);
         socket.channel = channel;
 
         socket.send = function (message) {
-        	console.log('sender: ' + sender);
             socket.emit('message', {
-                sender: sender,
+                sender: userToken,
                 data: message
             });
+        	console.log('sender: ' + userToken + ' sent message: ' + message);
         };
 
         socket.on('message', socketConfig.onmessage);
@@ -159,61 +189,49 @@ $(function(){
             return socket;
         } else{
 	        socket.on('connect', function () {
+	        	console.log('connected message received.');
 	            if (socketConfig.callback) socketConfig.callback(socket);
 	        });
         }
     }
 
-    function setSender(sender) {
-    	var loginUser = $('#user').attr('value');
-		console.log('loginUser: ' + loginUser);
-		if (loginUser && loginUser != '-') {
-			sender = loginUser;
-            console.log('Sender set to the loginUser: ' + sender);
+    function setUserToken(userToken) {
+
+    	var loginUser = window.user;
+		//console.log('loginUser: ' + loginUser);
+		if (loginUser && loginUser._id && loginUser._id !== '') {
+			userToken = loginUser.username + '-' + loginUser._id;
 		}
 
-		return sender;
+		return userToken;
     }
 
 	function captureUserMedia(callback) {
-	    var video = document.createElement('video');
-	    video.setAttribute('autoplay', true);
-	    video.setAttribute('controls', true);
 
-	    addVideoToBox(video);
+	    var video = $('<video/>').attr('autoplay', true).attr('controls', true);
+
+        addVideo(video, container);
 
 	    getUserMedia({
-	        video: video,
+	        video: video.get(0),
 	        onsuccess: function (stream) {
-	            config.attachStream = stream;
-	            video.setAttribute('muted', true);
+	            videoConfConfig.attachStream = stream;
+	            video.attr('muted', true);
+
 	            callback();
 	        }
 	    });
 	}
 
-	function addVideoToBox(video) {
+	function addVideo(video, container) {
 
-        video.setAttribute('height', '100%');
-        video.setAttribute('width', '100%');
+		video.attr('height', '100%').attr('width', '100%');
 
-        var videoBox = document.createElement('div');
-        videoBox.setAttribute('class', 'box photo col2 masonry-brick');
+        var videoBox = $('<div/>').attr('class', 'box photo col2 masonry-brick');
+        video.appendTo(videoBox);
+	    videoBox.appendTo(container);
 
-        videoBox.appendChild(video);
-
-	    videosContainer.appendChild(videoBox);
-
-	    $('#container').masonry('appended', videoBox);
-	}
-
-	function disableButton(button, text) {
-		if(button) {
-			if(text && text !== '') {
-				button.innerHTML = text;
-			}
-		    button.disabled = true;
-	    }
+	    container.masonry('appended', videoBox);
 	}
 
 });

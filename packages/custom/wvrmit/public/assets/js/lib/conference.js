@@ -216,6 +216,7 @@ var conference = function(config) {
     }, false);
 
     function startBroadcasting() {
+        console.log('Broadcasting requested by broadcaster: ' + self.userToken + ' roomName: ' + self.roomName);
         defaultSocket && defaultSocket.send({
             roomToken: self.roomToken,
             roomName: self.roomName,
@@ -251,9 +252,13 @@ var conference = function(config) {
     openDefaultSocket();
     return {
         createRoom: function(_config) {
-            console.log('createRoom for video-conferencing');
+            console.log('createRoom for video-conferencing with name: ' + _config.roomName);
             self.roomName = _config.roomName || 'Anonymous';
             self.roomToken = uniqueToken();
+
+            if (_config.userToken && self.userToken !== _config.userToken) {
+                self.userToken = _config.userToken;
+            }
 
             isbroadcaster = true;
             isGetNewRoom = false;

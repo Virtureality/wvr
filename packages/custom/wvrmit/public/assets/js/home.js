@@ -4,7 +4,8 @@ $(function(){
 	    openSocket: function (config) {
 	        /*var SIGNALING_SERVER = 'https://webrtc-signaling.nodejitsu.com:443/',
 	            defaultChannel = location.href.replace(/\/|:|#|%|\.|\[|\]/g, '');*/
-	        var SIGNALING_SERVER = 'http://localhost:8888/',
+	        //var SIGNALING_SERVER = 'http://localhost:8888/',
+            var SIGNALING_SERVER = 'http://192.168.0.109:8888/',
 	            defaultChannel = 'wvrmit';
 
 	        var channel = config.channel || defaultChannel;

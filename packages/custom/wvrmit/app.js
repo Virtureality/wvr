@@ -27,6 +27,15 @@ Wvrmit.register(function(app, auth, database) {
   Wvrmit.aggregateAsset('css', 'wvrmit.css');
   Wvrmit.aggregateAsset('css', 'masonry.css');
 
+  Wvrmit.aggregateAsset('js', 'lib/socket.io.js');
+  Wvrmit.aggregateAsset('js', 'lib/firebase.js');
+  Wvrmit.aggregateAsset('js', 'lib/RTCPeerConnection-v1.5.js');
+  Wvrmit.aggregateAsset('js', 'lib/conference.js');
+  Wvrmit.aggregateAsset('js', 'lib/data-connection.js');
+  /*Wvrmit.aggregateAsset('js', 'mit.js');
+  Wvrmit.aggregateAsset('js', 'home.js');*/
+
+
   /**
     //Uncomment to use. Requires meanio@0.3.7 or above
     // Save settings with callback
