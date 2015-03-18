@@ -1,6 +1,7 @@
 $(function(){
 
 	var config = {
+		
 	    openSocket: openSignaling,
 	    onRemoteStream: function (media) {
 	        var video = media.video;
