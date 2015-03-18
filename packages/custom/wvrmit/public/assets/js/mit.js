@@ -17,9 +17,13 @@ $(function(){
 
 	var container = $('#container');
 
-	var videoConfJoined = false;
-    var videoConfUI;
-	var videoConfConfig = {
+	var confJoined = false;
+    var confUI;
+    
+	var dataConnectionJoined = false;
+	var dataCon = new DataConnection('wvrmit-data');
+
+	var confConfig = {
 
 	    openSocket: openSignaling,
 	    onRemoteStream: function (media) {
@@ -44,27 +48,30 @@ $(function(){
             }*/
             var mname = $('#mname').attr('value') || 'Anonymous';
 
-	        if(videoConfJoined || room.roomName !== mname) {
+	        if(confJoined || room.roomName !== mname) {
 	        	return;
 	        } else{
 	        	confOnGoing = true;
 
-	        	videoConfJoined = true;
-		        setButton(actionButton, 'Video Conference Ongoing...', true);
+		        setButton(actionButton, 'Conference Ongoing...', true);
 
 		        var broadcaster = room.broadcaster;
 		        captureUserMedia(function () {
-		            videoConfUI.joinRoom({
+		            confUI.joinRoom({
 		                roomToken: broadcaster,
 		                joinUser: broadcaster
 		            });
+                    confJoined = true;
+
+		            dataCon.joinRoom(room);
+		            dataConnectionJoined = true;
+
+		            enableShare(mname);
 		        });
 	        }
 
 	    }
 	};
-
-	var dataConnectionJoined = false;
 
 	var SIGNALING_SERVER = 'http://localhost:8888/';
 	//var SIGNALING_SERVER = '127.0.0.1:8888/';
@@ -94,7 +101,7 @@ $(function(){
 
 		    var mname = $('#mname').attr('value') || 'Anonymous';
 
-		    setupVideoConf(mname, userToken);
+		    setupConf(mname, userToken);
 
 		    /*setupDataConnection(mname, userToken);
 
@@ -105,41 +112,72 @@ $(function(){
 		    //console.log('setup event handler execution ended.');
 
 		}
-		
-		/*actionButton.on('click', function() {
 
-		    setButton(actionButton, 'Setting up ...', true);
-
-		    var mname = $('#mname').attr('value') || 'Anonymous';
-
-		    setupVideoConf(mname, userToken);
-
-		    console.log('setup event handler execution ended.');
-
-		});*/
-
-		function setupVideoConf(mname, setter) {
+		function setupConf(mname, setter) {
 
 			//console.log('Setting up videoConf...');
 
 			captureUserMedia(function () {
 				//console.log('createRoom ongoing...');
-		        videoConfUI.createRoom({
+		        confUI.createRoom({
 		            roomName: mname,
 		            userToken: userToken
 		        });
-		        setButton(actionButton, 'Video Conference Ongoing...', true);
 
-		        videoConfJoined = true;
+		        setupDataConnection(mname, userToken);
+
+		        enableShare(mname);
+
+		        setButton(actionButton, 'Conference Ongoing...', true);
+
+		        confJoined = true;
 		    });
 		}
 
 		function setupDataConnection(mname, setter){
-			return;
+			
+		    dataCon.openSignalingChannel = openSignaling;
+
+		    //dataCon.firebase = 'signaling';
+			//dataCon.userid = sender;
+			var messageArea = $('#message-area');
+			/*dataCon.onopen = function(e) {
+				console.log('Data connection opened between you and ' + e.userid);
+			};*/
+			dataCon.onmessage = function(message, userid) {
+				//console.log(' message received from ' + userid + ': ' + message);
+				messageArea.append($('<div>').append(userid + ': ' + message));
+			};
+			dataCon.onerror = function(e) {
+				console.debug('Error in data connection. Target user id', e.userid, 'Error', e);
+			};
+			dataCon.onclose = function(e) {
+				console.log('Data connection closed. Target user id: ' + e.userid);
+			};
+			dataCon.onuserleft = function(e) {
+				console.log('User left. Target user id: ' + e.userid);
+			};
+
+
+	        dataCon.userid = setter;
+	        dataCon.setup(mname);
+
+	        $('#send-msg-btn').on('click', function() {
+				var msgBody = $('#message-text').val() || '';
+				if (msgBody && msgBody !== '') {
+					//console.log('Sending message: ' + msgBody);
+					dataCon.send(msgBody);
+					messageArea.append($('<div>').append('Me: ' + msgBody));
+				} else{
+					alert('Please input message content correctly!');
+				}
+			});
+
 		}
 
 		function enableShare(mname){
-			return;
+			var shareLink = $('<a/>').attr('class', 'pull-left').attr('target', '_blank').text('Share Meeting: {{$stateParams.mname}}');
+			shareLink.appendTo(actionArea);
 		}
 
 	}
@@ -151,23 +189,11 @@ $(function(){
 
 		setButton(actionButton, 'Watch', false);
 
-		/*actionButton.on('click', function() {
-
-		    var mname = $('#mname').attr('value') || 'Anonymous';
-
-	        startWatching(mname);
-
-		    setButton(actionButton, 'Watching ...', true);
-
-		});*/
-
 		actionButton.bind('click', doWatch);
 
 		function doWatch() {
 
-		    var mname = $('#mname').attr('value') || 'Anonymous';
-
-	        startWatching(mname);
+	        startWatching();
 
 	        actionButton.unbind('click', doWatch);
 
@@ -175,9 +201,9 @@ $(function(){
 
 		}
 
-		function startWatching(mname) {
-			//videoConfUI = conference(videoConfConfig);
-			videoConfUI = conference(videoConfConfig, userToken);
+		function startWatching() {
+			//confUI = conference(confConfig);
+			confUI = conference(confConfig, userToken);
 		};
 
 	}
@@ -239,15 +265,7 @@ $(function(){
 
 		            if (socketConfig.callback) socketConfig.callback(socket);
 
-		            /*console.log('socketConfig.callback: ' + socketConfig.callback);
-
-	                console.log('socket:' + socket);
-		            for (var item in socket) {
-		                console.log(item + ':' + socket[item]);
-		            }*/
-
-		        	//setTimeout(checkForSetup, 3000);
-		        	checkForSetup();
+		        	setTimeout(checkForSetup, 3000);
 	        	}
 	        });
         }
@@ -279,7 +297,7 @@ $(function(){
 	    getUserMedia({
 	        video: video.get(0),
 	        onsuccess: function (stream) {
-	            videoConfConfig.attachStream = stream;
+	            confConfig.attachStream = stream;
 	            video.attr('muted', true);
 
 	            callback();
