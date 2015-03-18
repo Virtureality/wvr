@@ -102,7 +102,7 @@ $(function(){
 
 		    actionButton.unbind('click', doSetup);
 
-		    console.log('setup event handler execution ended.');
+		    //console.log('setup event handler execution ended.');
 
 		}
 		
@@ -120,10 +120,10 @@ $(function(){
 
 		function setupVideoConf(mname, setter) {
 
-			console.log('Setting up videoConf...');
+			//console.log('Setting up videoConf...');
 
 			captureUserMedia(function () {
-				console.log('createRoom ongoing...');
+				//console.log('createRoom ongoing...');
 		        videoConfUI.createRoom({
 		            roomName: mname,
 		            userToken: userToken
@@ -147,7 +147,7 @@ $(function(){
 	function watch() {
 		    
     	userToken = setUserToken(userToken);
-        console.log('userToken set to: ' + userToken);
+        //console.log('userToken set to: ' + userToken);
 
 		setButton(actionButton, 'Watch', false);
 
@@ -207,22 +207,22 @@ $(function(){
             sender: userToken
         });
 
-        console.log('io connecting to: ' + SIGNALING_SERVER);
-        /*console.log('Emitted new-channel event: ' + ' channel-' + channel + ' sender-' + userToken);*/
+        /*console.log('io connecting to: ' + SIGNALING_SERVER);
+        console.log('Emitted new-channel event: ' + ' channel-' + channel + ' sender-' + userToken);*/
 
         var socket = io.connect(SIGNALING_SERVER + channel);
-        console.log('io connecting to: ' + SIGNALING_SERVER + channel);
+        //console.log('io connecting to: ' + SIGNALING_SERVER + channel);
         socket.channel = channel;
 
         socket.send = function (message) {
 
-        	console.log('sender: ' + userToken + ' is sending event with message: ' + message);
+        	//console.log('sender: ' + userToken + ' is sending event with message: ' + message);
 
             socket.emit('message', {
                 sender: userToken,
                 data: message
             });
-        	console.log('sender: ' + userToken + ' sent message: ' + message);
+        	//console.log('sender: ' + userToken + ' sent message: ' + message);
         };
 
         socket.on('message', socketConfig.onmessage);
@@ -235,7 +235,7 @@ $(function(){
 	        socket.on('connect', function () {
 	        	if (!connected) {
 	        		connected = true;
-		        	console.log('connected message received.');
+		        	//console.log('connected message received.');
 
 		            if (socketConfig.callback) socketConfig.callback(socket);
 

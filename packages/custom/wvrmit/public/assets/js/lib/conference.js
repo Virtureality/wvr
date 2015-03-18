@@ -33,8 +33,8 @@ var conference = function(config, userToken) {
 
     function onDefaultSocketResponse(response) {
         
-        console.log('onDefaultSocketResponse called back for message: ' + JSON.stringify(response));
-        console.log('self.userToken: ' + self.userToken);
+        /*console.log('onDefaultSocketResponse called back for message: ' + JSON.stringify(response));
+        console.log('self.userToken: ' + self.userToken);*/
 
         if (response.userToken == self.userToken) return;
 
@@ -224,7 +224,7 @@ var conference = function(config, userToken) {
     }, false);
 
     function startBroadcasting() {
-        console.log('Broadcasting requested by broadcaster: ' + self.userToken + ' roomName: ' + self.roomName);
+        //console.log('Broadcasting requested by broadcaster: ' + self.userToken + ' roomName: ' + self.roomName);
         defaultSocket && defaultSocket.send({
             roomToken: self.roomToken,
             roomName: self.roomName,
@@ -260,11 +260,11 @@ var conference = function(config, userToken) {
     openDefaultSocket();
     return {
         createRoom: function(_config) {
-            console.log('createRoom for video-conferencing with name: ' + _config.roomName);
+            /*console.log('createRoom for video-conferencing with name: ' + _config.roomName);
             console.log('self.defaultSocket:' + self.defaultSocket);
             for (var item in self.defaultSocket) {
                 console.log(item + ':' + self.defaultSocket[item]);
-            }
+            }*/
 
             self.roomName = _config.roomName || 'Anonymous';
             self.roomToken = uniqueToken();
@@ -273,14 +273,14 @@ var conference = function(config, userToken) {
                 self.userToken = _config.userToken;
             }
 
-            console.log('self.userToken:' + self.userToken);
+            //console.log('self.userToken:' + self.userToken);
 
             isbroadcaster = true;
             isGetNewRoom = false;
             startBroadcasting();
         },
         joinRoom: function(_config) {
-            console.log('joinRoom for video-conferencing');
+            //console.log('joinRoom for video-conferencing');
             self.roomToken = _config.roomToken;
             isGetNewRoom = false;
 
