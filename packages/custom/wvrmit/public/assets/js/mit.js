@@ -192,13 +192,14 @@ $(function(){
 
 		setButton(actionButton, 'Watch', false);
 
-		actionButton.bind('click', doWatch);
+		//actionButton.bind('click', doWatch);
+		setTimeout(doWatch, 1000);
 
 		function doWatch() {
 
 	        startWatching();
 
-	        actionButton.unbind('click', doWatch);
+	        //actionButton.unbind('click', doWatch);
 
 		    setButton(actionButton, 'Watching ...', true);
 
