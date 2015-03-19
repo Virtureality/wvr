@@ -13,10 +13,10 @@
 
         // on each new session
         this.onconnection = function(room) {
-            console.log('Room to join with details: ');
+            /*console.log('Room to join with details: ');
             for (var item in room) {
                 console.log(item + ': ' + room[item]);
-            }
+            }*/
             if (self.detectedRoom) return;
             self.detectedRoom = true;
 
@@ -31,7 +31,7 @@
 
         // setup new connection
         this.setup = function(roomid) {
-            console.log('setupRoom: ' + roomid + ' for data connection');
+            //console.log('setupRoom: ' + roomid + ' for data connection');
             self.detectedRoom = true;
             !signaler && initSignaler();
             signaler.broadcast({
@@ -41,12 +41,12 @@
 
         // join pre-created data connection
         this.join = function(room) {
-            console.log('Joining room: ' + room.roomid + ' for data connection');
+            /*console.log('Joining room: ' + room.roomid + ' for data connection');
             console.log('room.userid: ' + room.userid);
             console.log('Room details: ');
             for (var item in room) {
                 console.log(item + ': ' + room[item]);
-            }
+            }*/
             !signaler && initSignaler();
             signaler.join({
                 to: room.userid,
@@ -55,7 +55,7 @@
         };
 
         this.send = function(data, _channel) {
-            console.log('Sending data: ' + data);
+            //console.log('Sending data: ' + data);
             if (!data) throw 'No file, data or text message to share.';
             if (data.size)
                 FileSender.send({
@@ -74,7 +74,7 @@
         };
 
         this.check = function(roomid) {
-            console.log('checking room: ' + roomid + ' for data connection');
+            //console.log('checking room: ' + roomid + ' for data connection');
             self._roomid = roomid;
             initSignaler();
         };
@@ -127,10 +127,10 @@
         // it is called when your signaling implementation fires "onmessage"
         this.onmessage = function(message) {
             //console.log('Called back for data connection on message: ' + JSON.stringify(message));
-            console.log('Called back for data connection on message: ');
+            /*console.log('Called back for data connection on message: ');
             for (var item in message) {
                 console.log(item + ': ' + message[item]);
-            }
+            }*/
 
             // if new room detected
             if (message.roomid && message.broadcasting
@@ -214,7 +214,7 @@
         // reusable function to create new offer repeatedly
 
         function repeatedlyCreateOffer() {
-            console.log('signaler.participants', signaler.participants);
+            //console.log('signaler.participants', signaler.participants);
             var firstParticipant = signaler.participants[0];
             if (!firstParticipant) return;
 
@@ -282,7 +282,7 @@
                 forwardParticipant(e);
             },
             onmessage: function(e) {
-                console.log('on data message: ' + e.data);
+                //console.log('on data message: ' + e.data);
                 var message = e.data;
                 if (!message.size)
                     message = JSON.parse(message);
@@ -357,9 +357,9 @@
 
         // called for each new participant
         this.join = function(_config) {
-            console.log('Joining with config: ' + JSON.stringify(_config));
+            /*console.log('Joining with config: ' + JSON.stringify(_config));
             console.log('roomid: ' + _config.roomid);
-            console.log('toPeer: ' + _config.to);
+            console.log('toPeer: ' + _config.to);*/
             signaler.roomid = _config.roomid;;
             this.signal({
                 participationRequest: true,
@@ -486,10 +486,10 @@
 
             // method to signal the data
             this.signal = function(data) {
-                console.log('Signaling data', JSON.stringify(data));
+                /*console.log('Signaling data', JSON.stringify(data));
                 for (var dataItem in data) {
                     console.log(dataItem + ': ' + data[dataItem]);
-                }
+                }*/
                 data.userid = userid;
                 dataSocket.send(JSON.stringify(data));
             };
@@ -961,8 +961,11 @@
                 // share data with all connected users
                 var channels = root.channels || { };
                 for (var channel in channels) {
-                    console.log('Sending to channel: ' + channel + ' with message: ' + message);
-                    channels[channel].channel.send(message);
+                    //console.log('Sending to channel: ' + channel + ' with message: ' + message);
+                    //channels[channel].channel.send(message);
+                    if (channels[channel].channel.readyState === 'open') {
+                        channels[channel].channel.send(message);
+                    }
                 }
             }
 

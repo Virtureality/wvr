@@ -37,7 +37,14 @@ $(function(){
 	        video.play();*/
 	        var video = $(media.video).attr('id', media.stream.id).attr('controls', true);
 	        media.video.play();
+
+	        //console.log('Adding remote video...');
 	        addVideo(video, container);
+	        /*function addRemoteVideo() {
+	        	addVideo(video, container);
+	        	console.log('Remote video added.')
+	        }
+	        setTimeout(addRemoteVideo, 10000);*/
 	    },
 	    onRemoteStreamEnded: function (stream) {
 	        var video = document.getElementById(stream.id);
@@ -190,7 +197,7 @@ $(function(){
     	userToken = setUserToken(userToken);
         //console.log('userToken set to: ' + userToken);
 
-		setButton(actionButton, 'Watch', false);
+		//setButton(actionButton, 'Watch', false);
 
 		//actionButton.bind('click', doWatch);
 		setTimeout(doWatch, 1000);
@@ -281,6 +288,7 @@ $(function(){
 
     function checkForSetup() {
     	if (!confOnGoing) {
+    		confOnGoing = true;
     		setup();
     	}
     }
