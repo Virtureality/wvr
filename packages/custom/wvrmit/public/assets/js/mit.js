@@ -22,29 +22,17 @@ $(function(){
     var confUI;
     
 	var dataConnectionJoined = false;
-	//var dataCon = new DataConnection('wvrmit-data');
 	var dataCon;
 
 	var confConfig = {
 
 	    openSocket: openSignaling,
 	    onRemoteStream: function (media) {
-	        /*var video = media.video;
-	        video.setAttribute('controls', true);
-	        video.setAttribute('id', media.stream.id);
-	        video.setAttribute('muted', true);
-	        addVideo($(video), container);
-	        video.play();*/
 	        var video = $(media.video).attr('id', media.stream.id).attr('controls', true);
 	        media.video.play();
 
 	        //console.log('Adding remote video...');
 	        addVideo(video, container);
-	        /*function addRemoteVideo() {
-	        	addVideo(video, container);
-	        	console.log('Remote video added.')
-	        }
-	        setTimeout(addRemoteVideo, 10000);*/
 	    },
 	    onRemoteStreamEnded: function (stream) {
 	        var video = document.getElementById(stream.id);
@@ -91,15 +79,6 @@ $(function(){
     //var SIGNALING_SERVER = 'http://192.168.0.109:8888/';
 	var defaultChannel = 'wvrmit';
     
-	/*var loginUser = $('#user').attr('value');
-	var sender;
-	console.log('global.user.name:' + '{{global.user.name}}');
-	if (loginUser && loginUser != '{{global.user.name}}') {
-		sender = loginUser;
-	} else{
-		sender = Math.round(Math.random() * 999999999) + 999999999;
-	}*/
-
 	watch();
 
 	function setup() {
@@ -156,6 +135,7 @@ $(function(){
 		};*/
 		dataCon.onmessage = function(message, userid) {
 			//console.log(' message received from ' + userid + ': ' + message);
+			userid = userid.substring(0, userid.lastIndexOf('-'));
 			messageArea.append($('<div>').append(userid + ': ' + message));
 		};
 		dataCon.onerror = function(e) {
