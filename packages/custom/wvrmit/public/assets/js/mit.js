@@ -10,6 +10,7 @@ $(function(){
 	//var userToken = Math.round(Math.random() * 999999999) + 999999999;
 	var userToken = uniqueToken();
 
+    var roomFound = false;
 	var confOnGoing = false;
 
     var actionArea = $('#action-area');
@@ -21,7 +22,8 @@ $(function(){
     var confUI;
     
 	var dataConnectionJoined = false;
-	var dataCon = new DataConnection('wvrmit-data');
+	//var dataCon = new DataConnection('wvrmit-data');
+	var dataCon;
 
 	var confConfig = {
 
@@ -42,33 +44,37 @@ $(function(){
 	        if (video) video.parentNode.parentNode.removeChild(video.parentNode);
 	    },
 	    onRoomFound: function (room) {
-            /*console.log('Room found: ');
-            for (var item in room) {
-            	console.log(item + ': ' + room[item]);
-            }*/
-            var mname = $('#mname').attr('value') || 'Anonymous';
+	    	if(!roomFound) {
+	    		roomFound =true;
 
-	        if(confJoined || room.roomName !== mname) {
-	        	return;
-	        } else{
-	        	confOnGoing = true;
+	    		var mname = $('#mname').attr('value') || 'Anonymous';
 
-		        setButton(actionButton, 'Conference Ongoing...', true);
+		        if(confJoined || room.roomName !== mname) {
+		        	return;
+		        } else{
+		        	confOnGoing = true;
 
-		        var broadcaster = room.broadcaster;
-		        captureUserMedia(function () {
-		            confUI.joinRoom({
-		                roomToken: broadcaster,
-		                joinUser: broadcaster
-		            });
-                    confJoined = true;
+			        setButton(actionButton, 'Conference Ongoing...', true);
 
-		            dataCon.joinRoom(room);
-		            dataConnectionJoined = true;
+			        var broadcaster = room.broadcaster;
+			        captureUserMedia(function () {
+			            confUI.joinRoom({
+			                roomToken: broadcaster,
+			                joinUser: broadcaster
+			            });
+	                    confJoined = true;
 
-		            enableShare(mname);
-		        });
-	        }
+	                    if (!dataConnectionJoined) {
+				            initDataConnection(mname, userToken);
+				            //dataCon.join(room);
+				            dataCon.check(mname);
+				            dataConnectionJoined = true;
+	                    };
+
+			            enableShare(mname);
+			        });
+		        }
+	    	}
 
 	    }
 	};
@@ -103,10 +109,6 @@ $(function(){
 
 		    setupConf(mname, userToken);
 
-		    /*setupDataConnection(mname, userToken);
-
-		    enableShare(mname);*/
-
 		    actionButton.unbind('click', doSetup);
 
 		    //console.log('setup event handler execution ended.');
@@ -124,7 +126,8 @@ $(function(){
 		            userToken: userToken
 		        });
 
-		        setupDataConnection(mname, userToken);
+		        initDataConnection(mname, userToken);
+	            dataCon.setup(mname);
 
 		        enableShare(mname);
 
@@ -134,52 +137,52 @@ $(function(){
 		    });
 		}
 
-		function setupDataConnection(mname, setter){
-			
-		    dataCon.openSignalingChannel = openSignaling;
+	}	
 
-		    //dataCon.firebase = 'signaling';
-			//dataCon.userid = sender;
-			var messageArea = $('#message-area');
-			/*dataCon.onopen = function(e) {
-				console.log('Data connection opened between you and ' + e.userid);
-			};*/
-			dataCon.onmessage = function(message, userid) {
-				//console.log(' message received from ' + userid + ': ' + message);
-				messageArea.append($('<div>').append(userid + ': ' + message));
-			};
-			dataCon.onerror = function(e) {
-				console.debug('Error in data connection. Target user id', e.userid, 'Error', e);
-			};
-			dataCon.onclose = function(e) {
-				console.log('Data connection closed. Target user id: ' + e.userid);
-			};
-			dataCon.onuserleft = function(e) {
-				console.log('User left. Target user id: ' + e.userid);
-			};
+	function initDataConnection(mname, setter){
+
+	    //dataCon.firebase = 'signaling';
+		//dataCon.userid = sender;
+		var messageArea = $('#message-area');
+		/*dataCon.onopen = function(e) {
+			console.log('Data connection opened between you and ' + e.userid);
+		};*/
+		dataCon.onmessage = function(message, userid) {
+			//console.log(' message received from ' + userid + ': ' + message);
+			messageArea.append($('<div>').append(userid + ': ' + message));
+		};
+		dataCon.onerror = function(e) {
+			console.debug('Error in data connection. Target user id', e.userid, 'Error', e);
+		};
+		dataCon.onclose = function(e) {
+			console.log('Data connection closed. Target user id: ' + e.userid);
+		};
+		dataCon.onuserleft = function(e) {
+			console.log('User left. Target user id: ' + e.userid);
+		};
 
 
-	        dataCon.userid = setter;
-	        dataCon.setup(mname);
+        dataCon.userid = setter;
 
-	        $('#send-msg-btn').on('click', function() {
-				var msgBody = $('#message-text').val() || '';
-				if (msgBody && msgBody !== '') {
-					//console.log('Sending message: ' + msgBody);
-					dataCon.send(msgBody);
-					messageArea.append($('<div>').append('Me: ' + msgBody));
-				} else{
-					alert('Please input message content correctly!');
-				}
-			});
+        var sendMsgButton = $('#send-msg-btn');
+        sendMsgButton.on('click', function() {
+			var msgBody = $('#message-text').val() || '';
+			if (msgBody && msgBody !== '') {
+				//console.log('Sending message: ' + msgBody);
+				dataCon.send(msgBody);
+				messageArea.append($('<div>').append('Me: ' + msgBody));
+			} else{
+				alert('Please input message content correctly!');
+			}
+		});
 
-		}
+		setButton(sendMsgButton, 'Send', false);
 
-		function enableShare(mname){
-			var shareLink = $('<a/>').attr('class', 'pull-left').attr('target', '_blank').text('Share Meeting: {{$stateParams.mname}}');
-			shareLink.appendTo(actionArea);
-		}
+	}
 
+	function enableShare(mname){
+		var shareLink = $('<a/>').attr('class', 'pull-left').attr('target', '_blank').attr('href', location.href).text('Share Meeting: ' + mname);
+		shareLink.appendTo(actionArea);
 	}
 
 	function watch() {
@@ -202,8 +205,12 @@ $(function(){
 		}
 
 		function startWatching() {
-			//confUI = conference(confConfig);
+			
 			confUI = conference(confConfig, userToken);
+
+			dataCon = new DataConnection('wvrmit-data');
+		    dataCon.openSignalingChannel = openSignaling;
+
 		};
 
 	}
