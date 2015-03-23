@@ -24,16 +24,23 @@ Wvrmit.register(function(app, auth, database) {
     menu: 'wvr'
   });
   
-  Wvrmit.aggregateAsset('css', 'wvrmit.css');
   Wvrmit.aggregateAsset('css', 'masonry.css');
+  /*Wvrmit.aggregateAsset('css', 'wvrmit.css');
 
-  /*Wvrmit.aggregateAsset('js', 'lib/socket.io.js');
+  Wvrmit.aggregateAsset('js', 'lib/socket.io.js');
   //Wvrmit.aggregateAsset('js', 'lib/firebase.js');
   Wvrmit.aggregateAsset('js', 'lib/RTCPeerConnection-v1.5.js');
   Wvrmit.aggregateAsset('js', 'lib/conference.js');*/
   //Wvrmit.aggregateAsset('js', 'lib/data-connection.js');
   /*Wvrmit.aggregateAsset('js', 'mit.js');
   Wvrmit.aggregateAsset('js', 'home.js');*/
+
+  /*Wvrmit.aggregateAsset('css', 'masonry.css', {global:true,  weight: -3, group: 'footer'});
+
+  Wvrmit.aggregateAsset('js', 'lib/socket.io.js', {global:true,  weight: -3, group: 'footer'});
+  Wvrmit.aggregateAsset('js', 'lib/RTCPeerConnection-v1.5.js', {global:true,  weight: -3, group: 'footer'});
+  Wvrmit.aggregateAsset('js', 'lib/conference.js', {global:true,  weight: -3, group: 'footer'});
+  Wvrmit.aggregateAsset('js', 'lib/data-connection.js', {global:true,  weight: -3, group: 'footer'});*/
 
 
   /**
