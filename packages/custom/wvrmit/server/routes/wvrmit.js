@@ -4,7 +4,7 @@
 // The Package is past automatically as first parameter
 module.exports = function(Wvrmit, app, auth, database) {
 
-  app.get('/wvrmit/example/anyone', function(req, res, next) {
+  /*app.get('/wvrmit/example/anyone', function(req, res, next) {
     res.send('Anyone can access this');
   });
 
@@ -23,5 +23,28 @@ module.exports = function(Wvrmit, app, auth, database) {
       //Rendering a view from the Package server/views
       res.send(html);
     });
-  });
+  });*/
+
+  // Home route
+  app.route('/wvrmit')
+    .get(function(req, res, next) {
+          Wvrmit.render('index', {
+            package: 'wvrmit'
+          }, function(err, html) {
+            //Rendering a view from the Package server/views
+            res.send(html);
+          });
+        });
+
+  app.route('/wvrmit/mit/:mname')
+  .get(function(req, res, next) {
+        Wvrmit.render('index', {
+          package: 'wvrmit',
+          mname: req.params.mname
+        }, function(err, html) {
+          //Rendering a view from the Package server/views
+          res.send(html);
+        });
+      });
+
 };
