@@ -1,3 +1,17 @@
+# Get Started: #
+-> Set up prerequisites for MEAN.IO, referring to below MEAN part for detail
+
+-> git clone https://<your username>@bitbucket.org/Sharphill/wvr-mean.git
+
+-> npm install --verbose
+
+-> bower install --verbose
+
+-> node server
+
+-> ...
+
+*****************************************************************************************************************************
 [![Build Status](https://travis-ci.org/linnovate/mean.svg?branch=master)](https://travis-ci.org/linnovate/mean)
 [![Dependencies Status](https://david-dm.org/linnovate/mean.svg)](https://david-dm.org/linnovate/mean)
 [![Built with Grunt](https://cdn.gruntjs.com/builtwith.png)](http://gruntjs.com/)
@@ -650,4 +664,3 @@ $ heroku config:set NODE_ENV=production
 
 ## License
 We believe that mean should be free and easy to integrate within your existing projects so we chose [The MIT License](http://opensource.org/licenses/MIT)
-
