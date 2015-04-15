@@ -1,3 +1,41 @@
+# MySpace@LyteSpark #
+
+```
+#!html
+
+<!-- Step 1. Including LyteSpark library -->
+<script src='https://s3.amazonaws.com/s3.lytespark.com/api.soft.js'></script>
+<!-- Step 2. Defining a container for video chat -->
+<div id='ls-container' style='width:600px;height:400px;'></div>
+<!-- Step 3. Launching video chat -->
+<script>
+   $LS.setup({endpoint:'https://www.lytespark.com'}); /* Api Endpoint */
+   var LScall = $LS.launch({
+      space:"mh4va6kr5iy3qw4p", /* String, Space short URL, required */
+      roomkey:"testroom1", /* String, 8-32 length, lowercase latin letters and numbers allowed, required */
+      container:"ls-container", /* String, Container ID, required */
+      username:"Sharphill", /* String, User name, optional */
+      userphoto:"https://www....jpg", /* String, User photo, optional */
+      audioonly: false /* Boolean, Audio call mode, optional */
+   });
+</script>
+```
+
+
+# Get Started: #
+-> Set up prerequisites for MEAN.IO, referring to below MEAN part for detail
+
+-> git clone https://<your username>@bitbucket.org/Sharphill/wvr-mean.git
+
+-> npm install --verbose
+
+-> bower install --verbose
+
+-> node server
+
+-> ...
+
+*****************************************************************************************************************************
 [![Build Status](https://travis-ci.org/linnovate/mean.svg?branch=master)](https://travis-ci.org/linnovate/mean)
 [![Dependencies Status](https://david-dm.org/linnovate/mean.svg)](https://david-dm.org/linnovate/mean)
 [![Built with Grunt](https://cdn.gruntjs.com/builtwith.png)](http://gruntjs.com/)
@@ -650,4 +688,3 @@ $ heroku config:set NODE_ENV=production
 
 ## License
 We believe that mean should be free and easy to integrate within your existing projects so we chose [The MIT License](http://opensource.org/licenses/MIT)
-
