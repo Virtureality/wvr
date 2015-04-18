@@ -1,0 +1,33 @@
+<div class="row">
+    <div class="col-lg-7">
+	    <h4>What's going on ... </h4>
+	</div>
+	<div class="col-lg-4">
+		<div class="input-group">
+			<input id="new-name" type="text" class="form-control" placeholder="type here new meeting please ..."/>
+			<span class="input-group-btn">
+				<button id="setup-new-meeting" class="btn btn-info">Create</button>
+			</span>
+		</div>
+	</div>
+	<div class="col-lg-1 pull-right">
+    	<legend>
+		    <a ui-sref="WVR - MIT help page" target="_blank">Help</a>
+	    </legend>
+    </div>
+    <div class="row">
+        <hr/>
+    </div>
+</div>
+<div class="row" id="meetingsContainer"></div>
+
+<!-- -->
+<script type="text/javascript" src="/wvrmit/assets/js/masonry.js"></script>
+
+<!-- Ongoing Conferences. -->
+<!--  -->
+<script type="text/javascript" src="/wvrmit/assets/js/lib/socket.io.js"></script>
+<script type="text/javascript" src="/wvrmit/assets/js/lib/RTCPeerConnection-v1.5.js"></script>
+<script type="text/javascript" src="/wvrmit/assets/js/lib/conference.js"></script>
+
+<script type="text/javascript" src="/wvrmit/assets/js/home.js"></script>
