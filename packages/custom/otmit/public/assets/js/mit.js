@@ -2,18 +2,42 @@
  * New JS file
  */
 
+var session;
+var connectionCount = 0;
+
 var container = $('#container');
 
 //$(function(){
 function startOT(apiKey, sessionId, token) {
-	//var apiKey = 45209542;
-	//var sessionId = '1_MX40NTIwOTU0Mn5-MTQyOTA5NTA0Mzc0NX45ZzZhUUhpcFZacXE4d1BVemhKVnl5aDJ-fg';
-	var session = OT.initSession(apiKey, sessionId);
+  setButton($('#action-button').attr('onclick','').off(), 'Processing...', true);
+  if(OT.checkSystemRequirements() == 0) {
+	  console.log('The client does not support WebRTC!');
+
+      setButton($('#action-button'), 'Oops! Your environment is not supported!', true);
+  } else{
+	session = OT.initSession(apiKey, sessionId);
 	//var publisher = OT.initPublisher();
-
-	//var token = 'T1==cGFydG5lcl9pZD00NTIwOTU0MiZzaWc9M2EyODdmMjBiOGJlZDZlZTM3ZWE1NGU1ZTViOTAwMTJhNmM1YzNkMDpyb2xlPXB1Ymxpc2hlciZzZXNzaW9uX2lkPTFfTVg0ME5USXdPVFUwTW41LU1UUXlPVEE1TlRBME16YzBOWDQ1WnpaaFVVaHBjRlphY1hFNGQxQlZlbWhLVm5sNWFESi1mZyZjcmVhdGVfdGltZT0xNDI5MDk5MDgxJm5vbmNlPTAuNjM1NDExOTczOTQ4ODQwNyZleHBpcmVfdGltZT0xNDI5MTIwNjIzJmNvbm5lY3Rpb25fZGF0YT0=';
-
+	
 	session.on({
+		connectionCreated: function(event) {
+			connectionCount++;
+			console.log(connectionCount + ' connections.');
+		},
+		connectionDestroyed: function(event) {
+			connectionCount--;
+			console.log(connectionCount + ' connections.');
+		},
+		sessionDisconnected: function(event) {
+			session.off();
+			connectionCount = 0;
+			console.log(connectionCount + ' connections.');
+			console.log('Disconnected from the session');
+			setButton($('#action-button').off().on('click', function() {startOT(apiKey, sessionId, token);}), 'Reconnect', false);
+			if(event.reason == 'networkDisconnected') {
+				//alert('Your network connection terminated.');
+				console.log('Your network connection terminated.');
+			}
+		},
 		streamCreated: function(event) { 
 			//session.subscribe(event.stream, 'subscribersDiv', {insertMode: 'append'});
 			var videoBox = $('<div/>').attr('class', 'box photo col2 masonry-brick');
@@ -28,9 +52,11 @@ function startOT(apiKey, sessionId, token) {
 
 	session.connect(token, function(error) {
 		if (error) {
-			console.log(error.message);
+			console.log('Unable to connect:', error.message);
 		} else {
-			console.log('connected to session');
+			console.log('Connected.');
+			//connectionCount = 1;
+			setButton($('#action-button').off().on('click', function() {disconnect();}), 'Disconnect', false);
 			//session.publish('myPublisherDiv', {width: 320, height: 240});
 			var videoBox = $('<div/>').attr('class', 'box photo col2 masonry-brick');
 		    videoBox.appendTo(container);
@@ -41,5 +67,23 @@ function startOT(apiKey, sessionId, token) {
 			/*session.publish(publisher);*/
 		}
 	});
+  }
+}
+
+function disconnect() {
+	if(session) {
+		setButton($('#action-button'), 'Disconnecting...', true);
+		session.disconnect();
+	}
+}
+
+function setButton(button, text, disable) {
+	if(button) {
+		if(text && text !== '') {
+			button.text(text);
+		}
+
+	    button.attr('disabled', disable);
+    }
 }
 //});

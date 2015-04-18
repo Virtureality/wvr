@@ -63,7 +63,7 @@ module.exports = function(Otmit, app, auth, database) {
 				if(!room.sessionId) {
 					//console.log('Creating OT session...');
 					opentok.createSession(function(err, session) {
-						console.log('session:', session);
+						//console.log('session:', session);
 						if(err) {
 							console.log(err);
 						} else {
