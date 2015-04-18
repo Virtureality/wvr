@@ -8,7 +8,7 @@ var connectionCount = 0;
 var container = $('#container');
 
 //$(function(){
-function startOT(apiKey, sessionId, token) {
+function startOT(apiKey, sessionId, token, username) {
   setButton($('#action-button').attr('onclick','').off(), 'Processing...', true);
   if(OT.checkSystemRequirements() == 0) {
 	  console.log('The client does not support WebRTC!');
@@ -36,7 +36,8 @@ function startOT(apiKey, sessionId, token) {
 			/*var elements = container.masonry('getItemElements');
 			container.masonry('remove', elements);*/
 			console.log('Disconnected from the session');
-			setButton($('#action-button').off().on('click', function() {startOT(apiKey, sessionId, token);}), 'Reconnect', false);
+			//$('#username').removeAttr('disabled');
+			setButton($('#action-button').off().on('click', function() {startOT(apiKey, sessionId, token, username);}), 'Reconnect', false);
 			if(event.reason == 'networkDisconnected') {
 				//alert('Your network connection terminated.');
 				console.log('Your network connection terminated.');
@@ -61,16 +62,19 @@ function startOT(apiKey, sessionId, token) {
 
 	session.connect(token, function(error) {
 		if (error) {
-			console.log('Unable to connect:', error.message);
+			//console.log('Unable to connect:', error.message);
+			alert('Unable to connect:', error.message);
+			//$('#username').removeAttr('disabled');
 		} else {
 			console.log('Connected.');
 			//connectionCount = 1;
+			$('#username').attr('disabled','disabled');
 			setButton($('#action-button').off().on('click', function() {disconnect();}), 'Disconnect', false);
 			//session.publish('myPublisherDiv', {width: 320, height: 240});
 			if(session.capabilities.publish == 1) {
 				var videoBox = $('<div/>').attr('class', 'box photo col2 masonry-brick').attr('id', 'publisherContainer');
 			    videoBox.appendTo(container);
-			    session.publish(videoBox.get(0), {insertMode: 'append', audioVolume: 6, fitMode: 'contain', width: 168, height: 126})
+			    session.publish(videoBox.get(0), {name: username, insertMode: 'append', audioVolume: 6, fitMode: 'contain', width: 168, height: 126})
 			    .on({
 			    	streamCreated: function(event) {
 						console.log('Publisher started streaming.');

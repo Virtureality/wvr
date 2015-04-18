@@ -31,7 +31,15 @@
 				<a class="pull-right" ui-sref="WVR - MIT help page" target="_blank">Help</a>
 			</legend> -->
 			<div class="row" id="action-area">
-			    <button id="action-button" onclick="start();">Click to Start</button>
+			  <div class="col-lg-6">
+			    <div class="input-group">
+					<input id="username" class="form-control" type="text" placeholder="type your name and click to start"/>
+					<span class="input-group-btn">
+						<button id="action-button" class="btn btn-info" onclick="start();">Start</button>
+					</span>
+				</div>
+			  </div>
+			    <!-- <button id="action-button" onclick="start();">Click to Start</button> -->
 				<!-- <a id="shareLink" class="pull-left" target="_blank">Share Meeting: {{$stateParams.mname}}</a>
 				<script type="text/javascript">
 				    document.getElementById('shareLink').href = location.href;
@@ -116,9 +124,14 @@
 			    var token = '{{token}}';
 			    
 			    function start() {
-			        //setButton($('#action-button').attr('onclick','').unbind('click'), 'Starting...', true);
-			        startOT(apiKey, sessionId, token);
-			        //$('#action-button').attr('disabled', true);
+			        var username = $('#username').val() || '';
+					if (username && username !== '') {
+				        //setButton($('#action-button').attr('onclick','').unbind('click'), 'Starting...', true);
+				        startOT(apiKey, sessionId, token, username);
+				        //$('#action-button').attr('disabled', true);
+					} else{
+						alert('Please input your name for starting!');
+					}
 			    }
 			</script>
 			
