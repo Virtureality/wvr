@@ -31,6 +31,10 @@ function startOT(apiKey, sessionId, token) {
 			session.off();
 			connectionCount = 0;
 			console.log(connectionCount + ' connections.');
+			container.empty();
+			container.masonry('reloadItems');
+			/*var elements = container.masonry('getItemElements');
+			container.masonry('remove', elements);*/
 			console.log('Disconnected from the session');
 			setButton($('#action-button').off().on('click', function() {startOT(apiKey, sessionId, token);}), 'Reconnect', false);
 			if(event.reason == 'networkDisconnected') {
@@ -40,13 +44,18 @@ function startOT(apiKey, sessionId, token) {
 		},
 		streamCreated: function(event) { 
 			//session.subscribe(event.stream, 'subscribersDiv', {insertMode: 'append'});
-			var videoBox = $('<div/>').attr('class', 'box photo col2 masonry-brick');
+			var videoBox = $('<div/>').attr('class', 'box photo col2 masonry-brick').attr('id', event.stream.streamId);
 		    videoBox.appendTo(container);
 
 			session.subscribe(event.stream, videoBox.get(0), {insertMode: 'append', audioVolume: 6, fitMode: 'contain', width: 168, height: 126});
 			
 			container.masonry('appended', videoBox);
 			
+			console.log('Stream: ' + event.stream.streamId + ' started.');
+		},
+		streamDestroyed: function(event) {
+			$('#' + event.stream.streamId).remove();
+			console.log('Stream: ' + event.stream.streamId + ' stopped.');
 		}
 	});
 
@@ -58,13 +67,24 @@ function startOT(apiKey, sessionId, token) {
 			//connectionCount = 1;
 			setButton($('#action-button').off().on('click', function() {disconnect();}), 'Disconnect', false);
 			//session.publish('myPublisherDiv', {width: 320, height: 240});
-			var videoBox = $('<div/>').attr('class', 'box photo col2 masonry-brick');
-		    videoBox.appendTo(container);
-		    session.publish(videoBox.get(0), {insertMode: 'append', audioVolume: 6, fitMode: 'contain', width: 168, height: 126});
+			if(session.capabilities.publish == 1) {
+				var videoBox = $('<div/>').attr('class', 'box photo col2 masonry-brick').attr('id', 'publisherContainer');
+			    videoBox.appendTo(container);
+			    session.publish(videoBox.get(0), {insertMode: 'append', audioVolume: 6, fitMode: 'contain', width: 168, height: 126})
+			    .on({
+			    	streamCreated: function(event) {
+						console.log('Publisher started streaming.');
+					},
+					streamDestroyed: function(event) {
+						$('#publisherContainer').remove();
+						console.log('Publisher stopped streaming.');
+					}
+			    });
+			} else{
+				console.log('You are not able to publish!');
+			}
 		    
 		    container.masonry('appended', videoBox);
-		    
-			/*session.publish(publisher);*/
 		}
 	});
   }
