@@ -74,9 +74,9 @@ $(function(){
 	    }
 	};
 
-	//var SIGNALING_SERVER = 'http://localhost:8888/';
+	var SIGNALING_SERVER = 'http://localhost:8888/';
 	//var SIGNALING_SERVER = '127.0.0.1:8888/';
-    var SIGNALING_SERVER = 'http://192.168.0.109:8888/';
+    //var SIGNALING_SERVER = 'http://192.168.0.109:8888/';
 	var defaultChannel = 'wvrmit';
     
 	watch();

@@ -16,7 +16,7 @@ function startOT(apiKey, sessionId, token, username) {
       setButton($('#action-button'), 'Oops! Your environment is not supported!', true);
   } else{
 	session = OT.initSession(apiKey, sessionId);
-	//var publisher = OT.initPublisher();
+	var publisher, subscriber;
 	
 	session.on({
 		connectionCreated: function(event) {
@@ -43,13 +43,12 @@ function startOT(apiKey, sessionId, token, username) {
 				console.log('Your network connection terminated.');
 			}
 		},
-		streamCreated: function(event) { 
-			//session.subscribe(event.stream, 'subscribersDiv', {insertMode: 'append'});
-			var videoBox = $('<div/>').attr('class', 'box photo col2 masonry-brick').attr('id', event.stream.streamId);
+		streamCreated: function(event) {
+			var videoBox = $('<div/>').attr('class', 'box').attr('id', event.stream.streamId);
 		    videoBox.appendTo(container);
 
-			session.subscribe(event.stream, videoBox.get(0), {insertMode: 'append', audioVolume: 6, fitMode: 'contain', width: 168, height: 126});
-			
+		    subscriber = session.subscribe(event.stream, videoBox.get(0), {audioVolume: 6, insertMode: 'append', style: {nameDisplayMode: 'on'}});
+		    
 			container.masonry('appended', videoBox);
 			
 			console.log('Stream: ' + event.stream.streamId + ' started.');
@@ -70,12 +69,14 @@ function startOT(apiKey, sessionId, token, username) {
 			//connectionCount = 1;
 			$('#username').attr('disabled','disabled');
 			setButton($('#action-button').off().on('click', function() {disconnect();}), 'Disconnect', false);
-			//session.publish('myPublisherDiv', {width: 320, height: 240});
+			
 			if(session.capabilities.publish == 1) {
-				var videoBox = $('<div/>').attr('class', 'box photo col2 masonry-brick').attr('id', 'publisherContainer');
+				var videoBox = $('<div/>').attr('class', 'box').attr('id', 'publisherContainer');
 			    videoBox.appendTo(container);
-			    session.publish(videoBox.get(0), {name: username, insertMode: 'append', audioVolume: 6, fitMode: 'contain', width: 168, height: 126})
-			    .on({
+			    
+			    publisher = TB.initPublisher(apiKey, videoBox.get(0), {name: username, insertMode: 'append'});
+			    
+			    publisher.on({
 			    	streamCreated: function(event) {
 						console.log('Publisher started streaming.');
 					},
@@ -83,7 +84,11 @@ function startOT(apiKey, sessionId, token, username) {
 						$('#publisherContainer').remove();
 						console.log('Publisher stopped streaming.');
 					}
-			    });
+			    });			    
+
+			    session.publish(publisher);
+			    
+			    //publisher.setStyle('nameDisplayMode', 'on');
 			} else{
 				console.log('You are not able to publish!');
 			}
