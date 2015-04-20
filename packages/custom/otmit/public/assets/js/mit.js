@@ -18,6 +18,9 @@ function startOT(apiKey, sessionId, token, username) {
 	session = OT.initSession(apiKey, sessionId);
 	var publisher, subscriber;
 	
+	var extensionId = 'bghjcghfgpfjcpojhgbdnjdnibedponh';
+    OT.registerScreenSharingExtension('chrome', extensionId);
+	
 	session.on({
 		connectionCreated: function(event) {
 			connectionCount++;
@@ -44,12 +47,39 @@ function startOT(apiKey, sessionId, token, username) {
 			}
 		},
 		streamCreated: function(event) {
-			var videoBox = $('<div/>').attr('class', 'box').attr('id', event.stream.streamId);
-		    videoBox.appendTo(container);
 
-		    subscriber = session.subscribe(event.stream, videoBox.get(0), {audioVolume: 6, insertMode: 'append', style: {nameDisplayMode: 'on'}});
-		    
-			container.masonry('appended', videoBox);
+		    if (event.stream.videoType === 'screen') {
+				var screenContainer = $('#screen-share-area');
+				screenContainer.masonry({
+			        itemSelector : '.box'
+			    });
+				
+				/*var screenLeftSide = $('<div/>').attr('class', 'box');
+				screenLeftSide.appendTo($('#screen-main'));
+				//screenContainer.masonry('appended', screenLeftSide);
+*/				
+				var screenBox = $('<div/>').attr('class', 'box').attr('id', event.stream.streamId);
+				screenBox.appendTo($('#screen-main'));
+				var subOptions = {
+						insertMode: 'append',
+						width: event.stream.videoDimensions.width / 2,
+						height: event.stream.videoDimensions.height /2
+				};
+				session.subscribe(event.stream, screenBox.get(0), subOptions);
+				screenContainer.masonry('appended', screenBox);
+				
+				/*var screenRightSide = $('<div/>').attr('class', 'box');
+				screenRightSide.appendTo($('#screen-main'));
+				//screenContainer.masonry('appended', screenRightSide);
+				
+				screenContainer.masonry('reloadItems');*/
+		    } else {
+		    	var videoBox = $('<div/>').attr('class', 'box').attr('id', event.stream.streamId);
+				videoBox.appendTo(container);
+		    	subscriber = session.subscribe(event.stream, videoBox.get(0), {audioVolume: 6, insertMode: 'append', style: {nameDisplayMode: 'on'}});
+				    
+				container.masonry('appended', videoBox);
+		    }
 			
 			console.log('Stream: ' + event.stream.streamId + ' started.');
 		},
@@ -68,6 +98,10 @@ function startOT(apiKey, sessionId, token, username) {
 			console.log('Connected.');
 			//connectionCount = 1;
 			$('#username').attr('disabled','disabled');
+			
+			//prepareScreenShare();
+			$('#shareBtn').removeAttr('disabled');
+			
 			setButton($('#action-button').off().on('click', function() {disconnect();}), 'Disconnect', false);
 			
 			if(session.capabilities.publish == 1) {
@@ -97,6 +131,50 @@ function startOT(apiKey, sessionId, token, username) {
 		}
 	});
   }
+}
+
+function prepareScreenShare() {
+	OT.checkScreenSharingCapability(function(response) {
+        if (!response.supported || response.extensionRegistered === false) {
+          alert('This browser does not support screen sharing.');
+        } else if (response.extensionInstalled === false) {
+          alert('Please install the screen sharing extension and load this page over HTTPS.');
+        } else {
+        	$('#shareBtn').removeAttr('disabled');
+        }
+	});
+}
+
+function screenshare() {
+    OT.checkScreenSharingCapability(function(response) {
+      if (!response.supported || response.extensionRegistered === false) {
+        alert('This browser does not support screen sharing.');
+      } else if (response.extensionInstalled === false) {
+        alert('Please install the screen sharing extension and load this page over HTTPS.');
+      } else {
+        // Screen sharing is available. Publish the screen.
+        // Create an element, but do not display it in the HTML DOM:
+        var screenContainerElement = document.createElement('div');
+        var screenName = $('#username').val() || 'Anonymous';
+        screenName = 'Screen - ' + screenName;
+        var screenSharingPublisher = OT.initPublisher(
+          screenContainerElement,
+          {name: screenName, videoSource : 'screen' },
+          function(error) {
+            if (error) {
+              alert('Something went wrong: ' + error.message);
+            } else {
+              session.publish(
+                screenSharingPublisher,
+                function(error) {
+                  if (error) {
+                    alert('Something went wrong: ' + error.message);
+                  }
+                });
+            }
+          });
+        }
+      });
 }
 
 function disconnect() {

@@ -37,6 +37,11 @@
 					</span>
 				</div>
 			  </div>
+			  <div class="col-lg-2">
+			    <span class="input-group-btn">
+			      <button onclick="javascript:screenshare();" disabled="disabled" id="shareBtn" class="btn btn-info">Share your screen</button>
+				</span>
+			  </div>
 			    <!-- <button id="action-button" onclick="start();">Click to Start</button> -->
 				<!-- <a id="shareLink" class="pull-left" target="_blank">Share Meeting: {{$stateParams.mname}}</a>
 				<script type="text/javascript">
@@ -48,44 +53,58 @@
 			<div class="row">
 		
 				<div class="col-lg-9">
+				
+				    <div class="row" id="screen-share-area">
+				      <div class="col-lg-offset-1" id="screen-main-left">
+				        <div class="box photo col1 masonry-brick"> 
+				          <a href="/wvrmit/assets/img/lily.jpeg" title="Lily"><img src="/wvrmit//assets/img/lily.jpeg" alt="Lily"></a>
+						</div>
+				        <!-- <a href="/wvrmit/assets/img/lily.jpeg" title="Lily"><img src="/wvrmit//assets/img/lily.jpeg" alt="Lily"></a> -->
+				      </div>
+				      <div id="screen-main" class="col-lg-8"></div>
+					</div>
 
 					<div id="container" class="clearfix masonry">
+					
+						<div class="row" id="seats-area">
 					  
-					    <div class="box photo col2 masonry-brick">
-					      <!--  -->
-					      <a href="/wvrmit/assets/img/lily.jpeg" title="Lily"><img src="/wvrmit//assets/img/lily.jpeg" alt="Lily"></a>
-					    </div>
-					  
-					    <div class="box photo col2 masonry-brick">
-					      <a href="/wvrmit/assets/img/1.jpg" title="Kid"><img src="/wvrmit/assets/img/1.jpg" alt="Kid"></a>
-					    </div>
-					  
-					    <div class="box photo col1 masonry-brick">
-					      <a href="/wvrmit/assets/img/2.jpg" title="Kid"><img src="/wvrmit/assets/img/2.jpg" alt="Tony"></a>
-					    </div>
-					  
-					    <div class="box photo col2 masonry-brick">
-					      <a href="/wvrmit/assets/img/3.jpg" title="Campus"><img src="/wvrmit/assets/img/3.jpg" alt="Campus"></a>
-					    </div>
-					  
-					    <div class="box photo col2 masonry-brick">
-					      <a href="/wvrmit/assets/img/4.jpg" title=""><img src="/wvrmit/assets/img/4.jpg" alt=""></a>
-					    </div>
-					  
-					    <div class="box photo col1 masonry-brick">
-					      <a href="/wvrmit/assets/img/5.jpg" title=""><img src="/wvrmit/assets/img/5.jpg" alt=""></a>
-					    </div>
-					  
-					    <div class="box photo col2 masonry-brick">
-					      <a href="/wvrmit/assets/img/6.jpg" title=""><img src="/wvrmit/assets/img/6.jpg" alt=""></a>
-					    </div>
-					  
-					    <div class="box photo col1 masonry-brick">
-					      <a href="/wvrmit/assets/img/7.jpg" title=""><img src="/wvrmit/assets/img/7.jpg" alt=""></a>
-					    </div>
-					  
-					    <div class="box photo col2 masonry-brick">
-					      <a href="/wvrmit/assets/img/8.jpg" title=""><img src="/wvrmit/assets/img/8.jpg" alt=""></a>
+						    <div class="box photo col2 masonry-brick">
+						      <!--  -->
+						      <a href="/wvrmit/assets/img/lily.jpeg" title="Lily"><img src="/wvrmit//assets/img/lily.jpeg" alt="Lily"></a>
+						    </div>
+						  
+						    <div class="box photo col2 masonry-brick">
+						      <a href="/wvrmit/assets/img/1.jpg" title="Kid"><img src="/wvrmit/assets/img/1.jpg" alt="Kid"></a>
+						    </div>
+						  
+						    <div class="box photo col1 masonry-brick">
+						      <a href="/wvrmit/assets/img/2.jpg" title="Kid"><img src="/wvrmit/assets/img/2.jpg" alt="Tony"></a>
+						    </div>
+						  
+						    <div class="box photo col2 masonry-brick">
+						      <a href="/wvrmit/assets/img/3.jpg" title="Campus"><img src="/wvrmit/assets/img/3.jpg" alt="Campus"></a>
+						    </div>
+						  
+						    <div class="box photo col2 masonry-brick">
+						      <a href="/wvrmit/assets/img/4.jpg" title=""><img src="/wvrmit/assets/img/4.jpg" alt=""></a>
+						    </div>
+						  
+						    <div class="box photo col1 masonry-brick">
+						      <a href="/wvrmit/assets/img/5.jpg" title=""><img src="/wvrmit/assets/img/5.jpg" alt=""></a>
+						    </div>
+						  
+						    <div class="box photo col2 masonry-brick">
+						      <a href="/wvrmit/assets/img/6.jpg" title=""><img src="/wvrmit/assets/img/6.jpg" alt=""></a>
+						    </div>
+						  
+						    <div class="box photo col1 masonry-brick">
+						      <a href="/wvrmit/assets/img/7.jpg" title=""><img src="/wvrmit/assets/img/7.jpg" alt=""></a>
+						    </div>
+						  
+						    <div class="box photo col2 masonry-brick">
+						      <a href="/wvrmit/assets/img/8.jpg" title=""><img src="/wvrmit/assets/img/8.jpg" alt=""></a>
+						    </div>
+					    
 					    </div>
 					  
 					</div>
