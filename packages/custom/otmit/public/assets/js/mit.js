@@ -36,14 +36,11 @@ function startOT(apiKey, sessionId, token, username) {
 			console.log(connectionCount + ' connections.');
 			container.empty();
 			container.masonry('reloadItems');
-			/*var elements = container.masonry('getItemElements');
-			container.masonry('remove', elements);*/
 			console.log('Disconnected from the session');
-			//$('#username').removeAttr('disabled');
 			setButton($('#action-button').off().on('click', function() {startOT(apiKey, sessionId, token, username);}), 'Reconnect', false);
 			if(event.reason == 'networkDisconnected') {
-				//alert('Your network connection terminated.');
-				console.log('Your network connection terminated.');
+				alert('Your network connection terminated.');
+				//console.log('Your network connection terminated.');
 			}
 		},
 		streamCreated: function(event) {
@@ -53,11 +50,7 @@ function startOT(apiKey, sessionId, token, username) {
 				screenContainer.masonry({
 			        itemSelector : '.box'
 			    });
-				
-				/*var screenLeftSide = $('<div/>').attr('class', 'box');
-				screenLeftSide.appendTo($('#screen-main'));
-				//screenContainer.masonry('appended', screenLeftSide);
-*/				
+						
 				var screenBox = $('<div/>').attr('class', 'box').attr('id', event.stream.streamId);
 				screenBox.appendTo($('#screen-main'));
 				var subOptions = {
@@ -67,12 +60,6 @@ function startOT(apiKey, sessionId, token, username) {
 				};
 				session.subscribe(event.stream, screenBox.get(0), subOptions);
 				screenContainer.masonry('appended', screenBox);
-				
-				/*var screenRightSide = $('<div/>').attr('class', 'box');
-				screenRightSide.appendTo($('#screen-main'));
-				//screenContainer.masonry('appended', screenRightSide);
-				
-				screenContainer.masonry('reloadItems');*/
 		    } else {
 		    	var videoBox = $('<div/>').attr('class', 'box').attr('id', event.stream.streamId);
 				videoBox.appendTo(container);
@@ -91,15 +78,10 @@ function startOT(apiKey, sessionId, token, username) {
 
 	session.connect(token, function(error) {
 		if (error) {
-			//console.log('Unable to connect:', error.message);
 			alert('Unable to connect:', error.message);
-			//$('#username').removeAttr('disabled');
 		} else {
 			console.log('Connected.');
-			//connectionCount = 1;
 			$('#username').attr('disabled','disabled');
-			
-			//prepareScreenShare();
 			$('#shareBtn').removeAttr('disabled');
 			
 			setButton($('#action-button').off().on('click', function() {disconnect();}), 'Disconnect', false);
@@ -121,8 +103,6 @@ function startOT(apiKey, sessionId, token, username) {
 			    });			    
 
 			    session.publish(publisher);
-			    
-			    //publisher.setStyle('nameDisplayMode', 'on');
 			} else{
 				console.log('You are not able to publish!');
 			}
@@ -131,18 +111,6 @@ function startOT(apiKey, sessionId, token, username) {
 		}
 	});
   }
-}
-
-function prepareScreenShare() {
-	OT.checkScreenSharingCapability(function(response) {
-        if (!response.supported || response.extensionRegistered === false) {
-          alert('This browser does not support screen sharing.');
-        } else if (response.extensionInstalled === false) {
-          alert('Please install the screen sharing extension and load this page over HTTPS.');
-        } else {
-        	$('#shareBtn').removeAttr('disabled');
-        }
-	});
 }
 
 function screenshare() {
