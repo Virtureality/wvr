@@ -81,8 +81,44 @@ function startOT(apiKey, sessionId, token, username) {
 			alert('Unable to connect:', error.message);
 		} else {
 			console.log('Connected.');
+			
 			$('#username').attr('disabled','disabled');
 			$('#shareBtn').removeAttr('disabled');
+
+			var messageArea = $('#message-area');
+			var sendMsgButton = $('#send-msg-btn');
+			var msgInput = $('#message-text');
+	        sendMsgButton.on('click', function() {
+				var msgBody = msgInput.val() || '';
+				if (msgBody && msgBody !== '') {
+					session.signal(
+							{
+								data: username + ': ' + msgBody,
+							    type:"text"
+							},
+							function(error) {
+								if (error) {
+									console.log("signal error ("
+											+ error.code
+											+ "): " + error.message);
+								} else {
+									console.log("signal sent.");
+								}
+							}
+					);
+					//messageArea.append($('<div>').append('Me: ' + msgBody));
+				} else{
+					alert('Please input message content correctly!');
+				}
+			});
+			setButton(sendMsgButton, 'Send', false);
+			msgInput.removeAttr('disabled');
+			
+			session.on("signal:text", function(event) {
+				    console.log("Signal of type[text] sent from connection " + event.from.id);
+				    // Process the event.data property, if there is any data.
+				    messageArea.append($('<div>').append(event.data));
+				});
 			
 			setButton($('#action-button').off().on('click', function() {disconnect();}), 'Disconnect', false);
 			
