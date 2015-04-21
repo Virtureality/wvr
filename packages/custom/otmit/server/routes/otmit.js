@@ -10,9 +10,10 @@ module.exports = function(Otmit, app, auth, database) {
 	var opentok = new OpenTok(apiKey, apiSecret);
 
 	//var rooms = new Map();
-	var rooms = {};
 	
-	app.set('rooms', rooms);
+	if(!app.get('rooms')) {
+		app.set('rooms', {});
+	}
 	
 	function afterRoomGet(room, res, next) {
 		
