@@ -14,6 +14,14 @@ angular.module('mean.wvr')
 	       .state('wvrhome', {
 	         url: '/',
 	         templateUrl: 'wvr/views/index.html'
+	       })
+	       .state('spacehome', {
+	         url: '/space',
+	         templateUrl: 'wvr/views/space/home.html'
+	       })
+	       .state('space', {
+	         url: '/space/:spaceId',
+	         templateUrl: 'wvr/views/space/space.html'
 	       });
 	       
 	     }]);/**/
