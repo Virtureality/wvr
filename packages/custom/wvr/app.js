@@ -15,14 +15,6 @@ Wvr.register(function(system, app, auth, database) {
 
   //We enable routing. By default the Package Object is passed to the routes
   Wvr.routes(app, auth, database);
-
-  //We are adding a link to the main menu for all authenticated users
-/*  Wvr.menus.add({
-    title: 'wvr example page',
-    link: 'wvr example page',
-    roles: ['authenticated'],
-    menu: 'wvr'
-  });*/
   
   //Wvr.aggregateAsset('css', 'wvr.css');
 
