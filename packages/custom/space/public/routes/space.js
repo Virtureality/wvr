@@ -5,11 +5,11 @@ angular.module('mean.space').config(['$stateProvider',
     $stateProvider
     .state('spacehome', {
         url: '/space',
-        templateUrl: 'wvr/views/space/home.html'
+        templateUrl: 'space/views/home.html'
       })
       .state('space', {
         url: '/space/:spaceId',
-        templateUrl: 'wvr/views/space/space.html'
+        templateUrl: 'space/views/space.html'
       });
   }
 ]);
