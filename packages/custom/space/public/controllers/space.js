@@ -7,5 +7,6 @@ angular.module('mean.space').controller('SpaceController', ['$scope', 'Global', 
     $scope.package = {
       name: 'space'
     };
+    $scope.spaces = Space.query();
   }
 ]);

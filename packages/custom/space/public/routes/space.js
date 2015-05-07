@@ -1,5 +1,6 @@
 'use strict';
 
+//angular.module('mean.space', ['space.controller', 'space.service']).config(['$stateProvider',
 angular.module('mean.space').config(['$stateProvider',
   function($stateProvider) {
     $stateProvider
