@@ -17,5 +17,10 @@ module.exports = function(Wvr, app, auth, database) {
     		res.send(html);
     	});
     });
+  
+  app.route('/*')
+  .get(function(req, res, next) {
+	  res.redirect('/');
+  });
 
 };
