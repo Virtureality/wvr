@@ -1,10 +1,12 @@
-<div data-ng-controller="SpaceController">
-  <h2>Space: {{$stateParams.spaceId}}</h2>
-  <ol>
-  </ol>
-  </br>
+<div data-ng-controller="SpaceDetailController">
+  <h1>Space - {{space.id}}</h1>
+
+  <p>Name: {{space.name}}</p>
+  <p>Owner: {{space.owner}}</p>
+  <p>Type: {{space.type}}</p>
+
+  <p>Constructs: {{space.constructs}}</p>
+
   <p class="alert alert-info">Welcome! {{user.name}} :)</p>
-  </br>
-  <h3><a href=""></a></h3>
-  </br>
+
 </div>

@@ -1,14 +1,13 @@
-<div data-ng-controller="SpaceController">
-  <h2>Package: {{package}}</h2>
-  <ol>
-  </ol>
-  <ul>
-    <li ng-repeat="space in spaces">
-      <span><a href="#!/space/{{space.id}}">{{space.name}}</a></span> | 
-      <span>{{space.owner}}</span> | 
-      <span>{{space.type}}</span>
-    </li>
-  </ul>
-  </br>
+<div data-ng-controller="SpaceListController">
+  <h2>List of {{package.name}}:</h2>
+  <div class="col-md-10">
+    <ul>
+      <li ng-repeat="space in spaces">
+        <span><a href="#!/space/{{space.id}}">{{space.name}}</a></span> |
+        <span>{{space.owner}}</span> |
+        <span>{{space.type}}</span>
+      </li>
+    </ul>
+  </div>
 </div>
 

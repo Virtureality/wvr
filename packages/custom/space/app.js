@@ -40,5 +40,7 @@ Space.register(function(app, auth, database) {
     });
     */
 
+  //Space.angularDependencies(['spaceServices', 'spaceControllers', 'spaceFilters', 'spaceAnimations']);
+
   return Space;
 });
