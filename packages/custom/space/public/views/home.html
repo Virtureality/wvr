@@ -3,7 +3,8 @@
   <div class="col-md-10">
     <ul>
       <li ng-repeat="space in spaces">
-        <span><a href="#!/space/{{space.id}}">{{space.name}}</a></span> |
+        <!--<span><a href="#!/space/{{space._id}}">{{space.name}}</a></span> |-->
+        <span><a href="#!/space/{{space['_id']}}">{{space.name}}</a></span> |
         <span>{{space.owner}}</span> |
         <span>{{space.type}}</span>
       </li>
