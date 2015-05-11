@@ -18,9 +18,9 @@ module.exports = function(Wvr, app, auth, database) {
     	});
     });
   
-  app.route('/*')
-  .get(function(req, res, next) {
-	  res.redirect('/');
-  });
+  //app.route('/*')
+  //.get(function(req, res, next) {
+	//  res.redirect('/');
+  //});
 
 };
