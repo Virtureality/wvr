@@ -27,14 +27,10 @@ var SpaceSchema = new Schema({
     name: {type: String},
     owner: {type: Schema.ObjectId, ref: 'User'},
     type: {type: String, enum: ['Generic', 'Event', 'Org', 'Studio'], default: 'Generic', required: true},
-    facilities: [FacilitySchema]
-    //spaces: [SpaceSchema]
+    facilities: [FacilitySchema],
+    spaces: [{type: Schema.Types.ObjectId, ref: 'SpaceSchema'}]
     //spaces: [this]
 }, { strict: true });
-
-SpaceSchema.add({
-    spaces: [SpaceSchema]
-});
 
 /**/
 SpaceSchema.pre('save', function(next){

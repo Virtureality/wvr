@@ -9,7 +9,10 @@ function populateSpace(space, req) {
 	if(req.body) {
 		var spaceObj = req.body;
 
-		//if(req.route.methods.post) {}
+		//console.log('spaceObj:' + JSON.stringify(spaceObj));
+		/*for(var prop in spaceObj) {
+			console.log('spaceObj.' + prop + ': ' + spaceObj[prop]);
+		}*/
 
 		if(spaceObj.uuid && spaceObj.uuid != '') {
 			space.uuid = spaceObj.uuid;
@@ -64,51 +67,61 @@ function populateSpace(space, req) {
 			var spaces = spaceObj.spaces;
 
 			if(spaces && Array.isArray(spaces)) {
-				spaces.forEach(function(currentValue, index, array) {
-					var deleteFlag = false;
-					if(req.route.methods.put && currentValue._id && currentValue._id != '' && space.spaces.id(currentValue._id)) {
-						space.spaces.id(currentValue._id).remove();
+				var originalSpaces = space.spaces;
+				space.spaces = [];
+				//console.log('originalSpaces: ' + JSON.stringify(originalSpaces));
 
-						if(currentValue._delete) {
-							deleteFlag = true;
+				if(req.route.methods.put) {
+					//console.log('Checking original spaces for keeping...');
+					originalSpaces.forEach(function(currentValue, index, array) {
+						/*
+						console.log('Checking samples: ');
+						var sampleArray = ["555b4998fadf8414116159e4", "555ab7d062ab0fbbf8102478"];
+						var sampleElement = "555b4998fadf8414116159e4";
+						console.log('sampleArray: ' + sampleArray);
+						console.log('sampleElement: ' + sampleElement);
+						console.log('Checking result 1: ' + sampleArray.indexOf(sampleElement) + ', which means: ' + (sampleArray.indexOf(sampleElement) != -1));
+						console.log('Checking result 2: ' + sampleArray.indexOf(currentValue.toString()) + ', which means: ' + (sampleArray.indexOf(currentValue.toString()) != -1));
+						console.log('Checking result 3: ' + spaces.indexOf(sampleElement) + ', which means: ' + (spaces.indexOf(sampleElement) != -1));
+						 */
+						/*
+						console.log('In spaces: ' + spaces);
+						console.log('Checking space: ' + currentValue.toString());
+						console.log('Checking result: ' + spaces.indexOf(currentValue.toString()) + ', which means: ' + (spaces.indexOf(currentValue.toString()) != -1));
+						*/
+						if (spaces.indexOf(currentValue.toString()) != -1) {
+							//console.log('Keeping space: ' + currentValue.toString());
+							space.spaces.push(currentValue);
 						}
-					}
+					});
+				}
 
-					if(!deleteFlag) {
+				spaces.forEach(function(currentValue, index, array) {
+					if(req.route.methods.put) {
+						if(originalSpaces.indexOf(currentValue) == -1) {
+							space.spaces.push(currentValue);
+						}
+					} else if(req.route.methods.post) {
+						/*console.log('Finding space by Id: ' + currentValue + ' for referencing.');
+						SpaceModel.findById(currentValue, function(err, refSpace) {
+							if(err) {
+								console.log("Error happened: " + err);
+							} else if(refSpace) {
+								console.log('Found space: ' + refSpace + ' for referencing.');
+								space.spaces.push(currentValue);
+							}
+						});*/
 						space.spaces.push(currentValue);
 					}
 				});
+
+				console.log('space.spaces:' + space.spaces);
 			}
 		}
 
 	}
 
 	return space;
-}
-
-function getSubSpace(topSpace, req) {
-
-	var subSpaceIdKey = req.params.subSpaceId;
-	if(req.params[0]) {
-		subSpaceIdKey += req.params[0];
-	}
-	var subSpaceIdChain = subSpaceIdKey.split('/');
-	var subSpaces = topSpace.spaces;
-	var subSpace = topSpace;
-
-	if(Array.isArray(subSpaceIdChain)) {
-		subSpaceIdChain.forEach(function(currentValue, index, array) {
-			subSpace = subSpaces.id(currentValue);
-			if (subSpace) {
-				subSpaces = subSpace.spaces;
-			} else {
-				return subSpace;
-			}
-		});
-	}
-
-	return subSpace;
-
 }
 
 // jshint -W098 
@@ -187,143 +200,6 @@ module.exports = function(Space, app, auth, database) {
 					res.send(err);
 				} else {
 					res.json({message: 'Successfully Deleted!'});
-				}
-			});
-		});
-
-/* Note: The default 'Path-To-RegExp' version(1.0.3) for Express(4.11.1) doesn't support suffixed parameters,
- *       below(':subSpaceId*') is some kind of workaround ^-^ :(.
- *
- * Hints:
- * 1. Embedded documents may be not fit for the hierarchical/linked structure. */
-
-	//router.route('/spaces/:spaceId/:subSpaceId+')
-	//router.route('/spaces/:subSpaceId*')
-	router.route('/spaces/:spaceId/:subSpaceId*')
-		.get(function(req, res, next) {
-
-			SpaceModel.findById(req.params.spaceId, function(err, space) {
-				if(err) {
-					res.send(err);
-				} else {
-					res.json(getSubSpace(space, req));
-				}
-			});
-		})
-		.put(function(req, res, next) {
-			SpaceModel.findById(req.params.spaceId, function(err, space) {
-				if(err) {
-					res.send(err);
-				} else {
-					var subSpace = getSubSpace(space, req);
-					populateSpace(subSpace, req);
-
-					space.save(function(err) {
-						if(err) {
-							res.send(err);
-						} else {
-							res.json({message: 'SubSpace updated successfully!'});
-						}
-					});
-				}
-			});
-		})
-		.delete(function(req, res, next) {
-			SpaceModel.findById(req.params.spaceId, function(err, space) {
-				if(err) {
-					res.send(err);
-				} else {
-					var subSpace = getSubSpace(space, req);
-					//console.log('SubSpace to remove: ' + subSpace);
-					subSpace.remove();
-
-					space.save(function(err) {
-						if(err) {
-							res.send(err);
-						} else {
-							res.json({message: 'SubSpace deleted successfully!'});
-						}
-					});
-				}
-			});
-		});
-
-	router.route('/subspaces/:spaceId')
-		.get(function(req, res, next) {
-
-			//console.log('Retrieving subspaces for /subspaces/:spaceId...');
-
-			SpaceModel.findById(req.params.spaceId, function(err, space) {
-				if(err) {
-					res.send(err);
-				} else {
-					res.json(space.spaces);
-				}
-			});
-		})
-		.post(function(req, res, next) {
-			SpaceModel.findById(req.params.spaceId, function(err, space) {
-				if(err) {
-					res.send(err);
-				} else {
-					space.spaces.push(req.body);
-
-					space.save(function(err) {
-						if(err) {
-							res.send(err);
-						} else {
-							res.json({message: 'SubSpace added successfully!'});
-						}
-					});
-				}
-			});
-		});
-
-	router.route('/subspaces/:spaceId/:subSpaceId*')
-		.get(function(req, res, next) {
-
-			//console.log('Retrieving subspaces for /subspaces/:spaceId/:subSpaceId* ...');
-
-			/*
-			for(var prop in req.params) {
-			 console.log('req.params.' + prop + ': ' + req.params[prop]);
-			}*/
-
-			SpaceModel.findById(req.params.spaceId, function(err, space) {
-				if(err) {
-					res.send(err);
-				} else {
-					var parentSpace = getSubSpace(space, req);
-					console.log('The parent space: ' + parentSpace);
-					if(parentSpace) {
-						res.json(parentSpace.spaces);
-					} else{
-						res.json({message: 'Space Not Found!'});
-					}
-
-				}
-			});
-		})
-		.post(function(req, res, next) {
-			SpaceModel.findById(req.params.spaceId, function(err, space) {
-				if(err) {
-					res.send(err);
-				} else {
-					var parentSpace = getSubSpace(space, req);
-					console.log('The parent space: ' + parentSpace);
-					if(parentSpace) {
-						parentSpace.spaces.push(req.body);
-					} else{
-						res.json({message: 'Space Not Found!'});
-					}
-
-					space.save(function(err) {
-						if(err) {
-							res.send(err);
-						} else {
-							res.json({message: 'SubSpace added successfully!'});
-						}
-					});
 				}
 			});
 		});
