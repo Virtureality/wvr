@@ -18,6 +18,11 @@ Space.register(function(app, auth, database) {
   
   Space.aggregateAsset('css', 'space.css');
 
+  //Space.aggregateAsset('js', '/bower_components/angular-dragdrop/src/angular-dragdrop.min.js');
+  //Space.aggregateAsset('js', '/../../../bower_components/angular-dragdrop/src/angular-dragdrop.min.js');
+  /*Space.aggregateAsset('js', '../../../../../../bower_components/angular-dragdrop/src/angular-dragdrop.min.js');
+  Space.angularDependencies(['ngDragDrop']);*/
+
   /**
     //Uncomment to use. Requires meanio@0.3.7 or above
     // Save settings with callback

@@ -204,6 +204,16 @@ module.exports = function(Space, app, auth, database) {
 			});
 		});
 
+	//Space formation route
+	router.get('/formation', function(req, res, next) {
+		Space.render('formation', {
+			package: 'space'
+		}, function(err, html) {
+			//Rendering a view from the Package server/views
+			res.send(html);
+		});
+	});
+
 	router.get('/*', function(req, res, next) {
 		res.json({message: 'Welcome to our REST API! :)'});
 	});
