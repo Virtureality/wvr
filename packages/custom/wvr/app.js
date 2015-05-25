@@ -17,6 +17,7 @@ Wvr.register(function(system, app, auth, database) {
   Wvr.routes(app, auth, database);
   
   //Wvr.aggregateAsset('css', 'wvr.css');
+  Wvr.angularDependencies(['wvr.space']);
 
   /**
     //Uncomment to use. Requires meanio@0.3.7 or above

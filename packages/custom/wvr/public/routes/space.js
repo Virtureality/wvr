@@ -1,17 +1,17 @@
 'use strict';
 
-angular.module('mean.space')
+angular.module('wvr.space')
     .config([
       '$stateProvider',
       function($stateProvider) {
         $stateProvider
-            .state('spacehome', {
+            .state('spaces', {
               url: '/spaces',
-              templateUrl: 'space/views/home.html'
+              templateUrl: 'wvr/views/space/home.html'
             })
             .state('space', {
               url: '/spaces/:spaceId',
-              templateUrl: 'space/views/space.html'
+              templateUrl: 'wvr/views/space/space.html'
             });
       }
     ]);

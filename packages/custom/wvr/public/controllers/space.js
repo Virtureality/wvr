@@ -1,7 +1,7 @@
 'use strict';
 
 /* jshint -W098 */
-angular.module('mean.space')
+angular.module('wvr.space')
     .controller('SpaceListController', ['$scope', 'Global', 'Space',
       function($scope, Global, Space) {
         $scope.global = Global;

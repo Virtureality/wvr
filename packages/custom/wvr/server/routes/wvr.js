@@ -6,6 +6,11 @@ var mean = require('meanio');
 // The Package is past automatically as first parameter
 module.exports = function(Wvr, app, auth, database) {
 
+	app.route('/wvr/api/*')
+		.get(function(req, res, next) {
+			res.json({message: 'Welcome to our REST API! :)'});
+		});
+
   // Home route
   app.route('/wvr/*')
     .get(function(req, res, next) {

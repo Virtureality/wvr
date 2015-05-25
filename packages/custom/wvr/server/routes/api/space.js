@@ -126,7 +126,7 @@ function populateSpace(space, req) {
 
 // jshint -W098 
 // The Package is past automatically as first parameter
-module.exports = function(Space, app, auth, database) {
+module.exports = function(Wvr, app, auth, database) {
 
 	 var express = require('express');
 	 var router = express.Router();
@@ -203,21 +203,7 @@ module.exports = function(Space, app, auth, database) {
 				}
 			});
 		});
-
-	//Space formation route
-	router.get('/formation', function(req, res, next) {
-		Space.render('formation', {
-			package: 'space'
-		}, function(err, html) {
-			//Rendering a view from the Package server/views
-			res.send(html);
-		});
-	});
-
-	router.get('/*', function(req, res, next) {
-		res.json({message: 'Welcome to our REST API! :)'});
-	});
 	 
-	app.use('/space', router);
+	app.use('/wvr/api/space', router);
 
 };

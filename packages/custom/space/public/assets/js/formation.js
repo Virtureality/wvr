@@ -1,1 +1,0 @@
-angular.module('space.formation', ['ngDragDrop']);
