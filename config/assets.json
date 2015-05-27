@@ -14,7 +14,9 @@
         "bower_components/angular-bootstrap/ui-bootstrap-tpls.js",
         "bower_components/web-bootstrap/index.js",
         "bower_components/masonry/dist/masonry.pkgd.min.js",
-        "bower_components/imagesloaded/imagesloaded.pkgd.min.js"
+        "bower_components/imagesloaded/imagesloaded.pkgd.min.js",
+        "bower_components/jquery-ui/jquery-ui.min.js",
+        "bower_components/angular-dragdrop/src/angular-dragdrop.min.js"
       ]
     }
   }
