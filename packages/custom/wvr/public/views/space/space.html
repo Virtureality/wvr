@@ -5,6 +5,22 @@
   .btn-draggable { width: 160px; }
 </style>
 
+<script>
+  function switchSpaceDesigner()
+  {
+    var div = document.getElementById("spaceDesigner");
+    var btn = $('#spaceDesignerSwitch');
+    if (div.style.display !== "none") {
+      div.style.display = "none";
+      btn.text("Show Space Designer");
+    }
+    else {
+      div.style.display = "block";
+      btn.text("Hide Space Designer");
+    }
+  }
+</script>
+
 <div data-ng-controller="SpaceDetailController">
   <!--<h1>Space - {{space._id}}</h1>-->
   <h1>Space - {{space['_id']}}</h1>
@@ -13,9 +29,39 @@
   <p>Owner: {{space.owner}}</p>
   <p>Type: {{space.type}}</p>
 
-  <p>Constructs: {{space.constructs}}</p>
+  <p>Facilities: {{space.facilities}}</p>
+
+  <p>Spaces: {{space.spaces}}</p>
 
   <p class="alert alert-info">Welcome! {{user.name}} :)</p>
+
+  <button id="spaceDesignerSwitch" onclick="switchSpaceDesigner()">Show Space Designer</button>
+
+  <div id="spaceDesigner" style="display: none;">
+    <div class="thumbnail">
+      <p>Here are things for you to construct your space.</p>
+      <div class='contentWrapper ng-cloak'>
+        <div class='content'>
+          <div class="row-fluid">
+            <div class="container form-inline" style="text-align: center;">
+              <div class="btn btn-droppable" ng-repeat="item in designerResources">
+                <div class="btn btn-info btn-draggable" data-drag="{{item.drag}}" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" ng-model="designerResources" jqyoui-draggable="{index: {{$index}}, placeholder: 'keep', animate:true}" ng-hide="!item.title">{{item.title}}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!--<div class="caption thumbnail" data-drop="true" ng-model='space' jqyoui-droppable="{multiple:true}">
+    <div class="btn btn-info btn-draggable" ng-repeat="item in space.facilities" ng-show="item.name" data-drag="true" data-jqyoui-options="{revert: 'invalid'}" ng-model="space.facilities" jqyoui-draggable="{index: {{$index}},animate:true}">{{item.name}}</div>
+
+    <div ng-repeat="item in space.spaces" ng-show="item" data-drag="true" data-jqyoui-options="{revert: 'invalid'}" ng-model="space.spaces" jqyoui-draggable="{index: {{$index}},animate:true}"><a>Space - {{item}}</a></div>
+  </div>-->
+  <div class="caption thumbnail" data-drop="true" ng-model="designResult" jqyoui-droppable="{multiple:true}">
+    <div class="btn btn-info btn-draggable" ng-repeat="item in designResult track by $index" ng-show="item.title" data-drag="{{item.drag}}" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" ng-model="designResult" jqyoui-draggable="{index: {{$index}},animate:true}">{{item.title}}</div>
+  </div>
 
 </div>
 

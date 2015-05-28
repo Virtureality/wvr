@@ -39,7 +39,11 @@ var spaceApp = angular.module('wvr.space', ['ngDragDrop']);
 spaceApp.controller('oneCtrl', function($scope, $timeout) {
     $scope.list1 = [];
     $scope.list2 = [];
-    $scope.list3 = [];
+    $scope.list3 = [
+        { 'title': 'Item 1', 'drag': true },
+        { 'title': 'Item 2', 'drag': true },
+        { 'title': 'Item 3', 'drag': true }
+    ];
     $scope.list4 = [];
 
     $scope.list5 = [
