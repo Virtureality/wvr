@@ -1,7 +1,6 @@
 
 <style>
-  .thumbnail { height: 280px !important; }
-  .btn-droppable { width: 180px; height: 30px; padding-left: 4px; }
+  .thumbnail { height: 330px !important; }
   .btn-draggable { width: 160px; }
 </style>
 
@@ -22,7 +21,6 @@
 </script>
 
 <div data-ng-controller="SpaceDetailController">
-  <!--<h1>Space - {{space._id}}</h1>-->
   <h1>Space - {{space['_id']}}</h1>
 
   <p>Name: {{space.name}}</p>
@@ -37,103 +35,31 @@
 
   <button id="spaceDesignerSwitch" onclick="switchSpaceDesigner()">Show Space Designer</button>
 
-  <div id="spaceDesigner" style="display: none;">
-    <div class="thumbnail">
-      <p>Here are things for you to construct your space.</p>
-      <div class='contentWrapper ng-cloak'>
-        <div class='content'>
-          <div class="row-fluid">
-            <div class="container form-inline" style="text-align: center;">
-              <div class="btn btn-droppable" ng-repeat="item in designerResources">
-                <div class="btn btn-info btn-draggable" data-drag="{{item.drag}}" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" ng-model="designerResources" jqyoui-draggable="{index: {{$index}}, placeholder: 'keep', animate:true}" ng-hide="!item.title">{{item.title}}</div>
-              </div>
-            </div>
-          </div>
-        </div>
+  <div id="spaceDesigner" class="row thumbnail" style="display: none;">
+    <div class="col-lg-9" style="height: 260px; line-height: 1.42857143; border: 1px solid #ecf0f1; border-radius: 4px;">
+      <p>Design resources for you to construct space:</p>
+      <div class="col-lg-6" style="text-align: center;">
+        <div data-type="Facility-Office" class="btn btn-info btn-draggable" ng-repeat="item in designerResources.facilities" data-drag="true" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" ng-model="designerResources.facilities" jqyoui-draggable="{index: {{$index}}, placeholder: 'keep', animate:true}" ng-hide="!item.name">{{item.name}}</div>
+      </div>
+      <div class="col-lg-6" style="text-align: center;">
+        <div data-type="Space-Generic" ng-repeat="item in designerResources.spaces" data-drag="true" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" ng-model="designerResources.spaces" jqyoui-draggable="{index: {{$index}}, placeholder: 'keep', animate:true}" ng-hide="!item.name"><a>{{item.name}}</a></div>
       </div>
     </div>
-  </div>
-
-  <!--<div class="caption thumbnail" data-drop="true" ng-model='space' jqyoui-droppable="{multiple:true}">
-    <div class="btn btn-info btn-draggable" ng-repeat="item in space.facilities" ng-show="item.name" data-drag="true" data-jqyoui-options="{revert: 'invalid'}" ng-model="space.facilities" jqyoui-draggable="{index: {{$index}},animate:true}">{{item.name}}</div>
-
-    <div ng-repeat="item in space.spaces" ng-show="item" data-drag="true" data-jqyoui-options="{revert: 'invalid'}" ng-model="space.spaces" jqyoui-draggable="{index: {{$index}},animate:true}"><a>Space - {{item}}</a></div>
-  </div>-->
-  <div class="caption thumbnail" data-drop="true" ng-model="designResult" jqyoui-droppable="{multiple:true}">
-    <div class="btn btn-info btn-draggable" ng-repeat="item in designResult track by $index" ng-show="item.title" data-drag="{{item.drag}}" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" ng-model="designResult" jqyoui-draggable="{index: {{$index}},animate:true}">{{item.title}}</div>
-  </div>
-
-</div>
-
-<div>
-  <h1> Here is a simple example: </h1>
-  <div>
-    <div class="btn btn-primary" data-drag="true" data-jqyoui-options="{revert: 'invalid'}" jqyoui-draggable="{animate:true, placeholder: 'keep'}">Drag Me!</div>
-
-    <h2> Drop Here: </h2>
-    <div class="thumbnail" data-drop="true" data-jqyoui-options jqyoui-droppable="{multiple:true}" style='height:50px;'>
-      <!--<div class="btn btn-success" data-drag="false" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" jqyoui-draggable="{animate:true, placeholder: 'keep'}">Drag Me!</div>-->
-    </div>
-  </div>
-</div>
-
-<div ng-controller="oneCtrl">
-  <h1>Drag &amp; Drop: Multiple</h1>
-
-  <!--<div class="navbar-inner">-->
-  <div class='contentWrapper ng-cloak'>
-    <div class='content'>
-      <div class="row-fluid">
-        <div class="container form-inline" style="text-align: center;">
-          <div class="btn btn-droppable" ng-repeat="item in list5" data-drop="true" ng-model='list5' data-jqyoui-options="{accept:'.btn-draggable:not([ng-model=list5])'}"  jqyoui-droppable="{index: {{$index}}}">
-            <div class="btn btn-info btn-draggable" data-drag="{{item.drag}}" data-jqyoui-options="{revert: 'invalid'}" ng-model="list5" jqyoui-draggable="{index: {{$index}},placeholder:true,animate:true}" ng-hide="!item.title">{{item.title}}</div>
-          </div>
-        </div>
+    <div class="col-lg-3" style="height: 260px; line-height: 1.42857143; border: 1px solid #ecf0f1; border-radius: 4px;" data-drop="true" ng-model="trash" jqyoui-droppable="{multiple:true}">
+      <p>Trash:</p>
+      <ul>
+        <li data-type="{{item.type}}" ng-repeat="item in trash track by $index" ng-show="item" data-drag="true" data-jqyoui-options="{revert: 'invalid'}" ng-model="trash" jqyoui-draggable="{index: {{$index}},animate:true}">trash - {{item.name||item}}</li>
+      </ul>
       </div>
-    </div>
   </div>
 
-  <div class='contentWrapper ng-cloak'>
-    <div class='content'>
-      <div class="row-fluid">
-        <li class="span3" style='margin-left:10px;'>
-          <div class="thumbnail" data-drop="true" ng-model='list1' data-jqyoui-options="optionsList1" jqyoui-droppable="{multiple:true}">
-            <div class="caption">
-              <div class="btn btn-info btn-draggable" ng-repeat="item in list1" ng-show="item.title" data-drag="{{item.drag}}" data-jqyoui-options="{revert: 'invalid'}" ng-model="list1" jqyoui-draggable="{index: {{$index}},animate:true}">{{item.title}}</div>
-            </div>
-          </div>
-        </li>
-        <!--<ul class="thumbnails">
-          <li class="span3" style='margin-left:10px;'>
-            <div class="thumbnail" data-drop="true" ng-model='list1' data-jqyoui-options="optionsList1" jqyoui-droppable="{multiple:true}">
-              <div class="caption">
-                <div class="btn btn-info btn-draggable" ng-repeat="item in list1" ng-show="item.title" data-drag="{{item.drag}}" data-jqyoui-options="{revert: 'invalid'}" ng-model="list1" jqyoui-draggable="{index: {{$index}},animate:true}">{{item.title}}</div>
-              </div>
-            </div>
-          </li>
-          <li class="span3" style='margin-left:10px;'>
-            <div class="thumbnail" data-drop="true" ng-model='list2' data-jqyoui-options="{accept:'.btn-draggable:not([ng-model=list2])'}"  jqyoui-droppable="{multiple:true}">
-              <div class="caption">
-                <div class="btn btn-info btn-draggable" ng-repeat="item in list2" ng-show="item.title" data-drag="{{item.drag}}" data-jqyoui-options="{revert: 'invalid'}" ng-model="list2" jqyoui-draggable="{index: {{$index}},animate:true}">{{item.title}}</div>
-              </div>
-            </div>
-          </li>
-          <li class="span3" style='margin-left:10px;'>
-            <div class="thumbnail" data-drop="true" ng-model='list3' data-jqyoui-options="{accept:'.btn-draggable:not([ng-model=list3])'}"  jqyoui-droppable="{multiple:true}">
-              <div class="caption">
-                <div class="btn btn-info btn-draggable" ng-repeat="item in list3" ng-show="item.title" data-drag="{{item.drag}}" data-jqyoui-options="{revert: 'invalid'}" ng-model="list3" jqyoui-draggable="{index: {{$index}},animate:true}">{{item.title}}</div>
-              </div>
-            </div>
-          </li>
-          <li class="span3" style='margin-left:10px;'>
-            <div class="thumbnail" data-drop="true" ng-model='list4' data-jqyoui-options="{accept:'.btn-draggable:not([ng-model=list4])'}"  jqyoui-droppable="{multiple:true}">
-              <div class="caption">
-                <div class="btn btn-info btn-draggable" ng-repeat="item in list4" ng-show="item.title" data-drag="{{item.drag}}" data-jqyoui-options="{revert: 'invalid'}" ng-model="list4" jqyoui-draggable="{index: {{$index}},animate:true}">{{item.title}}</div>
-              </div>
-            </div>
-          </li>
-        </ul>-->
-      </div>
+  <div id="space" class="row thumbnail">
+    <p>Your Space Here:</p>
+    <div class="col-lg-9 caption" style="height: 260px; line-height: 1.42857143; border: 1px solid #ecf0f1; border-radius: 4px;" data-drop="true" ng-model="space.facilities" data-jqyoui-options="{accept: '[data-type|=&quot;Facility&quot;]'}" jqyoui-droppable="{multiple:true}">
+      <div data-type="{{item.type}}" class="btn btn-info btn-draggable" ng-repeat="item in space.facilities track by $index" ng-show="item.name" data-drag="true" data-jqyoui-options="{revert: 'invalid'}" ng-model="space.facilities" jqyoui-draggable="{index: {{$index}},animate:true}">{{item.name}}</div>
+    </div>
+    <div class="col-lg-3 caption" style="height: 260px; line-height: 1.42857143; border: 1px solid #ecf0f1; border-radius: 4px;" data-drop="true" ng-model="space.spaces" data-jqyoui-options="{accept: '[data-type|=Space]'}" jqyoui-droppable="{multiple:true}">
+      <div data-type="{{item.type}}" ng-repeat="item in space.spaces track by $index" ng-show="item" data-drag="true" data-jqyoui-options="{revert: 'invalid'}" ng-model="space.spaces" jqyoui-draggable="{index: {{$index}},animate:true}"><a>Space - {{item}}</a></div>
     </div>
   </div>
 
