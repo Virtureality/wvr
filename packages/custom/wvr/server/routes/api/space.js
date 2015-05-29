@@ -167,7 +167,14 @@ module.exports = function(Wvr, app, auth, database) {
 	/**/
 	router.route('/spaces/:spaceId')
 		.get(function(req, res, next) {
-			SpaceModel.findById(req.params.spaceId, function(err, space) {
+			/*SpaceModel.findById(req.params.spaceId, function(err, space) {
+				if(err) {
+					res.send(err);
+				} else {
+					res.json(space);
+				}
+			});*/
+			SpaceModel.findOne({ uuid: req.params.spaceId }, function(err, space) {
 				if(err) {
 					res.send(err);
 				} else {
