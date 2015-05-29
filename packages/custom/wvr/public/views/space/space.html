@@ -1,4 +1,3 @@
-
 <style>
   .thumbnail { height: 330px !important; }
   .btn-draggable { width: 160px; }
@@ -20,18 +19,98 @@
   }
 </script>
 
+
 <div data-ng-controller="SpaceDetailController">
-  <h1>Space - {{space['_id']}}</h1>
 
-  <p>Name: {{space.name}}</p>
-  <p>Owner: {{space.owner}}</p>
-  <p>Type: {{space.type}}</p>
+  <div id="space" ng-model="space">
 
-  <p>Facilities: {{space.facilities}}</p>
+    <div class="row">
+      <p class="alert alert-info">Welcome, {{global.user.name||"Guest"}}! :)</p>
 
-  <p>Spaces: {{space.spaces}}</p>
+      <p>Share ->&nbsp;<a id="shareLink" target="_blank">{{space.name||space.uuid}}</a></p>
+      <script type="text/javascript">
+        document.getElementById('shareLink').href = location.href;
+      </script>
 
-  <p class="alert alert-info">Welcome! {{user.name}} :)</p>
+      <p>Space: {{space}}</p>
+    </div>
+
+    <div class="row">
+
+      <p class="alert alert-info">Here you can meet up with folks! :)</p>&nbsp;<button id="action-button">Welcome</button>
+      <hr/>
+
+      <input id="mname" type="hidden" name="mname" value="{{space.uuid}}" />
+      <input id="userid" type="hidden" name="user" value="{{global.user.name}}-{{global.user._id}}" />
+      <input id="user" type="hidden" name="global.user" value="{{global.user}}" />
+
+      <div class="col-lg-9">
+
+        <div id="container" class="clearfix masonry">
+
+          <div class="box photo col2 masonry-brick">
+            <!--  -->
+            <a href="/wvrmit/assets/img/lily.jpeg" title="Lily"><img src="/wvrmit/assets/img/lily.jpeg" alt="Lily"></a>
+          </div>
+
+          <div class="box photo col2 masonry-brick">
+            <a href="/wvrmit/assets/img/1.jpg" title="Kid"><img src="/wvrmit/assets/img/1.jpg" alt="Kid"></a>
+          </div>
+
+          <div class="box photo col1 masonry-brick">
+            <a href="/wvrmit/assets/img/2.jpg" title="Kid"><img src="/wvrmit/assets/img/2.jpg" alt="Tony"></a>
+          </div>
+
+          <div class="box photo col2 masonry-brick">
+            <a href="/wvrmit/assets/img/3.jpg" title="Campus"><img src="/wvrmit/assets/img/3.jpg" alt="Campus"></a>
+          </div>
+
+          <div class="box photo col2 masonry-brick">
+            <a href="/wvrmit/assets/img/4.jpg" title=""><img src="/wvrmit/assets/img/4.jpg" alt=""></a>
+          </div>
+
+          <div class="box photo col1 masonry-brick">
+            <a href="/wvrmit/assets/img/5.jpg" title=""><img src="/wvrmit/assets/img/5.jpg" alt=""></a>
+          </div>
+
+          <div class="box photo col2 masonry-brick">
+            <a href="/wvrmit/assets/img/6.jpg" title=""><img src="/wvrmit/assets/img/6.jpg" alt=""></a>
+          </div>
+
+          <div class="box photo col1 masonry-brick">
+            <a href="/wvrmit/assets/img/7.jpg" title=""><img src="/wvrmit/assets/img/7.jpg" alt=""></a>
+          </div>
+
+          <div class="box photo col2 masonry-brick">
+            <a href="/wvrmit/assets/img/8.jpg" title=""><img src="/wvrmit/assets/img/8.jpg" alt=""></a>
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="col-lg-3">
+
+        <div class="input-group">
+          <input id="message-text" class="form-control" type="text" placeholder="type message here"/>
+				<span class="input-group-btn">
+				  <button id="send-msg-btn" class="btn btn-info" disabled="true">Waiting for setup ...</button>
+				</span>
+        </div>
+        <hr />
+        <div id="message-area"></div>
+
+      </div>
+
+      <script type="text/javascript" src="/wvrmit/assets/js/masonry.js"></script>
+      <script type="text/javascript" src="/wvrmit/assets/js/lib/socket.io.js"></script>
+      <script type="text/javascript" src="/wvrmit/assets/js/lib/RTCPeerConnection-v1.5.js"></script>
+      <script type="text/javascript" src="/wvrmit/assets/js/lib/conference.js"></script>
+      <script type="text/javascript" src="/wvrmit/assets/js/lib/data-connection.js"></script>
+
+      <script type="text/javascript" src="/wvrmit/assets/js/mit.js"></script>
+    </div>
+  </div>
 
   <button id="spaceDesignerSwitch" onclick="switchSpaceDesigner()">Show Space Designer</button>
 
@@ -50,16 +129,6 @@
       <ul>
         <li data-type="{{item.type}}" ng-repeat="item in trash track by $index" ng-show="item" data-drag="true" data-jqyoui-options="{revert: 'invalid'}" ng-model="trash" jqyoui-draggable="{index: {{$index}},animate:true}">trash - {{item.name||item}}</li>
       </ul>
-      </div>
-  </div>
-
-  <div id="space" class="row thumbnail">
-    <p>Your Space Here:</p>
-    <div class="col-lg-9 caption" style="height: 260px; line-height: 1.42857143; border: 1px solid #ecf0f1; border-radius: 4px;" data-drop="true" ng-model="space.facilities" data-jqyoui-options="{accept: '[data-type|=&quot;Facility&quot;]'}" jqyoui-droppable="{multiple:true}">
-      <div data-type="{{item.type}}" class="btn btn-info btn-draggable" ng-repeat="item in space.facilities track by $index" ng-show="item.name" data-drag="true" data-jqyoui-options="{revert: 'invalid'}" ng-model="space.facilities" jqyoui-draggable="{index: {{$index}},animate:true}">{{item.name}}</div>
-    </div>
-    <div class="col-lg-3 caption" style="height: 260px; line-height: 1.42857143; border: 1px solid #ecf0f1; border-radius: 4px;" data-drop="true" ng-model="space.spaces" data-jqyoui-options="{accept: '[data-type|=Space]'}" jqyoui-droppable="{multiple:true}">
-      <div data-type="{{item.type}}" ng-repeat="item in space.spaces track by $index" ng-show="item" data-drag="true" data-jqyoui-options="{revert: 'invalid'}" ng-model="space.spaces" jqyoui-draggable="{index: {{$index}},animate:true}"><a>Space - {{item}}</a></div>
     </div>
   </div>
 
