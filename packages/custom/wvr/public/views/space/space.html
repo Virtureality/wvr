@@ -1,25 +1,3 @@
-<style>
-  .thumbnail { height: 330px !important; }
-  .btn-draggable { width: 160px; }
-</style>
-
-<script>
-  function switchSpaceDesigner()
-  {
-    var div = document.getElementById("spaceDesigner");
-    var btn = $('#spaceDesignerSwitch');
-    if (div.style.display !== "none") {
-      div.style.display = "none";
-      btn.text("Show Space Designer");
-    }
-    else {
-      div.style.display = "block";
-      btn.text("Hide Space Designer");
-    }
-  }
-</script>
-
-
 <div data-ng-controller="SpaceDetailController">
 
   <div id="space" ng-model="space">
@@ -49,42 +27,9 @@
         <div id="container" class="clearfix masonry">
 
           <div class="box photo col2 masonry-brick">
-            <!--  -->
             <a href="/wvr/assets/img/lily.jpeg" title="Lily"><img src="/wvr/assets/img/lily.jpeg" alt="Lily"></a>
           </div>
-
-          <div class="box photo col2 masonry-brick">
-            <a href="/wvr/assets/img/1.jpg" title="Kid"><img src="/wvr/assets/img/1.jpg" alt="Kid"></a>
-          </div>
-
-          <div class="box photo col1 masonry-brick">
-            <a href="/wvr/assets/img/2.jpg" title="Kid"><img src="/wvr/assets/img/2.jpg" alt="Tony"></a>
-          </div>
-
-          <div class="box photo col2 masonry-brick">
-            <a href="/wvr/assets/img/3.jpg" title="Campus"><img src="/wvr/assets/img/3.jpg" alt="Campus"></a>
-          </div>
-
-          <div class="box photo col2 masonry-brick">
-            <a href="/wvr/assets/img/4.jpg" title=""><img src="/wvr/assets/img/4.jpg" alt=""></a>
-          </div>
-
-          <div class="box photo col1 masonry-brick">
-            <a href="/wvr/assets/img/5.jpg" title=""><img src="/wvr/assets/img/5.jpg" alt=""></a>
-          </div>
-
-          <div class="box photo col2 masonry-brick">
-            <a href="/wvr/assets/img/6.jpg" title=""><img src="/wvr/assets/img/6.jpg" alt=""></a>
-          </div>
-
-          <div class="box photo col1 masonry-brick">
-            <a href="/wvr/assets/img/7.jpg" title=""><img src="/wvr/assets/img/7.jpg" alt=""></a>
-          </div>
-
-          <div class="box photo col2 masonry-brick">
-            <a href="/wvr/assets/img/8.jpg" title=""><img src="/wvr/assets/img/8.jpg" alt=""></a>
-          </div>
-
+          
         </div>
 
       </div>
@@ -109,26 +54,6 @@
       <script type="text/javascript" src="/wvr/assets/js/mit/lib/data-connection.js"></script>
 
       <script type="text/javascript" src="/wvr/assets/js/mit/mit.js"></script>
-    </div>
-  </div>
-
-  <button id="spaceDesignerSwitch" onclick="switchSpaceDesigner()">Show Space Designer</button>
-
-  <div id="spaceDesigner" class="row thumbnail" style="display: none;">
-    <div class="col-lg-9" style="height: 260px; line-height: 1.42857143; border: 1px solid #ecf0f1; border-radius: 4px;">
-      <p>Design resources for you to construct space:</p>
-      <div class="col-lg-6" style="text-align: center;">
-        <div data-type="Facility-Office" class="btn btn-info btn-draggable" ng-repeat="item in designerResources.facilities" data-drag="true" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" ng-model="designerResources.facilities" jqyoui-draggable="{index: {{$index}}, placeholder: 'keep', animate:true}" ng-hide="!item.name">{{item.name}}</div>
-      </div>
-      <div class="col-lg-6" style="text-align: center;">
-        <div data-type="Space-Generic" ng-repeat="item in designerResources.spaces" data-drag="true" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" ng-model="designerResources.spaces" jqyoui-draggable="{index: {{$index}}, placeholder: 'keep', animate:true}" ng-hide="!item.name"><a>{{item.name}}</a></div>
-      </div>
-    </div>
-    <div class="col-lg-3" style="height: 260px; line-height: 1.42857143; border: 1px solid #ecf0f1; border-radius: 4px;" data-drop="true" ng-model="trash" jqyoui-droppable="{multiple:true}">
-      <p>Trash:</p>
-      <ul>
-        <li data-type="{{item.type}}" ng-repeat="item in trash track by $index" ng-show="item" data-drag="true" data-jqyoui-options="{revert: 'invalid'}" ng-model="trash" jqyoui-draggable="{index: {{$index}},animate:true}">trash - {{item.name||item}}</li>
-      </ul>
     </div>
   </div>
 
