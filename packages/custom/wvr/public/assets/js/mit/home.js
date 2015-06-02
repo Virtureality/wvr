@@ -4,8 +4,8 @@ $(function(){
 	    openSocket: function (config) {
 	        /*var SIGNALING_SERVER = 'https://webrtc-signaling.nodejitsu.com:443/',
 	            defaultChannel = location.href.replace(/\/|:|#|%|\.|\[|\]/g, '');*/
-	        //var SIGNALING_SERVER = 'http://localhost:8888/',
-            var SIGNALING_SERVER = 'http://192.168.0.109:8888/',
+	        var SIGNALING_SERVER = 'http://localhost:8888/',
+			//var SIGNALING_SERVER = 'http://192.168.0.109:8888/',
 	            defaultChannel = 'wvrmit';
 
 	        var channel = config.channel || defaultChannel;
@@ -43,7 +43,7 @@ $(function(){
 
             	var roomEntrance = document.createElement('a');
             	roomEntrance.setAttribute('id', room.roomName);
-		    	roomEntrance.setAttribute('href', '#!/wvrmit/mit/' + room.roomName);
+		    	roomEntrance.setAttribute('href', '#!/mit/' + room.roomName);
 		    	roomEntrance.setAttribute('target', '_blank');
 		    	roomEntrance.innerHTML = room.roomName;
 
@@ -75,7 +75,7 @@ $(function(){
 			alert(newMeetingName + " already there! Please just find it and join...");
 			return;
 		} else {
-			window.open('#!/wvrmit/mit/' + newMeetingName, '_blank');
+			window.open('#!/mit/' + newMeetingName, '_blank');
 		}
 	});
 

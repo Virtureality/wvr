@@ -1,0 +1,56 @@
+<div>
+	<!-- <legend>
+		<a class="pull-right" ui-sref="WVR - MIT help page" target="_blank">Help</a>
+	</legend> -->
+	<div class="row" id="action-area">
+	    <button id="action-button">Welcome</button>
+		<!-- <a id="shareLink" class="pull-left" target="_blank">Share Meeting: {{$stateParams.mname}}</a>
+		<script type="text/javascript">
+		    document.getElementById('shareLink').href = location.href;
+		</script> -->
+	</div>
+	<hr/>
+
+	<div class="row">
+
+		<div class="col-lg-9">
+
+			<input id="mname" type="hidden" name="mname" value="{{$stateParams.mname}}" />
+			<input id="user" type="hidden" name="user" value="{{global.user.name}}-{{global.user._id}}" />
+			<input id="user" type="hidden" name="global.user" value="{{global.user}}" />
+			<div id="container" class="clearfix masonry">
+			  
+			    <div class="box photo col2 masonry-brick">
+			      <a href="/wvr/assets/img/lily.jpeg" title="Lily"><img src="/wvr/assets/img/lily.jpeg" alt="Lily"></a>
+			    </div>
+			  
+			</div>
+
+		</div>
+
+		<div class="col-lg-3">
+
+			<div class="input-group">
+				<input id="message-text" class="form-control" type="text" placeholder="type message here"/>
+				<span class="input-group-btn">
+				  <button id="send-msg-btn" class="btn btn-info" disabled="true">Waiting for setup ...</button>
+				</span>
+			</div>
+			<hr />
+			<div id="message-area"></div>
+
+		</div>
+
+	</div>
+
+	<script type="text/javascript" src="/wvr/assets/js/mit/masonry.js"></script>
+	<!--  -->
+	<!-- Conferencing -->
+	<!-- <script type="text/javascript" src="/wvr/assets/js/mit/lib/firebase.js"></script> -->
+	<script type="text/javascript" src="/wvr/assets/js/mit/lib/socket.io.js"></script>
+	<script type="text/javascript" src="/wvr/assets/js/mit/lib/RTCPeerConnection-v1.5.js"></script>
+	<script type="text/javascript" src="/wvr/assets/js/mit/lib/conference.js"></script>
+	<script type="text/javascript" src="/wvr/assets/js/mit/lib/data-connection.js"></script>
+
+	<script type="text/javascript" src="/wvr/assets/js/mit/mit.js"></script>
+</div>
