@@ -4,6 +4,8 @@
 
     <div class="row">
       <p class="alert alert-info">Welcome, {{global.user.name||"Guest"}}! :)</p>
+      <p ng-show="operationInfo" class="{{alertStyle}}">{{operationInfo}}</p>
+      <hr/>
 
       <p>Share ->&nbsp;<a id="shareLink" target="_blank">{{space.name||space.uuid}}</a></p>
       <script type="text/javascript">

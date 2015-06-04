@@ -34,45 +34,56 @@ angular.module('wvr.space')
 
         $scope.ownSpace = function(spaceToOwn) {
 
+          $scope.operationInfo = 'Processing...[Own the Space]';
+          $scope.alertStyle = 'alert-info';
+
           if(!spaceToOwn.owner) {
             var loginUser = Global.user;
             if(loginUser && loginUser._id) {
               Space.get({spaceId: spaceToOwn.uuid}).$promise.then(
                   function(space) {
-                    spaceToOwn.owner = loginUser._id;
                     if(space && (!space.uuid || space.uuid === "")) {//Space not found, so to create then own
+                      spaceToOwn.owner = loginUser._id;
                       Space.save(spaceToOwn, function(result) {
-                        $scope.space = result.space;
-                        alert(result.message);
+                        if(result && result.space) {
+                          $scope.space = result.space;
+                          //alert('Congratulations! ' + result.message + ' You are the space owner now! :)');
+                          $scope.operationInfo = 'Congratulations! ' + result.message + ' You are the space owner now! :)';
+                          $scope.alertStyle = 'alert-success';
+                        } else {
+                          $scope.operationInfo = 'Failed to own the space! Reason: ' + result.message;
+                          $scope.alertStyle = 'alert-danger';
+                        }
                       }, function(error) {
-                        alert('Error creating space: ' + error);
+                        //alert('Failed to own the space! Reason: ' + error);
+                        $scope.operationInfo = 'Failed to own the space! Reason: ' + error;
+                        $scope.alertStyle = 'alert-danger';
                       });
                     } else {//Space found, so to update the owner
-                      //Space.update(spaceToOwn, function(result) {
                       space.owner = loginUser._id;
-                      //space.$update({spaceId: space._id}, function(result) {
                       space.$update({spaceId: space.uuid}, function(result) {
-                        $scope.space = result.space;
-                        alert(result.message);
+                        if(result && result.space) {
+                          $scope.space = result.space;
+                          //alert('Congratulations! ' + result.message + ' You are the space owner now! :)');
+                          $scope.operationInfo = 'Congratulations! ' + result.message + ' You are the space owner now! :)';
+                          $scope.alertStyle = 'alert-success';
+                        } else {
+                          $scope.operationInfo = 'Failed to own the space! Reason: ' + result.message;
+                          $scope.alertStyle = 'alert-danger';
+                        }
                       }, function(error) {
-                        alert('Error updating space: ' + error);
+                        //alert('Failed to own the space! Reason: ' + error);
+                        $scope.operationInfo = 'Failed to own the space! Reason: ' + error;
+                        $scope.alertStyle = 'alert-danger';
                       });
                     }
-                    /*Space.save(spaceToOwn, function(result) {
-                      console.log('result: ' + result);
-                      for(var item in result) {
-                        console.log(item + ': ' + result[item]);
-                      }
-                      $scope.space = result.space;
-                      alert(result.message);
-                    }, function(error) {
-                      alert('Error saving space: ' + error);
-                    });*/
                   },
                   function(reason) {
-                    console.log(reason);
+                    //console.log(reason);
 
-                    alert('Oops, space service is in trouble right now! You may try again later.');
+                    //alert('Oops, space service is in trouble right now! You may try again later.');
+                    $scope.operationInfo = 'Oops, space service is in trouble right now! You may try again later.';
+                    $scope.alertStyle = 'alert-warning';
                   }
               );
             } else {
@@ -81,7 +92,9 @@ angular.module('wvr.space')
               $location.replace();
             }
           } else {
-            alert('Sorry! The space has been owned.');
+            //alert('Sorry! The space has been owned.');
+            $scope.operationInfo = 'Sorry! The space has been owned.';
+            $scope.alertStyle = 'alert-warning';
           }
         };
 
