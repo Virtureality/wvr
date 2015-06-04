@@ -10,7 +10,7 @@
         document.getElementById('shareLink').href = location.href;
       </script>
 
-      <p>Space: {{space}}</p>
+      <p>Space: {{space||spaceServiceInfo}}&nbsp;<button ng-show="!space.owner" ng-click="ownSpace(space)" class="btn btn-info">Own</button></p>
     </div>
 
     <div class="row">
@@ -22,6 +22,8 @@
       <input id="userid" type="hidden" name="user" value="{{global.user.name}}-{{global.user._id}}" />
       <input id="user" type="hidden" name="global.user" value="{{global.user}}" />
 
+      <input id="ableToSetup" type="hidden" name="ableToSetup" value={{ableToOpenDefaultRoom}} />
+
       <div class="col-lg-9">
 
         <div id="container" class="clearfix masonry">
@@ -29,7 +31,7 @@
           <div class="box photo col2 masonry-brick">
             <a href="/wvr/assets/img/lily.jpeg" title="Lily"><img src="/wvr/assets/img/lily.jpeg" alt="Lily"></a>
           </div>
-          
+
         </div>
 
       </div>

@@ -267,7 +267,9 @@ $(function(){
     }
 
     function checkForSetup() {
-    	if (!confOnGoing) {
+		var ableToSetup = $('#ableToSetup').attr('value');
+		//console.log('ableToSetup:' + ableToSetup);
+    	if (!confOnGoing && ableToSetup == "true") {
     		confOnGoing = true;
     		setup();
     	}

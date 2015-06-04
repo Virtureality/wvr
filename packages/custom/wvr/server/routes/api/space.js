@@ -154,11 +154,18 @@ module.exports = function(Wvr, app, auth, database) {
 
 			space = populateSpace(space, req);
 
-			space.save(function(err) {
+			/*space.save(function(err) {
 				if(err) {
 					res.send(err);
 				} else {
 					res.json({message: 'Space Created!'});
+				}
+			});*/
+			SpaceModel.create(space, function(err, createdSpace) {
+				if(err) {
+					res.send(err);
+				} else {
+					res.json({message: 'Space Created!', space: createdSpace});
 				}
 			});
 
