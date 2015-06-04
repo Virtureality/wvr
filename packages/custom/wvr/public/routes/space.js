@@ -8,6 +8,9 @@ angular.module('wvr.space')
             .state('spaces', {
               url: '/spaces',
               templateUrl: 'wvr/views/space/home.html'
+            }).state('spaces1', {
+                url: '/spaces/',
+                templateUrl: 'wvr/views/space/home.html'
             })
             .state('space', {
               url: '/spaces/:spaceId',
