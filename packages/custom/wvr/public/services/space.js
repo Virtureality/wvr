@@ -10,7 +10,8 @@ angular.module('wvr.space').factory('Space', ['$resource',
       query: {method:'GET', params:{spaceId: null}, isArray:true}
     });*/
     return $resource('/wvr/api/space/spaces/:spaceId', {}, {
-      query: {method:'GET', params:{spaceId: null}, isArray:true}
+      query: {method:'GET', params:{spaceId: null}, isArray:true},
+      'update': { method:'PUT' }
     });
   }
 ]);

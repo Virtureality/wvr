@@ -115,7 +115,7 @@ function populateSpace(space, req) {
 					}
 				});
 
-				console.log('space.spaces:' + space.spaces);
+				//console.log('space.spaces:' + space.spaces);
 			}
 		}
 
@@ -154,20 +154,21 @@ module.exports = function(Wvr, app, auth, database) {
 
 			space = populateSpace(space, req);
 
-			/*space.save(function(err) {
+			space.save(function(err) {
 				if(err) {
 					res.send(err);
 				} else {
-					res.json({message: 'Space Created!'});
+					//res.json({message: 'Space Created!'});
+					res.json({"message": 'Space Created!', "space": space});
 				}
-			});*/
-			SpaceModel.create(space, function(err, createdSpace) {
+			});
+			/*SpaceModel.create(space, function(err, createdSpace) {
 				if(err) {
 					res.send(err);
 				} else {
 					res.json({message: 'Space Created!', space: createdSpace});
 				}
-			});
+			});*/
 
 		});
 
@@ -190,7 +191,8 @@ module.exports = function(Wvr, app, auth, database) {
 			});
 		})
 		.put(function(req, res, next) {
-			SpaceModel.findById(req.params.spaceId, function(err, space) {
+			//SpaceModel.findById(req.params.spaceId, function(err, space) {
+			SpaceModel.findOne({ uuid: req.params.spaceId }, function(err, space) {
 				if(err) {
 					res.send(err);
 				} else {
@@ -200,7 +202,8 @@ module.exports = function(Wvr, app, auth, database) {
 						if(err) {
 							res.send(err);
 						} else {
-							res.json({message: 'Space Updated!'});
+							//res.json({message: 'Space Updated!'});
+							res.json({"message": 'Space Updated!', "space": space});
 						}
 					});
 				}

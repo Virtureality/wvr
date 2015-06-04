@@ -10,7 +10,7 @@
         document.getElementById('shareLink').href = location.href;
       </script>
 
-      <p>Space: {{space||spaceServiceInfo}}&nbsp;<button ng-show="!space.owner" ng-click="ownSpace(space)" class="btn btn-info">Own</button></p>
+      <p>Space: {{space||spaceServiceInfo}}&nbsp;<button ng-show="global.user._id && !space.owner" ng-click="ownSpace(space)" class="btn btn-info">Own</button></p>
     </div>
 
     <div class="row">
