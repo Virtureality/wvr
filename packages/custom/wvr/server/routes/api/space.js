@@ -107,6 +107,7 @@ module.exports = function(Wvr, app, auth, database) {
 				}
 			});*/
 			SpaceModel
+				//.findOne({ uuid: req.params.spaceId }, '-__v', function(err, space) {
 				.findOne({ uuid: req.params.spaceId }, function(err, space) {
 					if(err) {
 						res.send(err);
@@ -114,6 +115,10 @@ module.exports = function(Wvr, app, auth, database) {
 						res.json(space);
 					}
 				})
+				/* select() below has no effect, why[not supported in the version]?*/
+				//.select('-__v -type')
+				//.select({ type: 0 })
+				//.select('uuid name owner')
 			    //.populate('owner');
 			    .populate('owner', 'email name');
 		})

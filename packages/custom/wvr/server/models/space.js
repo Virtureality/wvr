@@ -23,6 +23,7 @@ var FacilitySchema = new Schema({
 var SpaceSchema = new Schema({
     //uuid: {type: String, unique: true, sparse: true, default: _id},
     //uuid: {type: String, unique: true, sparse: true, default: id},
+    __v: { type: Number, select: false},
     uuid: {type: String, unique: true, sparse: true},
     name: {type: String},
     owner: {type: Schema.ObjectId, ref: 'User'},
