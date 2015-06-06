@@ -4,7 +4,7 @@
 
     <div class="row">
       <p class="alert alert-info">Welcome, {{global.user.name||"Guest"}}! :)</p>
-      <p ng-show="space.owner" class="alert alert-info">This is <a class="text-primary">{{space.owner}}</a>'s space.</p>
+      <p ng-show="space.owner" class="alert alert-info">This is <a class="text-primary" href="mailto:{{space.owner.email}}">{{space.owner.name}}</a>'s space.</p>
       <p ng-show="operationInfo" class="{{alertStyle}}">{{operationInfo}}</p>
       <hr/>
 

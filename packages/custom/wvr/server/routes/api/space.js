@@ -99,13 +99,23 @@ module.exports = function(Wvr, app, auth, database) {
 					res.json(space);
 				}
 			});*/
-			SpaceModel.findOne({ uuid: req.params.spaceId }, function(err, space) {
+			/*SpaceModel.findOne({ uuid: req.params.spaceId }, function(err, space) {
 				if(err) {
 					res.send(err);
 				} else {
 					res.json(space);
 				}
-			});
+			});*/
+			SpaceModel
+				.findOne({ uuid: req.params.spaceId }, function(err, space) {
+					if(err) {
+						res.send(err);
+					} else {
+						res.json(space);
+					}
+				})
+			    //.populate('owner');
+			    .populate('owner', 'email name');
 		})
 		.put(function(req, res, next) {
 			//SpaceModel.findById(req.params.spaceId, function(err, space) {
