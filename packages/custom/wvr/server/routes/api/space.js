@@ -58,13 +58,15 @@ module.exports = function(Wvr, app, auth, database) {
 
 	router.route('/spaces')
 		.get(function(req, res, next) {
-			SpaceModel.find(function(err, spaces) {
-				if(err) {
-					res.send(err);
-				} else {
-					res.json(spaces);
-				}
-			});
+			SpaceModel
+				.find(function(err, spaces) {
+					if(err) {
+						res.send(err);
+					} else {
+						res.json(spaces);
+					}
+				})
+				.populate('owner', 'email name');
 		})
 		.post(function(req, res, next) {
 			var space = new SpaceModel();
