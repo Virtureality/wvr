@@ -17,7 +17,7 @@ angular.module('wvr.space')
               }
               $scope.space = space;
 
-              $scope.ableToOpenDefaultRoom = !space.owner || space.owner == Global.user._id;
+              $scope.ableToOpenDefaultRoom = !space.owner || space.owner._id == Global.user._id;
             },
             function(reason) {
               // Error!
