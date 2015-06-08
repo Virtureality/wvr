@@ -13,11 +13,12 @@
     <div class="col-lg-9">
       <ul>
         <div ng-repeat="space in spaces | filter: textFilter" class="box photo col2 masonry-brick">
-          <span><a href="#!/spaces/{{space.uuid}}" target="_blank">{{space.uuid}}</a></span>
-          <!--|
-          <span>{{space.owner}}</span>
-          |
-          <span>{{space.type}}</span>-->
+          <!--<span><a href="#!/spaces/{{space.uuid}}" target="_blank">{{space.uuid}}</a></span>-->
+          <p><span>Address: </span><span><a href="#!/spaces/{{space.uuid}}" target="_blank">{{space.uuid}}</a></span></p>
+          <p><span>Name: </span><span>{{space.name}}</span></p>
+          <p>
+            <span>Owner: </span><span><a class="text-primary" href="mailto:{{space.owner.email}}">{{space.owner.name}}</a></span>
+          </p>
         </div>
       </ul>
     </div>
