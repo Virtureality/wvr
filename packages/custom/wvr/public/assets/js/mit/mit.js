@@ -1,5 +1,26 @@
 $(function(){
 
+	function requestToJoin(roomOwner, isRetry) {
+		setButton(actionButton, 'Request to Join', false);
+
+		actionButton.bind('click', requestToJoinHandler);
+
+		function requestToJoinHandler() {
+
+			setButton(actionButton, 'Requesting ...', true);
+			isProcessingRoomJoinResponse = false;
+
+			confUI.requestToJoin({
+				roomOwner: roomOwner,
+				requestUserToken: userToken,
+				retry: isRetry
+			});
+
+			actionButton.unbind('click', requestToJoinHandler);
+
+		}
+	}
+
 	function uniqueToken() {
         var s4 = function() {
             return Math.floor(Math.random() * 0x10000).toString(16);
@@ -9,6 +30,8 @@ $(function(){
 
 	//var userToken = Math.round(Math.random() * 999999999) + 999999999;
 	var userToken = uniqueToken();
+
+	var isProcessingRoomJoinResponse = false;
 
     var roomFound = false;
 	var confOnGoing = false;
@@ -42,36 +65,68 @@ $(function(){
 	    	if(!roomFound) {
 	    		roomFound =true;
 
-	    		var mname = $('#mname').attr('value') || 'Anonymous';
+				var mname = $('#mname').attr('value') || 'Anonymous';
+				confOnGoing = true;
 
 		        if(confJoined || room.roomName !== mname) {
 		        	return;
 		        } else{
-		        	confOnGoing = true;
-
-			        setButton(actionButton, 'Conference Ongoing...', true);
-
-			        var broadcaster = room.broadcaster;
-			        captureUserMedia(function () {
-			            confUI.joinRoom({
-			                roomToken: broadcaster,
-			                joinUser: broadcaster
-			            });
-	                    confJoined = true;
-
-	                    if (!dataConnectionJoined) {
-				            initDataConnection(mname, userToken);
-				            //dataCon.join(room);
-				            dataCon.check(mname);
-				            dataConnectionJoined = true;
-	                    };
-
-			            enableShare(mname);
-			        });
+					requestToJoin(room.broadcaster);
 		        }
+				roomFound = false;
 	    	}
 
-	    }
+	    },
+		onRoomJoinResponse: function (response) {
+			//console.log('onRoomJoinResponse...');
+			if(!isProcessingRoomJoinResponse) {
+				//console.log('Processing join response as the receiver.');
+				isProcessingRoomJoinResponse = true;
+
+				//console.log('acceptDecision: ' + response.acceptDecision);
+
+				if(response.acceptDecision) {
+					var confirmDecision = confirm(response.fromUser + ' confirmed, would you like to join?');
+					//console.log('confirmDecision: ' + confirmDecision);
+
+					if(confirmDecision) {
+						//alert('You confirmed!');
+
+						var mname = $('#mname').attr('value') || 'Anonymous';
+
+						confOnGoing = true;
+
+						setButton(actionButton, 'Conference Ongoing...', true);
+
+						captureUserMedia(function () {
+							confUI.joinRoom({
+								roomToken: response.fromUser,
+								joinUser: response.fromUser
+							});
+							confJoined = true;
+
+							if (!dataConnectionJoined) {
+								initDataConnection(mname, userToken);
+								//dataCon.join(room);
+								dataCon.check(mname);
+								dataConnectionJoined = true;
+							};
+
+							enableShare(mname);
+						});
+					} else {
+						alert('You cancelled!');
+						//requestToJoin(response.fromUser);
+						requestToJoin(response.fromUser, true);
+					}
+				} else {
+					alert('Oops! Your request was not accepted by: ' + response.fromUser);
+					//requestToJoin(response.fromUser);
+					requestToJoin(response.fromUser, true);
+				}
+			}
+			isProcessingRoomJoinResponse = false;
+		}
 	};
 
 	var SIGNALING_SERVER = 'http://localhost:8888/';

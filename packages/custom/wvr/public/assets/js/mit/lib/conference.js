@@ -21,6 +21,7 @@ var conference = function(config, userToken) {
     for (var item in defaultSocket) {
         console.log(item + ':' + defaultSocket[item]);
     }*/
+    var joinRequestProcessingWatcher = {};
 
     function openDefaultSocket() {
         defaultSocket = config.openSocket({
@@ -50,6 +51,49 @@ var conference = function(config, userToken) {
             });
         }
 
+        if (response.joinRequest && response.roomOwner == self.userToken && response.requestUserToken) {
+            if(channels.indexOf(response.requestUserToken) == -1) {//Processing join request only if user not joined yet.
+                if(!joinRequestProcessingWatcher[response.requestUserToken] || joinRequestProcessingWatcher[response.requestUserToken] == 'retry' || response.retry) {
+                    joinRequestProcessingWatcher[response.requestUserToken] = 'processing';
+
+                    //console.log('Processing join request as the room owner.');
+                    var acceptDecision = confirm(response.requestUserToken + ' is requesting to join, would you like to accept?');
+                    //console.log('acceptDecision: ' + acceptDecision);
+
+                    defaultSocket.send({
+                        joinResponse: true,
+                        fromUser: self.userToken,
+                        toUser: response.requestUserToken,
+                        acceptDecision: acceptDecision
+                    });
+
+                    if(!acceptDecision) {
+                        joinRequestProcessingWatcher[response.requestUserToken] = 'retry';
+                    }
+                }
+                /*if(!joinRequestProcessingWatcher[response.requestUserToken]) {
+                    joinRequestProcessingWatcher[response.requestUserToken] = true;
+
+                    //console.log('Processing join request as the room owner.');
+                    var acceptDecision = confirm(response.requestUserToken + ' is requesting to join, would you like to accept?');
+                    //console.log('acceptDecision: ' + acceptDecision);
+
+                    defaultSocket.send({
+                        joinResponse: true,
+                        fromUser: self.userToken,
+                        toUser: response.requestUserToken,
+                        acceptDecision: acceptDecision
+                    });
+
+                    joinRequestProcessingWatcher[response.requestUserToken] = false;
+                }*/
+            }
+        }
+
+        if (response.joinResponse && response.toUser == self.userToken && response.fromUser) {
+            config.onRoomJoinResponse(response);
+        }
+
         // to make sure room is unlisted if owner leaves		
         if (response.left && config.onRoomClosed) {
             config.onRoomClosed(response);
@@ -70,6 +114,15 @@ var conference = function(config, userToken) {
         socketConfig.callback = function(_socket) {
             socket = _socket;
             this.onopen();
+            /*if(_config.isJoinRequest) {
+                socket.send({
+                    participationRequest: true,
+                    userid: _config.requestor,
+                    to: _config.responsor
+                });
+            } else {
+                this.onopen();
+            }*/
         };
 
         var socket = config.openSocket(socketConfig),
@@ -297,6 +350,14 @@ var conference = function(config, userToken) {
                 joinUser: _config.joinUser
             });
         },
-        leaveRoom: leave
+        leaveRoom: leave,
+        requestToJoin: function(_config) {
+            defaultSocket.send({
+                joinRequest: true,
+                roomOwner: _config.roomOwner,
+                requestUserToken: _config.requestUserToken,
+                retry: _config.retry
+            });
+        }
     };
 };
