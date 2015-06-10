@@ -1,140 +1,188 @@
 $(function(){
 
-	function requestToJoin(roomOwner, isRetry) {
-		setButton(actionButton, 'Request to Join', false);
-
-		actionButton.bind('click', requestToJoinHandler);
-
-		function requestToJoinHandler() {
-
-			setButton(actionButton, 'Requesting ...', true);
-			isProcessingRoomJoinResponse = false;
-
-			confUI.requestToJoin({
-				roomOwner: roomOwner,
-				requestUserToken: userToken,
-				retry: isRetry
-			});
-
-			actionButton.unbind('click', requestToJoinHandler);
-
-		}
-	}
-
-	function uniqueToken() {
-        var s4 = function() {
-            return Math.floor(Math.random() * 0x10000).toString(16);
-        };
-        return s4() + s4() + "-" + s4() + "-" + s4() + "-" + s4() + "-" + s4() + s4() + s4();
-    }
-
-	//var userToken = Math.round(Math.random() * 999999999) + 999999999;
-	var userToken = uniqueToken();
-
-	var isProcessingRoomJoinResponse = false;
-
-    var roomFound = false;
-	var confOnGoing = false;
-
-    var actionArea = $('#action-area');
-    var actionButton = $('#action-button');
-
-	var container = $('#container');
-
-	var confJoined = false;
-    var confUI;
-    
-	var dataConnectionJoined = false;
-	var dataCon;
-
-	var confConfig = {
-
-	    openSocket: openSignaling,
-	    onRemoteStream: function (media) {
-	        var video = $(media.video).attr('id', media.stream.id).attr('controls', true);
-	        media.video.play();
-
-	        //console.log('Adding remote video...');
-	        addVideo(video, container);
-	    },
-	    onRemoteStreamEnded: function (stream) {
-	        var video = document.getElementById(stream.id);
-	        if (video) video.parentNode.parentNode.removeChild(video.parentNode);
-	    },
-	    onRoomFound: function (room) {
-	    	if(!roomFound) {
-	    		roomFound =true;
-
-				var mname = $('#mname').attr('value') || 'Anonymous';
-				confOnGoing = true;
-
-		        if(confJoined || room.roomName !== mname) {
-		        	return;
-		        } else{
-					requestToJoin(room.broadcaster);
-		        }
-				roomFound = false;
-	    	}
-
-	    },
-		onRoomJoinResponse: function (response) {
-			//console.log('onRoomJoinResponse...');
-			if(!isProcessingRoomJoinResponse) {
-				//console.log('Processing join response as the receiver.');
-				isProcessingRoomJoinResponse = true;
-
-				//console.log('acceptDecision: ' + response.acceptDecision);
-
-				if(response.acceptDecision) {
-					var confirmDecision = confirm(response.fromUser + ' confirmed, would you like to join?');
-					//console.log('confirmDecision: ' + confirmDecision);
-
-					if(confirmDecision) {
-						//alert('You confirmed!');
-
-						var mname = $('#mname').attr('value') || 'Anonymous';
-
-						confOnGoing = true;
-
-						setButton(actionButton, 'Conference Ongoing...', true);
-
-						captureUserMedia(function () {
-							confUI.joinRoom({
-								roomToken: response.fromUser,
-								joinUser: response.fromUser
-							});
-							confJoined = true;
-
-							if (!dataConnectionJoined) {
-								initDataConnection(mname, userToken);
-								//dataCon.join(room);
-								dataCon.check(mname);
-								dataConnectionJoined = true;
-							};
-
-							enableShare(mname);
-						});
-					} else {
-						alert('You cancelled!');
-						//requestToJoin(response.fromUser);
-						requestToJoin(response.fromUser, true);
-					}
-				} else {
-					alert('Oops! Your request was not accepted by: ' + response.fromUser);
-					//requestToJoin(response.fromUser);
-					requestToJoin(response.fromUser, true);
-				}
-			}
-			isProcessingRoomJoinResponse = false;
-		}
-	};
-
 	var SIGNALING_SERVER = 'http://localhost:8888/';
 	//var SIGNALING_SERVER = '127.0.0.1:8888/';
-    //var SIGNALING_SERVER = 'http://192.168.0.109:8888/';
+	//var SIGNALING_SERVER = 'http://192.168.0.109:8888/';
 	var defaultChannel = 'wvrmit';
-    
+
+	var confOnGoing = false;
+	var confJoined = false;
+	var wvrmitConnection;
+	//var wvrmitDataConnection;
+
+	var actionArea = $('#action-area');
+	var actionButton = $('#action-button');
+	var container = $('#container');
+
 	watch();
+
+	function watch() {
+
+		setTimeout(doWatch, 1000);
+
+		function doWatch() {
+
+			startWatching();
+
+			setButton(actionButton, 'Watching ...', true);
+
+		}
+
+		function startWatching() {
+
+			var userID = getUserID();
+
+			wvrmitConnection = new RTCMultiConnection('wvrmit');
+
+			wvrmitConnection.userid = userID;
+
+			wvrmitConnection.openSignalingChannel = function (config) {
+				var channel = config.channel || defaultChannel;
+
+				io.connect(SIGNALING_SERVER).emit('new-channel', {
+					channel: channel,
+					sender: userID
+				});
+
+				var socket = io.connect(SIGNALING_SERVER + channel);
+				socket.channel = channel;
+
+				socket.send = function (message) {
+
+					socket.emit('message', {
+						sender: userID,
+						data: message
+					});
+				};
+
+				socket.on('message', config.onmessage);
+
+				var connected = false;
+
+				socket.on('connect', function () {
+					if (!connected) {
+						connected = true;
+
+						if (config.callback) config.callback(socket);
+
+						setTimeout(checkForSetup, 3000);
+					}
+				});
+			};
+
+			wvrmitConnection.onstatechange = function(state) {
+				// state.userid == 'target-userid' || 'browser'
+				// state.extra  == 'target-user-extra-data' || {}
+				// state.name  == 'short name'
+				// state.reason == 'longer description'
+
+				// fetching-usermedia
+				// usermedia-fetched
+
+				// detecting-room-presence
+				// room-not-available
+				// room-available
+
+				// connecting-with-initiator
+				// connected-with-initiator
+
+				// failed---has reason
+
+				// request-accepted
+				// request-rejected
+
+				if(state.name == 'request-accepted') {
+					alert(state.reason);
+					setButton(actionButton, 'Conference Ongoing...', true);
+					initDataConnection();
+				}
+
+				if(state.name == 'request-rejected') {
+					alert(state.reason);
+					enableRequestToJoin();
+				}
+
+				if(state.name == 'failed---has reason') {
+					alert(state.reason);
+				}
+			};
+
+			wvrmitConnection.onstream = function (event) {
+
+				// e.mediaElement (audio or video element)
+				// e.stream     native MediaStream object
+				// e.streamid   unique identifier of the stream; synced among all users!
+				// e.session    {audio: true, video: true, screen: true}
+				// e.blobURL    blob-URI
+				// e.type       "local" or "remote"
+				// e.extra
+				// e.userid      the person who shared stream with you!
+
+				// e.isVideo ---- if it is a  Video stream
+				// e.isAudio ---- if it is an Audio stream
+				// e.isScreen --- if it is screen-sharing stream
+
+				if(event.isVideo && (event.type == 'local' || event.userid != this.userid)) {
+					var video = $(event.mediaElement).attr('id', event.streamid).attr('controls', true);
+					addVideo(video, container);
+				}
+			};
+
+			wvrmitConnection.onstreamended = function (e) {
+				//var video = document.getElementById(stream.id);
+				var video = document.getElementById(e.streamid);
+				if (video) video.parentNode.parentNode.removeChild(video.parentNode);
+			};
+
+			//wvrmitConnection.transmitRoomOnce = true;
+			wvrmitConnection.onNewSession = function (session) {
+
+				console.log('onNewSession ... ');
+
+				// session.userid
+				// session.sessionid
+				// session.extra
+				// session.session i.e. {audio,video,screen,data}
+
+				var mname = $('#mname').attr('value') || 'Anonymous';
+
+				if (session.sessionid == mname && session.userid != this.userid && !confJoined) {
+					confOnGoing = true;
+
+					setButton(actionButton, 'Joining ...', true);
+
+					wvrmitConnection.join(mname);
+					//initDataConnection();
+
+					confJoined = true;
+				}
+
+			};
+
+			wvrmitConnection.connect();
+
+		};
+
+	}
+
+	function getUserID() {
+
+		var loginUser = window.user;
+
+		if (loginUser && loginUser._id && loginUser._id !== '') {
+			return loginUser.username + '-' + loginUser._id;
+		}
+
+		return Math.round(Math.random() * 999999999) + 999999999;
+	}
+
+	function checkForSetup() {
+		var ableToSetup = $('#ableToSetup').attr('value');
+
+		if (!confOnGoing && ableToSetup == "true") {
+			setup();
+		}
+	}
 
 	function setup() {
 
@@ -144,81 +192,219 @@ $(function(){
 
 		function doSetup() {
 
-		    setButton(actionButton, 'Setting up ...', true);
+			setButton(actionButton, 'Setting up ...', true);
 
-		    var mname = $('#mname').attr('value') || 'Anonymous';
+			var mname = $('#mname').attr('value') || 'Anonymous';
 
-		    setupConf(mname, userToken);
+			setupConf(mname);
 
-		    actionButton.unbind('click', doSetup);
-
-		    //console.log('setup event handler execution ended.');
+			actionButton.unbind('click', doSetup);
 
 		}
 
-		function setupConf(mname, setter) {
+		function setupConf(mname) {
 
-			//console.log('Setting up videoConf...');
+			wvrmitConnection.isInitiator = true;
+			wvrmitConnection.onRequest = function(request) {
+				var acceptDecision = confirm(request.userid + ' is requesting to join, would you like to accept?');
 
-			captureUserMedia(function () {
-				//console.log('createRoom ongoing...');
-		        confUI.createRoom({
-		            roomName: mname,
-		            userToken: userToken
-		        });
+				wvrmitConnection.dontCaptureUserMedia = true;
+				if(acceptDecision) {
+					wvrmitConnection.accept(request);
+				} else {
+					wvrmitConnection.reject(request);
+				}
+			};
+			wvrmitConnection.open(mname);
 
-		        initDataConnection(mname, userToken);
-	            dataCon.setup(mname);
+			enableShare(mname);
 
-		        enableShare(mname);
+			setButton(actionButton, 'Conference Ongoing...', true);
 
-		        setButton(actionButton, 'Conference Ongoing...', true);
+			initDataConnection();
 
-		        confJoined = true;
-		    });
+			confJoined = true;
 		}
 
-	}	
+	}
 
-	function initDataConnection(mname, setter){
+	function enableRequestToJoin() {
 
-	    //dataCon.firebase = 'signaling';
-		//dataCon.userid = sender;
+		wvrmitConnection.dontCaptureUserMedia = true;
+
+		setButton(actionButton, 'Request to Join', false);
+
+		actionButton.bind('click', requestToJoinHandler);
+
+		function requestToJoinHandler() {
+			var mname = $('#mname').attr('value') || 'Anonymous';
+
+			setButton(actionButton, 'Requesting to join ...', true);
+			wvrmitConnection.join(mname);
+
+			actionButton.unbind('click', requestToJoinHandler);
+
+		}
+	}
+
+	function initDataConnection(){
+
+		var userID = getUserID();
+
 		var messageArea = $('#message-area');
-		/*dataCon.onopen = function(e) {
-			console.log('Data connection opened between you and ' + e.userid);
-		};*/
-		dataCon.onmessage = function(message, userid) {
-			//console.log(' message received from ' + userid + ': ' + message);
-			userid = userid.substring(0, userid.lastIndexOf('-'));
-			messageArea.append($('<div>').append(userid + ': ' + message));
-		};
-		dataCon.onerror = function(e) {
-			console.debug('Error in data connection. Target user id', e.userid, 'Error', e);
-		};
-		dataCon.onclose = function(e) {
-			console.log('Data connection closed. Target user id: ' + e.userid);
-		};
-		dataCon.onuserleft = function(e) {
-			console.log('User left. Target user id: ' + e.userid);
+
+		var sendMsgButton = $('#send-msg-btn');
+
+		wvrmitConnection.language = 'en'; // prefer English
+		wvrmitConnection.autoTranslateText = true;
+
+		wvrmitConnection.onCustomMessage = function(message) {
+			messageArea.append($('<div>').append(message));
 		};
 
-
-        dataCon.userid = setter;
-
-        var sendMsgButton = $('#send-msg-btn');
-        sendMsgButton.on('click', function() {
+		sendMsgButton.on('click', function() {
 			var msgBody = $('#message-text').val() || '';
 			if (msgBody && msgBody !== '') {
-				//console.log('Sending message: ' + msgBody);
-				dataCon.send(msgBody);
+				wvrmitConnection.sendCustomMessage(userID + ':' + msgBody);
 				messageArea.append($('<div>').append('Me: ' + msgBody));
 			} else{
 				alert('Please input message content correctly!');
 			}
 		});
-
 		setButton(sendMsgButton, 'Send', false);
+
+		/// Warning: send() and onmessage() as below doesn't work, why?
+		/*var userID = getUserID();
+
+		var messageArea = $('#message-area');
+
+		var sendMsgButton = $('#send-msg-btn');
+
+		//var channel = config.channel || defaultChannel;
+		var channel = 'wvrmit' + 'data';
+
+		wvrmitDataConnection = new RTCMultiConnection('wvrmit' + 'data');
+		wvrmitDataConnection.openSignalingChannel = function (config) {
+
+			io.connect(SIGNALING_SERVER).emit('new-channel', {
+				channel: channel,
+				sender: userID
+			});
+
+			var socket = io.connect(SIGNALING_SERVER + channel);
+			socket.channel = channel;
+
+			socket.send = function (message) {
+
+				socket.emit('message', {
+					sender: userID,
+					data: message
+				});
+			};
+
+			socket.on('message', config.onmessage);
+
+			var connected = false;
+
+			socket.on('connect', function () {
+				if (!connected) {
+					console.log('wvrmitDataConnection socket connected!');
+
+					var mname = $('#mname').attr('value') || 'Anonymous';
+					wvrmitDataConnection.open(mname);
+					setButton(sendMsgButton, 'Opening ...', true);
+					connected = true;
+
+					if (config.callback) config.callback(socket);
+				}
+			});
+		};
+		wvrmitDataConnection.session = {
+			data: true
+		};
+		wvrmitDataConnection.onstatechange = function(state) {
+			// state.userid == 'target-userid' || 'browser'
+			// state.extra  == 'target-user-extra-data' || {}
+			// state.name  == 'short name'
+			// state.reason == 'longer description'
+
+			// fetching-usermedia
+			// usermedia-fetched
+
+			// detecting-room-presence
+			// room-not-available
+			// room-available
+
+			// connecting-with-initiator
+			// connected-with-initiator
+
+			// failed---has reason
+
+			// request-accepted
+			// request-rejected
+
+			console.log('wvrmitDataConnection status: ' + state.name);
+		};
+
+		wvrmitDataConnection.language = 'en'; // prefer English
+		wvrmitDataConnection.autoTranslateText = true;
+
+		wvrmitDataConnection.onopen = function() {
+			sendMsgButton.on('click', function() {
+				var msgBody = $('#message-text').val() || '';
+				if (msgBody && msgBody !== '') {
+					//console.log('Sending message: ' + msgBody);
+					wvrmitDataConnection.send({msg: msgBody});
+					//wvrmitConnection.send(msgBody);
+					//wvrmitConnection.sendCustomMessage(msgBody);
+					messageArea.append($('<div>').append('Me: ' + msgBody));
+				} else{
+					alert('Please input message content correctly!');
+				}
+			});
+			setButton(sendMsgButton, 'Send', false);
+			console.log('wvrmitDataConnection opened.');
+		}
+		wvrmitDataConnection.onmessage = function(e) {
+			console.log('onmessage: ' + e);
+			// e.data     ---- translated text
+			// e.original ---- original text
+			// e.userid
+			// e.extra
+
+			//console.log(' message received from ' + userid + ': ' + message);
+			/!*userid = userid.substring(0, userid.lastIndexOf('-'));
+			messageArea.append($('<div>').append(userid + ': ' + message));*!/
+			messageArea.append($('<div>').append(e.userid + ': ' + e.data));
+		};
+		/!*wvrmitConnection.onCustomMessage = function(message) {
+			// e.data     ---- translated text
+			// e.original ---- original text
+			// e.userid
+			// e.extra
+
+			//console.log(' message received from ' + userid + ': ' + message);
+			/!*userid = userid.substring(0, userid.lastIndexOf('-'));
+			 messageArea.append($('<div>').append(userid + ': ' + message));*!/
+			messageArea.append($('<div>').append(message));
+		};*!/
+		/!*sendMsgButton.on('click', function() {
+			var msgBody = $('#message-text').val() || '';
+			if (msgBody && msgBody !== '') {
+				//console.log('Sending message: ' + msgBody);
+				wvrmitDataConnection.send({msg: msgBody});
+				//wvrmitConnection.send(msgBody);
+				//wvrmitConnection.sendCustomMessage(msgBody);
+				messageArea.append($('<div>').append('Me: ' + msgBody));
+			} else{
+				alert('Please input message content correctly!');
+			}
+		});*!/
+
+		/!*setButton(sendMsgButton, 'Connecting ...', true);
+		wvrmitDataConnection.connect();*!/
+
+		//setButton(sendMsgButton, 'Initializing ...', true);*/
 
 	}
 
@@ -227,146 +413,25 @@ $(function(){
 		shareLink.appendTo(actionArea);
 	}
 
-	function watch() {
-		    
-    	userToken = setUserToken(userToken);
-        //console.log('userToken set to: ' + userToken);
-
-		//setButton(actionButton, 'Watch', false);
-
-		//actionButton.bind('click', doWatch);
-		setTimeout(doWatch, 1000);
-
-		function doWatch() {
-
-	        startWatching();
-
-	        //actionButton.unbind('click', doWatch);
-
-		    setButton(actionButton, 'Watching ...', true);
-
-		}
-
-		function startWatching() {
-			
-			confUI = conference(confConfig, userToken);
-
-			dataCon = new DataConnection('wvrmit-data');
-		    dataCon.openSignalingChannel = openSignaling;
-
-		};
-
-	}
-
 	function setButton(button, text, disable) {
 		if(button) {
 			if(text && text !== '') {
 				button.text(text);
 			}
 
-		    button.attr('disabled', disable);
-	    }
-	}
-
-	function openSignaling(socketConfig, forLibrary) {
-		/*console.log('openSignaling with config: ');
-
-		for (var item in socketConfig) {
-			console.log(item + ': ' + socketConfig[item]);
+			button.attr('disabled', disable);
 		}
-		console.log('forLibrary: ' + forLibrary);*/
-
-        var channel = socketConfig.channel || defaultChannel;
-
-        io.connect(SIGNALING_SERVER).emit('new-channel', {
-            channel: channel,
-            sender: userToken
-        });
-
-        /*console.log('io connecting to: ' + SIGNALING_SERVER);
-        console.log('Emitted new-channel event: ' + ' channel-' + channel + ' sender-' + userToken);*/
-
-        var socket = io.connect(SIGNALING_SERVER + channel);
-        //console.log('io connecting to: ' + SIGNALING_SERVER + channel);
-        socket.channel = channel;
-
-        socket.send = function (message) {
-
-        	//console.log('sender: ' + userToken + ' is sending event with message: ' + message);
-
-            socket.emit('message', {
-                sender: userToken,
-                data: message
-            });
-        	//console.log('sender: ' + userToken + ' sent message: ' + message);
-        };
-
-        socket.on('message', socketConfig.onmessage);
-        
-        if (forLibrary) {
-            return socket;
-        } else{
-        	var connected = false;
-
-	        socket.on('connect', function () {
-	        	if (!connected) {
-	        		connected = true;
-		        	//console.log('connected message received.');
-
-		            if (socketConfig.callback) socketConfig.callback(socket);
-
-		        	setTimeout(checkForSetup, 3000);
-	        	}
-	        });
-        }
-    }
-
-    function checkForSetup() {
-		var ableToSetup = $('#ableToSetup').attr('value');
-		//console.log('ableToSetup:' + ableToSetup);
-    	if (!confOnGoing && ableToSetup == "true") {
-    		confOnGoing = true;
-    		setup();
-    	}
-    }
-
-    function setUserToken(userToken) {
-
-    	var loginUser = window.user;
-		//console.log('loginUser: ' + loginUser);
-		if (loginUser && loginUser._id && loginUser._id !== '') {
-			userToken = loginUser.username + '-' + loginUser._id;
-		}
-
-		return userToken;
-    }
-
-	function captureUserMedia(callback) {
-
-	    var video = $('<video/>').attr('autoplay', true).attr('controls', true);
-
-        addVideo(video, container);
-
-	    getUserMedia({
-	        video: video.get(0),
-	        onsuccess: function (stream) {
-	            confConfig.attachStream = stream;
-	            video.attr('muted', true);
-
-	            callback();
-	        }
-	    });
 	}
 
 	function addVideo(video, container) {
 
 		video.attr('height', '100%').attr('width', '100%');
 
-        var videoBox = $('<div/>').attr('class', 'box photo col2 masonry-brick');
-        video.appendTo(videoBox);
-	    videoBox.appendTo(container);
+		var videoBox = $('<div/>').attr('class', 'box photo col2 masonry-brick');
+		video.appendTo(videoBox);
+		videoBox.appendTo(container);
 
-	    container.masonry('appended', videoBox);
+		container.masonry('appended', videoBox);
 	}
 
 });

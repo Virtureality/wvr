@@ -18,6 +18,9 @@
 			<input id="mname" type="hidden" name="mname" value="{{$stateParams.mname}}" />
 			<input id="user" type="hidden" name="user" value="{{global.user.name}}-{{global.user._id}}" />
 			<input id="user" type="hidden" name="global.user" value="{{global.user}}" />
+
+			<input id="ableToSetup" type="hidden" name="ableToSetup" value="true" />
+
 			<div id="container" class="clearfix masonry">
 			  
 			    <div class="box photo col2 masonry-brick">
@@ -45,12 +48,8 @@
 
 	<script type="text/javascript" src="/wvr/assets/js/mit/masonry.js"></script>
 	<!--  -->
-	<!-- Conferencing -->
-	<!-- <script type="text/javascript" src="/wvr/assets/js/mit/lib/firebase.js"></script> -->
 	<script type="text/javascript" src="/wvr/assets/js/mit/lib/socket.io.js"></script>
-	<script type="text/javascript" src="/wvr/assets/js/mit/lib/RTCPeerConnection-v1.5.js"></script>
-	<script type="text/javascript" src="/wvr/assets/js/mit/lib/conference.js"></script>
-	<script type="text/javascript" src="/wvr/assets/js/mit/lib/data-connection.js"></script>
+	<script type="text/javascript" src="/wvr/assets/js/mit/lib/RTCMultiConnection.js"></script>
 
 	<script type="text/javascript" src="/wvr/assets/js/mit/mit.js"></script>
 </div>
