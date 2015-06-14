@@ -5,163 +5,193 @@ $(function(){
 	//var SIGNALING_SERVER = 'http://192.168.0.109:8888/';
 	var defaultChannel = 'wvrmit';
 
-	var confOnGoing = false;
-	var confJoined = false;
 	var wvrmitConnection;
-	//var wvrmitDataConnection;
 
 	var actionArea = $('#action-area');
 	var actionButton = $('#action-button');
 	var container = $('#container');
 
-	watch();
+	setTimeout(startWatching, 1000);
 
-	function watch() {
+	function startWatching() {
 
-		setTimeout(doWatch, 1000);
+		var mname = $('#mname').attr('value') || 'Anonymous';
 
-		function doWatch() {
+		setButton(actionButton, 'Watching ...', true);
 
-			startWatching();
+		var userID = getUserID();
 
-			setButton(actionButton, 'Watching ...', true);
+		wvrmitConnection = new RTCMultiConnection(defaultChannel);
 
-		}
+		wvrmitConnection.userid = userID;
 
-		function startWatching() {
+		wvrmitConnection.openSignalingChannel = function (config) {
+			//var channel = config.channel || defaultChannel;
+			var channel = config.channel || this.channel;
+			var sender = userID;
 
-			var userID = getUserID();
+			io.connect(SIGNALING_SERVER).emit('new-channel', {
+				channel: channel,
+				sender: sender
+			});
 
-			wvrmitConnection = new RTCMultiConnection('wvrmit');
+			var socket = io.connect(SIGNALING_SERVER + channel);
+			socket.channel = channel;
 
-			wvrmitConnection.userid = userID;
+			socket.send = function (message) {
 
-			wvrmitConnection.openSignalingChannel = function (config) {
-				var channel = config.channel || defaultChannel;
-
-				io.connect(SIGNALING_SERVER).emit('new-channel', {
-					channel: channel,
-					sender: userID
-				});
-
-				var socket = io.connect(SIGNALING_SERVER + channel);
-				socket.channel = channel;
-
-				socket.send = function (message) {
-
-					socket.emit('message', {
-						sender: userID,
-						data: message
-					});
-				};
-
-				socket.on('message', config.onmessage);
-
-				var connected = false;
-
-				socket.on('connect', function () {
-					if (!connected) {
-						connected = true;
-
-						if (config.callback) config.callback(socket);
-
-						setTimeout(checkForSetup, 3000);
-					}
+				socket.emit('message', {
+					sender: sender,
+					data: message
 				});
 			};
 
-			wvrmitConnection.onstatechange = function(state) {
-				// state.userid == 'target-userid' || 'browser'
-				// state.extra  == 'target-user-extra-data' || {}
-				// state.name  == 'short name'
-				// state.reason == 'longer description'
+			socket.on('message', config.onmessage);
 
-				// fetching-usermedia
-				// usermedia-fetched
+			var connected = false;
 
-				// detecting-room-presence
-				// room-not-available
-				// room-available
+			socket.on('connect', function () {
+				if (!connected) {
+					connected = true;
 
-				// connecting-with-initiator
-				// connected-with-initiator
+					if (config.callback) config.callback(socket);
 
-				// failed---has reason
-
-				// request-accepted
-				// request-rejected
-
-				if(state.name == 'request-accepted') {
-					alert(state.reason);
-					setButton(actionButton, 'Conference Ongoing...', true);
-					initDataConnection();
+					setTimeout(checkForSetup, 3000);
 				}
+			});
+		};
 
-				if(state.name == 'request-rejected') {
-					alert(state.reason);
-					enableRequestToJoin();
-				}
+		wvrmitConnection.onstatechange = function(state) {
+			// state.userid == 'target-userid' || 'browser'
+			// state.extra  == 'target-user-extra-data' || {}
+			// state.name  == 'short name'
+			// state.reason == 'longer description'
 
-				if(state.name == 'failed---has reason') {
-					alert(state.reason);
-				}
-			};
+			// fetching-usermedia
+			// usermedia-fetched
 
-			wvrmitConnection.onstream = function (event) {
+			// detecting-room-presence
+			// room-not-available
+			// room-available
 
-				// e.mediaElement (audio or video element)
-				// e.stream     native MediaStream object
-				// e.streamid   unique identifier of the stream; synced among all users!
-				// e.session    {audio: true, video: true, screen: true}
-				// e.blobURL    blob-URI
-				// e.type       "local" or "remote"
-				// e.extra
-				// e.userid      the person who shared stream with you!
+			// connecting-with-initiator
+			// connected-with-initiator
 
-				// e.isVideo ---- if it is a  Video stream
-				// e.isAudio ---- if it is an Audio stream
-				// e.isScreen --- if it is screen-sharing stream
+			// failed---has reason
 
-				if(event.isVideo && (event.type == 'local' || event.userid != this.userid)) {
-					var video = $(event.mediaElement).attr('id', event.streamid).attr('controls', true);
-					addVideo(video, container);
-				}
-			};
+			// request-accepted
+			// request-rejected
 
-			wvrmitConnection.onstreamended = function (e) {
-				//var video = document.getElementById(stream.id);
-				var video = document.getElementById(e.streamid);
-				if (video) video.parentNode.parentNode.removeChild(video.parentNode);
-			};
+			console.log('wvrmitConnection status changed: ' + state.name);
 
-			//wvrmitConnection.transmitRoomOnce = true;
-			wvrmitConnection.onNewSession = function (session) {
+			if(state.name == 'room-not-available') {
+				setButton(actionButton, state.reason, true);
+				wvrmitConnection.connect(mname);
+			}
 
-				console.log('onNewSession ... ');
+			if(state.name == 'room-available') {
+				enableRequestToJoin();
+			}
 
-				// session.userid
-				// session.sessionid
-				// session.extra
-				// session.session i.e. {audio,video,screen,data}
+			if(state.name == 'request-accepted') {
+				alert(state.reason);
+				setButton(actionButton, 'Conference Ongoing...', true);
+			}
 
-				var mname = $('#mname').attr('value') || 'Anonymous';
+			if(state.name == 'request-rejected') {
+				alert(state.reason);
+				enableRequestToJoin();
+			}
 
-				if (session.sessionid == mname && session.userid != this.userid && !confJoined) {
-					confOnGoing = true;
+			if(state.name == 'failed---has reason') {
+				alert(state.reason);
+			}
+		};
 
-					setButton(actionButton, 'Joining ...', true);
+		wvrmitConnection.onstream = function (event) {
 
-					wvrmitConnection.join(mname);
-					//initDataConnection();
+			// e.mediaElement (audio or video element)
+			// e.stream     native MediaStream object
+			// e.streamid   unique identifier of the stream; synced among all users!
+			// e.session    {audio: true, video: true, screen: true}
+			// e.blobURL    blob-URI
+			// e.type       "local" or "remote"
+			// e.extra
+			// e.userid      the person who shared stream with you!
 
-					confJoined = true;
-				}
+			// e.isVideo ---- if it is a  Video stream
+			// e.isAudio ---- if it is an Audio stream
+			// e.isScreen --- if it is screen-sharing stream
 
-			};
+			if(event.isVideo && (event.type == 'local' || event.userid != this.userid)) {
+				var video = $(event.mediaElement).attr('id', event.streamid).attr('controls', true);
+				addVideo(video, container);
+			}
+		};
 
-			wvrmitConnection.connect();
+		wvrmitConnection.onstreamended = function (e) {
+			//var video = document.getElementById(stream.id);
+			var video = document.getElementById(e.streamid);
+			if (video) video.parentNode.parentNode.removeChild(video.parentNode);
+		};
+
+		//wvrmitConnection.transmitRoomOnce = true;
+		wvrmitConnection.onNewSession = function (session) {
+
+			//console.log('onNewSession: ' + session.sessionid);
+
+			// session.userid
+			// session.sessionid
+			// session.extra
+			// session.session i.e. {audio,video,screen,data}
+
+			if (session.sessionid == mname) {
+				setButton(actionButton, 'Joining ...', true);
+
+				//wvrmitConnection.join(mname);
+				wvrmitConnection.join(session);
+			}
 
 		};
+
+		var messageArea = $('#message-area');
+
+		var sendMsgButton = $('#send-msg-btn');
+
+		sendMsgButton.on('click', function() {
+			var msgBody = $('#message-text').val() || '';
+			if (msgBody && msgBody !== '') {
+				//console.log('Sending message: ' + msgBody);
+				wvrmitConnection.send(msgBody);
+				messageArea.append($('<div>').append('Me: ' + msgBody));
+			} else{
+				alert('Please input message content correctly!');
+			}
+		});
+
+		wvrmitConnection.onopen = function(e) {
+			// e.userid
+			// e.extra
+
+			//console.log('Data connection opened between you and: ' + e.userid);
+
+			setButton(sendMsgButton, 'Send', false);
+		}
+		wvrmitConnection.onmessage = function(e) {
+			// e.data     ---- translated text
+			// e.original ---- original text
+			// e.userid
+			// e.extra
+
+			//console.log('onmessage: ' + e);
+
+			messageArea.append($('<div>').append(e.userid + ': ' + e.data));
+		}
+
+		wvrmitConnection.fakeDataChannels = true;
+
+		wvrmitConnection.connect();
+		//wvrmitConnection.connect(mname);
 
 	}
 
@@ -179,7 +209,7 @@ $(function(){
 	function checkForSetup() {
 		var ableToSetup = $('#ableToSetup').attr('value');
 
-		if (!confOnGoing && ableToSetup == "true") {
+		if (ableToSetup == "true") {
 			setup();
 		}
 	}
@@ -196,14 +226,6 @@ $(function(){
 
 			var mname = $('#mname').attr('value') || 'Anonymous';
 
-			setupConf(mname);
-
-			actionButton.unbind('click', doSetup);
-
-		}
-
-		function setupConf(mname) {
-
 			wvrmitConnection.isInitiator = true;
 			wvrmitConnection.onRequest = function(request) {
 				var acceptDecision = confirm(request.userid + ' is requesting to join, would you like to accept?');
@@ -215,15 +237,21 @@ $(function(){
 					wvrmitConnection.reject(request);
 				}
 			};
+			wvrmitConnection.session = {
+				audio: true,
+				video: true,
+				data:  true
+			};
+			wvrmitConnection.maxParticipantsAllowed = 256;
 			wvrmitConnection.open(mname);
 
 			enableShare(mname);
 
 			setButton(actionButton, 'Conference Ongoing...', true);
 
-			initDataConnection();
 
-			confJoined = true;
+			actionButton.unbind('click', doSetup);
+
 		}
 
 	}
@@ -245,167 +273,6 @@ $(function(){
 			actionButton.unbind('click', requestToJoinHandler);
 
 		}
-	}
-
-	function initDataConnection(){
-
-		var userID = getUserID();
-
-		var messageArea = $('#message-area');
-
-		var sendMsgButton = $('#send-msg-btn');
-
-		wvrmitConnection.language = 'en'; // prefer English
-		wvrmitConnection.autoTranslateText = true;
-
-		wvrmitConnection.onCustomMessage = function(message) {
-			messageArea.append($('<div>').append(message));
-		};
-
-		sendMsgButton.on('click', function() {
-			var msgBody = $('#message-text').val() || '';
-			if (msgBody && msgBody !== '') {
-				wvrmitConnection.sendCustomMessage(userID + ':' + msgBody);
-				messageArea.append($('<div>').append('Me: ' + msgBody));
-			} else{
-				alert('Please input message content correctly!');
-			}
-		});
-		setButton(sendMsgButton, 'Send', false);
-
-		/// Warning: send() and onmessage() as below doesn't work, why?
-		/*var userID = getUserID();
-
-		var messageArea = $('#message-area');
-
-		var sendMsgButton = $('#send-msg-btn');
-
-		//var channel = config.channel || defaultChannel;
-		var channel = 'wvrmit' + 'data';
-
-		wvrmitDataConnection = new RTCMultiConnection('wvrmit' + 'data');
-		wvrmitDataConnection.openSignalingChannel = function (config) {
-
-			io.connect(SIGNALING_SERVER).emit('new-channel', {
-				channel: channel,
-				sender: userID
-			});
-
-			var socket = io.connect(SIGNALING_SERVER + channel);
-			socket.channel = channel;
-
-			socket.send = function (message) {
-
-				socket.emit('message', {
-					sender: userID,
-					data: message
-				});
-			};
-
-			socket.on('message', config.onmessage);
-
-			var connected = false;
-
-			socket.on('connect', function () {
-				if (!connected) {
-					console.log('wvrmitDataConnection socket connected!');
-
-					var mname = $('#mname').attr('value') || 'Anonymous';
-					wvrmitDataConnection.open(mname);
-					setButton(sendMsgButton, 'Opening ...', true);
-					connected = true;
-
-					if (config.callback) config.callback(socket);
-				}
-			});
-		};
-		wvrmitDataConnection.session = {
-			data: true
-		};
-		wvrmitDataConnection.onstatechange = function(state) {
-			// state.userid == 'target-userid' || 'browser'
-			// state.extra  == 'target-user-extra-data' || {}
-			// state.name  == 'short name'
-			// state.reason == 'longer description'
-
-			// fetching-usermedia
-			// usermedia-fetched
-
-			// detecting-room-presence
-			// room-not-available
-			// room-available
-
-			// connecting-with-initiator
-			// connected-with-initiator
-
-			// failed---has reason
-
-			// request-accepted
-			// request-rejected
-
-			console.log('wvrmitDataConnection status: ' + state.name);
-		};
-
-		wvrmitDataConnection.language = 'en'; // prefer English
-		wvrmitDataConnection.autoTranslateText = true;
-
-		wvrmitDataConnection.onopen = function() {
-			sendMsgButton.on('click', function() {
-				var msgBody = $('#message-text').val() || '';
-				if (msgBody && msgBody !== '') {
-					//console.log('Sending message: ' + msgBody);
-					wvrmitDataConnection.send({msg: msgBody});
-					//wvrmitConnection.send(msgBody);
-					//wvrmitConnection.sendCustomMessage(msgBody);
-					messageArea.append($('<div>').append('Me: ' + msgBody));
-				} else{
-					alert('Please input message content correctly!');
-				}
-			});
-			setButton(sendMsgButton, 'Send', false);
-			console.log('wvrmitDataConnection opened.');
-		}
-		wvrmitDataConnection.onmessage = function(e) {
-			console.log('onmessage: ' + e);
-			// e.data     ---- translated text
-			// e.original ---- original text
-			// e.userid
-			// e.extra
-
-			//console.log(' message received from ' + userid + ': ' + message);
-			/!*userid = userid.substring(0, userid.lastIndexOf('-'));
-			messageArea.append($('<div>').append(userid + ': ' + message));*!/
-			messageArea.append($('<div>').append(e.userid + ': ' + e.data));
-		};
-		/!*wvrmitConnection.onCustomMessage = function(message) {
-			// e.data     ---- translated text
-			// e.original ---- original text
-			// e.userid
-			// e.extra
-
-			//console.log(' message received from ' + userid + ': ' + message);
-			/!*userid = userid.substring(0, userid.lastIndexOf('-'));
-			 messageArea.append($('<div>').append(userid + ': ' + message));*!/
-			messageArea.append($('<div>').append(message));
-		};*!/
-		/!*sendMsgButton.on('click', function() {
-			var msgBody = $('#message-text').val() || '';
-			if (msgBody && msgBody !== '') {
-				//console.log('Sending message: ' + msgBody);
-				wvrmitDataConnection.send({msg: msgBody});
-				//wvrmitConnection.send(msgBody);
-				//wvrmitConnection.sendCustomMessage(msgBody);
-				messageArea.append($('<div>').append('Me: ' + msgBody));
-			} else{
-				alert('Please input message content correctly!');
-			}
-		});*!/
-
-		/!*setButton(sendMsgButton, 'Connecting ...', true);
-		wvrmitDataConnection.connect();*!/
-
-		//setButton(sendMsgButton, 'Initializing ...', true);*/
-
 	}
 
 	function enableShare(mname){
