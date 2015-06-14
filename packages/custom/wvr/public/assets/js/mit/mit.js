@@ -188,7 +188,7 @@ $(function(){
 			messageArea.append($('<div>').append(e.userid + ': ' + e.data));
 		}
 
-		wvrmitConnection.fakeDataChannels = true;
+		//wvrmitConnection.fakeDataChannels = true;
 
 		wvrmitConnection.connect();
 		//wvrmitConnection.connect(mname);
