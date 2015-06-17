@@ -1,1 +1,1 @@
-web: ./node_modules/.bin/grunt --force
+web: ./node_modules/.bin/forever -m 5 server.js
