@@ -2,9 +2,10 @@ $(function(){
 
 	var roomsContainer = $('#meetingsContainer');
 
-	var SIGNALING_SERVER = 'http://localhost:8888/';
-	/*var SIGNALING_SERVER = 'https://webrtc-signaling.nodejitsu.com:443/';*/
-	//var SIGNALING_SERVER = 'http://192.168.0.109:8888/';
+	//console.log('window.signalingServer: ' + window.signalingServer);
+	var SIGNALING_SERVER = window.signalingServer || 'http://localhost:8888/';
+	/*var SIGNALING_SERVER = window.signalingServer || 'https://webrtc-signaling.nodejitsu.com:443/';*/
+	//var SIGNALING_SERVER = window.signalingServer || 'http://192.168.0.109:8888/';
 
 	var wvrmitConnection = new RTCMultiConnection('wvrmit');
 

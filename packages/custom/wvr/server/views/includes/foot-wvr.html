@@ -2,6 +2,12 @@
   <script type="text/javascript" src="{{file}}"></script>
 {% endfor %}
 
+{% if (process.env.SIGNALING_SERVER) %}
+<script>
+  var signalingServer = '{{process.env.SIGNALING_SERVER}}';
+</script>
+{% endif %}
+
 {% if (process.env.NODE_ENV == 'development') %}
   <!-- Livereload script rendered -->
   <!-- Disabling livereload due to - https://github.com/linnovate/mean/issues/929

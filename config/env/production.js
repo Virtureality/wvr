@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = {
-  db: 'mongodb://' + (process.env.DB_PORT_27017_TCP_ADDR || 'localhost') + '/wvr-prod',
+  db: 'mongodb://wvr:wvr11$@proximus.modulusmongo.net:27017/Igu9zyzo',
   /**
    * Database options that will be passed directly to mongoose.connect
    * Below are some examples.
