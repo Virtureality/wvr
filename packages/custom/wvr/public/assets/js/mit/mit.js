@@ -76,7 +76,7 @@ $(function(){
 
 			config.onopen && setTimeout(config.onopen, 1);
 			socket.onDisconnect().remove();
-			var connectedRef = new Firebase("https://chat.firebaseIO.com/.info/connected");
+			/*var connectedRef = new Firebase("https://chat.firebaseIO.com/.info/connected");
 			connectedRef.on("value", function(snap) {
 				if (snap.val() === true) {
 					//alert("connected");
@@ -86,17 +86,17 @@ $(function(){
 					//alert("not connected");
 					console.log('Disconnected from Firebase.');
 				}
-			});
-			/*socket.child('.info/connected').on('value', function(connectedSnap) {
+			});*/
+			socket.child('.info/connected').on('value', function(connectedSnap) {
 				if (connectedSnap.val() === true) {
-					/!* we're connected! *!/
+					/* we're connected! */
 					console.log('Connected to Firebase.');
 					setTimeout(checkForSetup, 3000);
 				} else {
-					/!* we're disconnected! *!/
+					/* we're disconnected! */
 					console.log('Disconnected from Firebase.');
 				}
-			});*/
+			});
 			return socket;
 		};
 
