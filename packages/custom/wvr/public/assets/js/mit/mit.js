@@ -25,7 +25,7 @@ $(function(){
 
 		wvrmitConnection.userid = userID;
 
-		wvrmitConnection.openSignalingChannel = function (config) {
+		/*wvrmitConnection.openSignalingChannel = function (config) {
 			//var channel = config.channel || defaultChannel;
 			var channel = config.channel || this.channel;
 			var sender = userID;
@@ -59,6 +59,45 @@ $(function(){
 					setTimeout(checkForSetup, 3000);
 				}
 			});
+		};*/
+		wvrmitConnection.openSignalingChannel = function (config) {
+			config.channel = config.channel || this.channel;
+
+			var socket = new Firebase('https://chat.firebaseIO.com/' + config.channel);
+			socket.channel = config.channel;
+
+			socket.on('child_added', function (data) {
+				config.onmessage(data.val());
+			});
+
+			socket.send = function(data) {
+				this.push(data);
+			};
+
+			config.onopen && setTimeout(config.onopen, 1);
+			socket.onDisconnect().remove();
+			var connectedRef = new Firebase("https://chat.firebaseIO.com/.info/connected");
+			connectedRef.on("value", function(snap) {
+				if (snap.val() === true) {
+					//alert("connected");
+					console.log('Connected to Firebase.');
+					setTimeout(checkForSetup, 3000);
+				} else {
+					//alert("not connected");
+					console.log('Disconnected from Firebase.');
+				}
+			});
+			/*socket.child('.info/connected').on('value', function(connectedSnap) {
+				if (connectedSnap.val() === true) {
+					/!* we're connected! *!/
+					console.log('Connected to Firebase.');
+					setTimeout(checkForSetup, 3000);
+				} else {
+					/!* we're disconnected! *!/
+					console.log('Disconnected from Firebase.');
+				}
+			});*/
+			return socket;
 		};
 
 		wvrmitConnection.onstatechange = function(state) {

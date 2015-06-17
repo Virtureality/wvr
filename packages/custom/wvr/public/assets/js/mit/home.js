@@ -9,7 +9,7 @@ $(function(){
 
 	var wvrmitConnection = new RTCMultiConnection('wvrmit');
 
-	wvrmitConnection.openSignalingChannel = function (config) {
+	/*wvrmitConnection.openSignalingChannel = function (config) {
 
 		var channel = config.channel || this.channel;
 		var sender = Math.round(Math.random() * 999999999) + 999999999;
@@ -34,6 +34,24 @@ $(function(){
 		};
 
 		socket.on('message', config.onmessage);
+	};*/
+	wvrmitConnection.openSignalingChannel = function (config) {
+		config.channel = config.channel || this.channel;
+
+		var socket = new Firebase('https://chat.firebaseIO.com/' + config.channel);
+		socket.channel = config.channel;
+
+		socket.on('child_added', function (data) {
+			config.onmessage(data.val());
+		});
+
+		socket.send = function(data) {
+			this.push(data);
+		};
+
+		config.onopen && setTimeout(config.onopen, 1);
+		socket.onDisconnect().remove();
+		return socket;
 	};
 
 	wvrmitConnection.onNewSession = function (session) {
