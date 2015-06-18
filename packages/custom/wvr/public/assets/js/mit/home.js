@@ -9,7 +9,7 @@ $(function(){
 
 	var wvrmitConnection = new RTCMultiConnection('wvrmit');
 
-	/*wvrmitConnection.openSignalingChannel = function (config) {
+	wvrmitConnection.openSignalingChannel = function (config) {
 
 		var channel = config.channel || this.channel;
 		var sender = Math.round(Math.random() * 999999999) + 999999999;
@@ -34,7 +34,7 @@ $(function(){
 		};
 
 		socket.on('message', config.onmessage);
-	};*/
+	};
 	/*wvrmitConnection.openSignalingChannel = function (config) {
 		config.channel = config.channel || this.channel;
 

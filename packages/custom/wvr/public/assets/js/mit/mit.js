@@ -28,10 +28,10 @@ $(function(){
 
 		wvrmitConnection.userid = userID;
 
-		/*wvrmitConnection.openSignalingChannel = function (config) {
-			//var channel = config.channel || defaultChannel;
+		wvrmitConnection.openSignalingChannel = function (config) {
+
 			var channel = config.channel || this.channel;
-			var sender = userID;
+			var sender = Math.round(Math.random() * 999999999) + 999999999;
 
 			io.connect(SIGNALING_SERVER).emit('new-channel', {
 				channel: channel,
@@ -41,8 +41,11 @@ $(function(){
 			var socket = io.connect(SIGNALING_SERVER + channel);
 			socket.channel = channel;
 
-			socket.send = function (message) {
+			socket.on('connect', function () {
+				if (config.callback) config.callback(socket);
+			});
 
+			socket.send = function (message) {
 				socket.emit('message', {
 					sender: sender,
 					data: message
@@ -50,19 +53,7 @@ $(function(){
 			};
 
 			socket.on('message', config.onmessage);
-
-			var connected = false;
-
-			socket.on('connect', function () {
-				if (!connected) {
-					connected = true;
-
-					if (config.callback) config.callback(socket);
-
-					setTimeout(checkForSetup, 3000);
-				}
-			});
-		};*/
+		};
 		/*wvrmitConnection.openSignalingChannel = function (config) {
 			config.channel = config.channel || this.channel;
 
