@@ -7,6 +7,9 @@ $(function(){
 
 	var wvrmitConnection;
 
+	var detectingRoom = false;
+	var roomDetected = false;
+
 	var actionArea = $('#action-area');
 	var actionButton = $('#action-button');
 	var container = $('#container');
@@ -60,7 +63,7 @@ $(function(){
 				}
 			});
 		};*/
-		wvrmitConnection.openSignalingChannel = function (config) {
+		/*wvrmitConnection.openSignalingChannel = function (config) {
 			config.channel = config.channel || this.channel;
 
 			var socket = new Firebase('https://chat.firebaseIO.com/' + config.channel);
@@ -76,7 +79,7 @@ $(function(){
 
 			config.onopen && setTimeout(config.onopen, 1);
 			socket.onDisconnect().remove();
-			/*var connectedRef = new Firebase("https://chat.firebaseIO.com/.info/connected");
+			/!*var connectedRef = new Firebase("https://chat.firebaseIO.com/.info/connected");
 			connectedRef.on("value", function(snap) {
 				if (snap.val() === true) {
 					//alert("connected");
@@ -86,19 +89,19 @@ $(function(){
 					//alert("not connected");
 					console.log('Disconnected from Firebase.');
 				}
-			});*/
+			});*!/
 			socket.child('.info/connected').on('value', function(connectedSnap) {
 				if (connectedSnap.val() === true) {
-					/* we're connected! */
+					/!* we're connected! *!/
 					console.log('Connected to Firebase.');
 					setTimeout(checkForSetup, 3000);
 				} else {
-					/* we're disconnected! */
+					/!* we're disconnected! *!/
 					console.log('Disconnected from Firebase.');
 				}
 			});
 			return socket;
-		};
+		};*/
 
 		wvrmitConnection.onstatechange = function(state) {
 			// state.userid == 'target-userid' || 'browser'
@@ -184,12 +187,18 @@ $(function(){
 			// session.extra
 			// session.session i.e. {audio,video,screen,data}
 
+			detectingRoom = true;
+			setButton(actionButton, 'Checking ...', true);
+
 			if (session.sessionid == mname) {
+				roomDetected = true;
 				setButton(actionButton, 'Joining ...', true);
 
 				//wvrmitConnection.join(mname);
 				wvrmitConnection.join(session);
 			}
+
+			detectingRoom = false;
 
 		};
 
@@ -232,6 +241,8 @@ $(function(){
 		wvrmitConnection.connect();
 		//wvrmitConnection.connect(mname);
 
+		setTimeout(checkForSetup, 3000);
+
 	}
 
 	function getUserID() {
@@ -248,7 +259,7 @@ $(function(){
 	function checkForSetup() {
 		var ableToSetup = $('#ableToSetup').attr('value');
 
-		if (ableToSetup == "true") {
+		if (ableToSetup == "true" && !detectingRoom &&!roomDetected) {
 			setup();
 		}
 	}

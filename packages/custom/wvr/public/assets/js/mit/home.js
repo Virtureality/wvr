@@ -35,7 +35,7 @@ $(function(){
 
 		socket.on('message', config.onmessage);
 	};*/
-	wvrmitConnection.openSignalingChannel = function (config) {
+	/*wvrmitConnection.openSignalingChannel = function (config) {
 		config.channel = config.channel || this.channel;
 
 		var socket = new Firebase('https://chat.firebaseIO.com/' + config.channel);
@@ -52,7 +52,7 @@ $(function(){
 		config.onopen && setTimeout(config.onopen, 1);
 		socket.onDisconnect().remove();
 		return socket;
-	};
+	};*/
 
 	wvrmitConnection.onNewSession = function (session) {
 
@@ -86,11 +86,13 @@ $(function(){
 		// e.session.session -- {audio:true, video:true}
 
 		//console.log('Session: ' + e.session.sessionid + ' closed!');
+		//console.log('Before deleting[' + e.session.sessionid + '] wvrmitConnection.sessionDescriptions: ' + JSON.stringify(wvrmitConnection.sessionDescriptions));
 
 		if(wvrmitConnection.sessionDescriptions[e.session.sessionid]) {
 			//console.log('Deleting session ...');
 			delete wvrmitConnection.sessionDescriptions[e.session.sessionid];
 		}
+		//console.log('After deleting[' + e.session.sessionid + '] wvrmitConnection.sessionDescriptions: ' + JSON.stringify(wvrmitConnection.sessionDescriptions));
 
 		var roomItem = document.getElementById(e.session.sessionid);
 		if (roomItem) roomItem.parentNode.parentNode.removeChild(roomItem.parentNode);
@@ -101,7 +103,13 @@ $(function(){
 	$('#setup-new-meeting').on('click', function() {
 		var newMeetingName = $('#new-name').val() || 'Anonymous';
 
-		if (wvrmitConnection.sessionDescriptions[newMeetingName]) {
+		/*if (wvrmitConnection.sessionDescriptions[newMeetingName]) {/// Warning: Doesn't work, since wvrmitConnection.sessionDescriptions[newMeetingName] would be true even if the session was actually deleted during onSessionClosed.
+			alert(newMeetingName + " already there! Please just find it and join...");
+			return;
+		} else {
+			window.open('#!/mit/' + newMeetingName, '_blank');
+		}*/
+		if (document.getElementById(newMeetingName)) {
 			alert(newMeetingName + " already there! Please just find it and join...");
 			return;
 		} else {
