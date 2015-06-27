@@ -1,7 +1,8 @@
 'use strict';
 
 module.exports = {
-  db: 'mongodb://wvr:wvr11$@proximus.modulusmongo.net:27017/Igu9zyzo',
+  db: 'mongodb://' + process.env.MONGODB_URI || 'wvr:wvr11$@ds031751.mongolab.com:31751/wvr',
+  //db: 'mongodb://' + process.env.MONGODB_URI || 'wvr:wvr11$@proximus.modulusmongo.net:27017/Igu9zyzo',
   /**
    * Database options that will be passed directly to mongoose.connect
    * Below are some examples.
@@ -27,7 +28,7 @@ module.exports = {
     */
   },
   app: {
-    name: 'WVR - World Virtual Reality - Production'
+    name: 'WVR - World Virtual Reality'
   },
   facebook: {
     clientID: 'APP_ID',
