@@ -1,8 +1,9 @@
 $(function(){
 
-	var SIGNALING_SERVER = window.signalingServer || 'http://localhost:8888/';
+	/*var SIGNALING_SERVER = window.signalingServer || 'http://localhost:8888/';
 	//var SIGNALING_SERVER = window.signalingServer || '127.0.0.1:8888/';
-	//var SIGNALING_SERVER = window.signalingServer || 'http://192.168.0.109:8888/';
+	//var SIGNALING_SERVER = window.signalingServer || 'http://192.168.0.109:8888/';*/
+
 	var defaultChannel = 'wvrmit';
 
 	var wvrmitConnection;
@@ -28,71 +29,11 @@ $(function(){
 
 		wvrmitConnection.userid = userID;
 
-		wvrmitConnection.openSignalingChannel = function (config) {
-
-			var channel = config.channel || this.channel;
-			var sender = Math.round(Math.random() * 999999999) + 999999999;
-
-			io.connect(SIGNALING_SERVER).emit('new-channel', {
-				channel: channel,
-				sender: sender
-			});
-
-			var socket = io.connect(SIGNALING_SERVER + channel);
-			socket.channel = channel;
-
-			socket.on('connect', function () {
-				if (config.callback) config.callback(socket);
-			});
-
-			socket.send = function (message) {
-				socket.emit('message', {
-					sender: sender,
-					data: message
-				});
-			};
-
-			socket.on('message', config.onmessage);
-		};
-		/*wvrmitConnection.openSignalingChannel = function (config) {
-			config.channel = config.channel || this.channel;
-
-			var socket = new Firebase('https://chat.firebaseIO.com/' + config.channel);
-			socket.channel = config.channel;
-
-			socket.on('child_added', function (data) {
-				config.onmessage(data.val());
-			});
-
-			socket.send = function(data) {
-				this.push(data);
-			};
-
-			config.onopen && setTimeout(config.onopen, 1);
-			socket.onDisconnect().remove();
-			/!*var connectedRef = new Firebase("https://chat.firebaseIO.com/.info/connected");
-			connectedRef.on("value", function(snap) {
-				if (snap.val() === true) {
-					//alert("connected");
-					console.log('Connected to Firebase.');
-					setTimeout(checkForSetup, 3000);
-				} else {
-					//alert("not connected");
-					console.log('Disconnected from Firebase.');
-				}
-			});*!/
-			socket.child('.info/connected').on('value', function(connectedSnap) {
-				if (connectedSnap.val() === true) {
-					/!* we're connected! *!/
-					console.log('Connected to Firebase.');
-					setTimeout(checkForSetup, 3000);
-				} else {
-					/!* we're disconnected! *!/
-					console.log('Disconnected from Firebase.');
-				}
-			});
-			return socket;
-		};*/
+		if(window.openSignalingChannel) {
+			wvrmitConnection.openSignalingChannel = window.openSignalingChannel;
+		} else if(window.customSignaling && window.customSignaling === 'firebase' && window.signalingServer) {
+			wvrmitConnection.firebase = window.signalingServer;
+		}
 
 		wvrmitConnection.onstatechange = function(state) {
 			// state.userid == 'target-userid' || 'browser'

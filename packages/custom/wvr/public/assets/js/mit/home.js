@@ -2,57 +2,18 @@ $(function(){
 
 	var roomsContainer = $('#meetingsContainer');
 
-	//console.log('window.signalingServer: ' + window.signalingServer);
+	/*//console.log('window.signalingServer: ' + window.signalingServer);
 	var SIGNALING_SERVER = window.signalingServer || 'http://localhost:8888/';
-	/*var SIGNALING_SERVER = window.signalingServer || 'https://webrtc-signaling.nodejitsu.com:443/';*/
-	//var SIGNALING_SERVER = window.signalingServer || 'http://192.168.0.109:8888/';
+	/!*var SIGNALING_SERVER = window.signalingServer || 'https://webrtc-signaling.nodejitsu.com:443/';*!/
+	//var SIGNALING_SERVER = window.signalingServer || 'http://192.168.0.109:8888/';*/
 
 	var wvrmitConnection = new RTCMultiConnection('wvrmit');
 
-	wvrmitConnection.openSignalingChannel = function (config) {
-
-		var channel = config.channel || this.channel;
-		var sender = Math.round(Math.random() * 999999999) + 999999999;
-
-		io.connect(SIGNALING_SERVER).emit('new-channel', {
-			channel: channel,
-			sender: sender
-		});
-
-		var socket = io.connect(SIGNALING_SERVER + channel);
-		socket.channel = channel;
-
-		socket.on('connect', function () {
-			if (config.callback) config.callback(socket);
-		});
-
-		socket.send = function (message) {
-			socket.emit('message', {
-				sender: sender,
-				data: message
-			});
-		};
-
-		socket.on('message', config.onmessage);
-	};
-	/*wvrmitConnection.openSignalingChannel = function (config) {
-		config.channel = config.channel || this.channel;
-
-		var socket = new Firebase('https://chat.firebaseIO.com/' + config.channel);
-		socket.channel = config.channel;
-
-		socket.on('child_added', function (data) {
-			config.onmessage(data.val());
-		});
-
-		socket.send = function(data) {
-			this.push(data);
-		};
-
-		config.onopen && setTimeout(config.onopen, 1);
-		socket.onDisconnect().remove();
-		return socket;
-	};*/
+	if(window.openSignalingChannel) {
+		wvrmitConnection.openSignalingChannel = window.openSignalingChannel;
+	} else if(window.customSignaling && window.customSignaling === 'firebase' && window.signalingServer) {
+		wvrmitConnection.firebase = window.signalingServer;
+	}
 
 	wvrmitConnection.onNewSession = function (session) {
 
