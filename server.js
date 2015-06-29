@@ -1,5 +1,12 @@
 'use strict';
 
+if(process.env.NODE_TIME) {
+    require('nodetime').profile({
+        accountKey: 'aa640f628654195382f988e84393db8b225d0268',
+        appName: 'WVR - World Virtual Reality' + ' - ' + process.env.NODE_TIME
+    });
+}
+
 /*
 var cl = console.log;
 console.log = function(){
