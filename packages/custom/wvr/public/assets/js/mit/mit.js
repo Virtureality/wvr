@@ -1,15 +1,12 @@
 $(function(){
 
-	/*var SIGNALING_SERVER = window.signalingServer || 'http://localhost:8888/';
-	//var SIGNALING_SERVER = window.signalingServer || '127.0.0.1:8888/';
-	//var SIGNALING_SERVER = window.signalingServer || 'http://192.168.0.109:8888/';*/
-
 	var defaultChannel = 'wvrmit';
 
 	var wvrmitConnection;
 
 	var detectingRoom = false;
 	var roomDetected = false;
+	var joinDisabled = false;
 
 	var actionArea = $('#action-area');
 	var actionButton = $('#action-button');
@@ -56,7 +53,7 @@ $(function(){
 			// request-accepted
 			// request-rejected
 
-			console.log('wvrmitConnection status changed: ' + state.name);
+			//console.log('wvrmitConnection status changed: ' + state.name);
 
 			if(state.name == 'room-not-available') {
 				setButton(actionButton, state.reason, true);
@@ -64,7 +61,9 @@ $(function(){
 			}
 
 			if(state.name == 'room-available') {
-				enableRequestToJoin();
+				if(!joinDisabled) {
+					enableRequestToJoin();
+				}
 			}
 
 			if(state.name == 'request-accepted') {
@@ -74,7 +73,11 @@ $(function(){
 
 			if(state.name == 'request-rejected') {
 				alert(state.reason);
-				enableRequestToJoin();
+
+				joinDisabled = false;
+				if(!joinDisabled) {
+					enableRequestToJoin(true);
+				}
 			}
 
 			if(state.name == 'failed---has reason') {
@@ -101,6 +104,7 @@ $(function(){
 				var video = $(event.mediaElement).attr('id', event.streamid).attr('controls', true);
 				addVideo(video, container);
 			}
+
 		};
 
 		wvrmitConnection.onstreamended = function (e) {
@@ -124,10 +128,10 @@ $(function(){
 
 			if (session.sessionid == mname) {
 				roomDetected = true;
-				setButton(actionButton, 'Joining ...', true);
 
-				//wvrmitConnection.join(mname);
-				wvrmitConnection.join(session);
+				if(!joinDisabled) {
+					enableRequestToJoin();
+				}
 			}
 
 			detectingRoom = false;
@@ -173,6 +177,8 @@ $(function(){
 		wvrmitConnection.connect();
 		//wvrmitConnection.connect(mname);
 
+		enableShare(mname);
+
 		setTimeout(checkForSetup, 3000);
 
 	}
@@ -204,6 +210,8 @@ $(function(){
 
 		function doSetup() {
 
+			actionButton.unbind('click', doSetup);
+
 			setButton(actionButton, 'Setting up ...', true);
 
 			var mname = $('#mname').attr('value') || 'Anonymous';
@@ -227,32 +235,31 @@ $(function(){
 			wvrmitConnection.maxParticipantsAllowed = 256;
 			wvrmitConnection.open(mname);
 
-			enableShare(mname);
-
 			setButton(actionButton, 'Conference Ongoing...', true);
-
-
-			actionButton.unbind('click', doSetup);
 
 		}
 
 	}
 
-	function enableRequestToJoin() {
+	function enableRequestToJoin(retry) {
 
-		wvrmitConnection.dontCaptureUserMedia = true;
+		if(retry) {
+			wvrmitConnection.dontCaptureUserMedia = true;
+		}
 
 		setButton(actionButton, 'Request to Join', false);
 
 		actionButton.bind('click', requestToJoinHandler);
 
 		function requestToJoinHandler() {
+
+			joinDisabled = true;
+			actionButton.unbind('click', requestToJoinHandler);
+
 			var mname = $('#mname').attr('value') || 'Anonymous';
 
-			setButton(actionButton, 'Requesting to join ...', true);
 			wvrmitConnection.join(mname);
-
-			actionButton.unbind('click', requestToJoinHandler);
+			setButton(actionButton, 'Requesting to join ...', true);
 
 		}
 	}
