@@ -17,6 +17,14 @@ var FacilitySchema = new Schema({
     type: {type: String, enum: ['Generic', 'Physical', 'Virtual'], default: 'Generic', required: true}
 }, { strict: true });
 
+FacilitySchema.pre('save', function(next){
+    if(!this.uuid || this.uuid == '') {
+        this.uuid = this.id;
+    }
+
+    next();
+});
+
 /**
  * Space Schema
  */

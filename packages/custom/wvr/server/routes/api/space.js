@@ -122,11 +122,12 @@ module.exports = function(Wvr, app, auth, database) {
 				//.select({ type: 0 })
 				//.select('uuid name owner')
 			    //.populate('owner');
-			    .populate('owner', 'email name');
+			    //.populate('owner', 'email name');
+				.populate('owner', '_id email name');
 		})
 		.put(function(req, res, next) {
 			//SpaceModel.findById(req.params.spaceId, function(err, space) {
-			SpaceModel.findOne({ uuid: req.params.spaceId }, function(err, space) {
+			/*SpaceModel.findOne({ uuid: req.params.spaceId }, function(err, space) {
 				if(err) {
 					res.send(err);
 				} else {
@@ -141,7 +142,7 @@ module.exports = function(Wvr, app, auth, database) {
 						}
 					});
 				}
-			});
+			});*/
 			/*SpaceModel.update({ uuid: req.params.spaceId }, req.body, function(err, result) {
 				if(err) {
 					res.send(err);
@@ -149,6 +150,13 @@ module.exports = function(Wvr, app, auth, database) {
 					res.json({"message": 'Space Updated!', "space": result});
 				}
 			});*/
+			SpaceModel.findOneAndUpdate({ uuid: req.params.spaceId }, req.body, function(err, result) {
+				if(err) {
+					res.send(err);
+				} else {
+					res.json({"message": 'Space Updated!', "space": result});
+				}
+			});
 		})
 		.delete(function(req, res, next) {
 			SpaceModel.remove({
