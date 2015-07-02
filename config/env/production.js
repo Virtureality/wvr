@@ -27,33 +27,47 @@ module.exports = {
     }
     */
   },
+  hostname: 'http://localhost:3000',
   app: {
     name: 'WVR - World Virtual Reality'
   },
-  facebook: {
-    clientID: 'APP_ID',
-    clientSecret: 'APP_SECRET',
-    callbackURL: 'http://localhost:3000/auth/facebook/callback'
+  logging: {
+    format: 'combined'
   },
-  twitter: {
-    clientID: 'CONSUMER_KEY',
-    clientSecret: 'CONSUMER_SECRET',
-    callbackURL: 'http://localhost:3000/auth/twitter/callback'
-  },
-  github: {
-    clientID: 'APP_ID',
-    clientSecret: 'APP_SECRET',
-    callbackURL: 'http://localhost:3000/auth/github/callback'
-  },
-  google: {
-    clientID: 'APP_ID',
-    clientSecret: 'APP_SECRET',
-    callbackURL: 'http://localhost:3000/auth/google/callback'
-  },
-  linkedin: {
-    clientID: 'API_KEY',
-    clientSecret: 'SECRET_KEY',
-    callbackURL: 'http://localhost:3000/auth/linkedin/callback'
+  strategies: {
+      local: {
+        enabled: true
+      },
+      facebook: {
+        clientID: 'APP_ID',
+        clientSecret: 'APP_SECRET',
+        callbackURL: 'http://localhost:3000/api/auth/facebook/callback',
+        enabled: false
+      },
+      twitter: {
+        clientID: 'CONSUMER_KEY',
+        clientSecret: 'CONSUMER_SECRET',
+        callbackURL: 'http://localhost:3000/api/auth/twitter/callback',
+        enabled: false
+      },
+      github: {
+        clientID: 'APP_ID',
+        clientSecret: 'APP_SECRET',
+        callbackURL: 'http://localhost:3000/api/auth/github/callback',
+        enabled: false
+      },
+      google: {
+        clientID: 'APP_ID',
+        clientSecret: 'APP_SECRET',
+        callbackURL: 'http://localhost:3000/api/auth/google/callback',
+        enabled: false
+      },
+      linkedin: {
+        clientID: 'API_KEY',
+        clientSecret: 'SECRET_KEY',
+        callbackURL: 'http://localhost:3000/api/auth/linkedin/callback',
+        enabled: false
+      }
   },
   emailFrom: 'SENDER EMAIL ADDRESS', // sender address like ABC <abc@example.com>
   mailer: {
@@ -62,5 +76,6 @@ module.exports = {
       user: 'EMAIL_ID',
       pass: 'PASSWORD'
     }
-  }
+  },
+  secret: 'SOME_TOKEN_SECRET'
 };

@@ -1,5 +1,6 @@
 {
-  "dependencies": {
-    "mean-admin": "latest"
-  }
+    "dependencies": {},
+    "anonymizedData": true,
+    "name": "m2 - 1",
+    "id": "55881690f366e3a837e9af25"
 }
