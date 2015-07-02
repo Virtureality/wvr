@@ -47,6 +47,8 @@ module.exports = function(config) {
     proxies: {
       '/': 'http://localhost:3001/'
     },
+
+    urlRoot: '__karma__',
     
     // enable / disable colors in the output (reporters and logs)
     colors: true,
