@@ -18,7 +18,7 @@ Wvr.register(function(system, app, auth, database) {
   
   //Wvr.aggregateAsset('css', 'wvr.css');
   Wvr.aggregateAsset('css', 'masonry.css');
-  Wvr.angularDependencies(['wvr.space']);
+  Wvr.angularDependencies(['wvr.space', 'wvr.mit']);
 
   /**
     //Uncomment to use. Requires meanio@0.3.7 or above
