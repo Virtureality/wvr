@@ -4,9 +4,10 @@
 	</div>
 	<div class="col-lg-4">
 		<div class="input-group">
-			<input id="new-name" type="text" class="form-control" placeholder="type here new meeting please ..."/>
+			<input ng-model="mitName" id="new-name" type="text" class="form-control" placeholder="type here new meeting please ..."/>
 			<span class="input-group-btn">
-				<button id="setup-new-meeting" class="btn btn-info">Create</button>
+				<!--<button id="setup-new-meeting" class="btn btn-info">Create</button>-->
+			    <a ui-sref="mit({mname: mitName})" class="btn btn-info">Create</a>
 			</span>
 		</div>
 	</div>

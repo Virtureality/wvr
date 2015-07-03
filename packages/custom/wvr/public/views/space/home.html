@@ -13,8 +13,8 @@
     <div class="col-lg-9">
       <ul>
         <div ng-repeat="space in spaces | filter: textFilter" class="box photo col2 masonry-brick">
-          <!--<span><a href="#!/spaces/{{space.uuid}}" target="_blank">{{space.uuid}}</a></span>-->
-          <p><span>Address: </span><span><a href="#!/spaces/{{space.uuid}}" target="_blank">{{space.uuid}}</a></span></p>
+          <!--<p><span>Address: </span><span><a href="/spaces/{{space.uuid}}" target="_blank">{{space.uuid}}</a></span></p>-->
+          <p><span>Address: </span><span><a ui-sref="space({spaceId: space.uuid})">{{space.uuid}}</a></span></p>
           <p><span>Name: </span><span>{{space.name}}</span></p>
           <p>
             <span>Owner: </span><span><a href="mailto:{{space.owner.email}}">{{space.owner.name}}</a></span>
@@ -39,7 +39,7 @@
     var uniqueName = $('#go-name').val();
 
     if (uniqueName && uniqueName != "") {
-      window.open('#!/spaces/' + uniqueName, '_blank');
+      window.open('/spaces/' + uniqueName, '_blank');
     } else {
       alert("Please provide name to go!");
       return;

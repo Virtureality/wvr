@@ -25,8 +25,9 @@ $(function(){
 		if(!session.left) {//To make sure it works only for real new session events. Note: This is only just a temporary workaround, good solution should be sth at RMC onmessage() level. TODO: To verify!!!
 			var roomEntrance = document.createElement('a');
 			roomEntrance.setAttribute('id', session.sessionid);
-			roomEntrance.setAttribute('href', '#!/mit/' + session.sessionid);
-			roomEntrance.setAttribute('target', '_blank');
+			/*roomEntrance.setAttribute('href', '/mit/' + session.sessionid);
+			roomEntrance.setAttribute('target', '_blank');*/
+			roomEntrance.setAttribute('ui-sref', 'mit({mname: ' + session.sessionid + '})');
 			roomEntrance.innerHTML = session.sessionid;
 
 			addToContainer(roomsContainer, roomEntrance);
@@ -68,13 +69,13 @@ $(function(){
 			alert(newMeetingName + " already there! Please just find it and join...");
 			return;
 		} else {
-			window.open('#!/mit/' + newMeetingName, '_blank');
+			window.open('/mit/' + newMeetingName, '_blank');
 		}*/
 		if (document.getElementById(newMeetingName)) {
 			alert(newMeetingName + " already there! Please just find it and join...");
 			return;
 		} else {
-			window.open('#!/mit/' + newMeetingName, '_blank');
+			window.open('/mit/' + newMeetingName, '_blank');
 		}
 	});
 

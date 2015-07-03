@@ -66,11 +66,6 @@ angular.module('wvr.space')
               // Error!
               console.log(reason);
 
-              /*var uuid = uniqueToken();
-              $location.path('/#!/spaces/' + uuid);
-              $location.replace();
-              $scope.space = {"uuid": uuid, "name": uuid};*/
-
               $scope.spaceServiceInfo = "Warning: Space service is in trouble right now! You could continue if you just want to use it temporarily.";
             }
         );
@@ -143,10 +138,3 @@ angular.module('wvr.space')
 
       }]);
 
-/*
-function uniqueToken() {
-  var s4 = function() {
-    return Math.floor(Math.random() * 0x10000).toString(16);
-  };
-  return s4() + s4() + "-" + s4() + "-" + s4() + "-" + s4() + "-" + s4() + s4() + s4();
-}*/

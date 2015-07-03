@@ -12,11 +12,14 @@ $(function(){
 	var actionButton = $('#action-button');
 	var container = $('#container');
 
+	var locationHref = location.href;
+
 	setTimeout(startWatching, 1000);
 
 	function startWatching() {
 
-		var mname = $('#mname').attr('value') || 'Anonymous';
+		//var mname = $('#mname').attr('value') || 'Anonymous';
+		var mname = $('#mname').attr('value') || locationHref.substr(locationHref.lastIndexOf('/') + 1, locationHref.length);
 
 		setButton(actionButton, 'Watching ...', true);
 
@@ -214,7 +217,8 @@ $(function(){
 
 			setButton(actionButton, 'Setting up ...', true);
 
-			var mname = $('#mname').attr('value') || 'Anonymous';
+			//var mname = $('#mname').attr('value') || 'Anonymous';
+			var mname = $('#mname').attr('value') || locationHref.substr(locationHref.lastIndexOf('/') + 1, locationHref.length);
 
 			wvrmitConnection.isInitiator = true;
 			wvrmitConnection.onRequest = function(request) {
@@ -256,7 +260,8 @@ $(function(){
 			joinDisabled = true;
 			actionButton.unbind('click', requestToJoinHandler);
 
-			var mname = $('#mname').attr('value') || 'Anonymous';
+			//var mname = $('#mname').attr('value') || 'Anonymous';
+			var mname = $('#mname').attr('value') || locationHref.substr(locationHref.lastIndexOf('/') + 1, locationHref.length);
 
 			wvrmitConnection.join(mname);
 			setButton(actionButton, 'Requesting to join ...', true);

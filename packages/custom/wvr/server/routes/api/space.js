@@ -169,7 +169,7 @@ module.exports = function(Wvr, app, auth, database) {
 				}
 			});
 		});
-	 
-	app.use('/wvr/api/space', router);
+
+	app.use('/api/wvr/space', router);
 
 };
