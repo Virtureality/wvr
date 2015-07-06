@@ -15,31 +15,3 @@ angular.module('wvr.mit')
             });
       }
     ]);
-
-/*
-angular.module('wvr.mit')
-    .config([
-        '$meanStateProvider',
-        function($meanStateProvider) {
-            $meanStateProvider
-                .state('mits', {
-                    url: '/mits',
-                    templateUrl: 'wvr/views/mit/index.html'
-                });
-
-            $meanStateProvider
-                .state('mits.mit', {
-                    url: '/:mname',
-                    templateUrl: 'wvr/views/mit/mit.html'
-                });
-        }
-    ])
-    .config(['$locationProvider',
-        function($locationProvider) {
-            $locationProvider.html5Mode({
-                enabled:true,
-                requireBase:false
-            });
-        }
-    ]);
-*/

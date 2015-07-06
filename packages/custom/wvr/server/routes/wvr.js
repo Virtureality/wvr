@@ -11,28 +11,4 @@ module.exports = function(Wvr, app, auth, database) {
 			res.json({message: 'Welcome to our REST API! :)'});
 		});
 
-  // Home route
-  /*app.route('/api/wvr/!*')
-    .get(function(req, res, next) {
-    	res.header('workerID' , JSON.stringify(mean.options.workerid) );
-    	res.render('home', {
-    		package: 'wvr'
-    	}, function(err, html) {
-    		//Rendering a view from the Package server/views
-    		res.send(html);
-    	});
-    });*/
-  
-  //app.route('/*')
-  //.get(function(req, res, next) {
-	//  res.redirect('/');
-  //});
-
-  /*app.route('/mit/!*')
-	.get(function(req, res, next) {
-	  res.redirect('/mit');
-	  //res.rewriteLinks('/mit');
-	  //res.forward('/mit');
-	});*/
-
 };
