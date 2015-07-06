@@ -1,3 +1,5 @@
+<div id="mitArea" data-ng-controller="MitListController">
+
 <div class="row">
     <div class="col-lg-7">
 	    <h4>What's going on ... </h4>
@@ -20,7 +22,21 @@
         <hr/>
     </div>
 </div>
-<div class="row" id="meetingsContainer"></div>
+<div class="row" id="meetingsContainer">
+	<div ng-repeat="mit in mits" class="box photo col2 masonry-brick">
+		<!--<p><span>Address: </span><span><a ui-sref="mit({mname: mit})">{{mit}}</a></span></p>-->
+		<p><span>Address: </span><span><a ui-sref="mit({mname: mit.sessionid})">{{mit.sessionid}}</a></span></p>
+	</div>
+	<!--<div id="mitList" ng-repeat="mit in mitList" class="box photo col2 masonry-brick">
+		<p><span>Address: </span><span><a ui-sref="mit({mname: mit})">{{mit}}</a></span></p>
+	</div>-->
+</div>
+
+</div>
+
+<script>
+	var mitList =['aaa'];
+</script>
 
 <script type="text/javascript" src="/wvr/assets/js/mit/masonry.js"></script>
 

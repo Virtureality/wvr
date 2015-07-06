@@ -28,4 +28,11 @@ module.exports = function(Wvr, app, auth, database) {
 	//  res.redirect('/');
   //});
 
+  /*app.route('/mit/!*')
+	.get(function(req, res, next) {
+	  res.redirect('/mit');
+	  //res.rewriteLinks('/mit');
+	  //res.forward('/mit');
+	});*/
+
 };
