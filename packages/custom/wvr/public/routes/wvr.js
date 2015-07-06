@@ -7,5 +7,11 @@ angular.module('mean.wvr')
          '$stateProvider',
          function($viewPathProvider, $stateProvider) {
 	       $viewPathProvider.override('system/views/index.html', 'wvr/views/index.html');
+
+	       $stateProvider
+	       .state('wvrhome', {
+	         url: '/',
+	         templateUrl: 'wvr/views/index.html'
+	       });
 	       
 	     }]);/**/

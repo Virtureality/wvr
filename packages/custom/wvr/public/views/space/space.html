@@ -2,15 +2,9 @@
 
   <div id="space" ng-model="space">
     <div class="row">
-      <p class="alert alert-info"><span>Welcome, {{global.user.name||"Guest"}}! :)</span>&nbsp;|&nbsp;<span ng-show="space.owner" >This is <a class="text-primary" href="mailto:{{space.owner.email}}">{{space.owner.name}}</a>'s space.</span><span ng-show="!space.owner"> This is a free space.&nbsp;<a ng-show="!global.user._id" href="/auth/login" target="_blank" class="btn btn-success badge">Login to Own</a><button ng-show="global.user._id" ng-click="ownSpace(space)" class="btn btn-success badge">Own</button></span> &nbsp;<button ng-show="showCraftToStudio" ng-click="craftToStudio(space)" class="btn btn-success badge">Craft to Studio</button></p>
+      <p class="alert alert-info"><span>Welcome, {{loginUser.name||"Guest"}}! :)</span>&nbsp;|&nbsp;<span ng-show="space.owner" >This is <a class="text-primary" href="mailto:{{space.owner.email}}">{{space.owner.name}}</a>'s space.</span><span ng-show="!space.owner"> This is a free space.&nbsp;<a ng-show="!loginUser._id" href="/auth/login" target="_blank" class="btn btn-success badge">Login to Own</a><button ng-show="loginUser._id" ng-click="ownSpace(space)" class="btn btn-success badge">Own</button></span> &nbsp;<button ng-show="showCraftToStudio" ng-click="craftToStudio(space)" class="btn btn-success badge">Craft to Studio</button></p>
 
       <p ng-show="operationInfo" class="{{alertStyle}}">{{operationInfo}}</p>
-
-      <!--<p>Share ->&nbsp;<a id="shareLink" target="_blank">{{space.name||space.uuid}}</a></p>
-      <script type="text/javascript">
-        document.getElementById('shareLink').href = location.href;
-      </script>
-      <button id="action-button">Welcome</button>-->
 
       <hr/>
     </div>
@@ -28,11 +22,11 @@
 
       <div class="col-lg-9">
 
-        <div class="box photo col2 masonry-brick">
-          <a href="/wvr/assets/img/lily.jpeg" title="Lily"><img src="/wvr/assets/img/lily.jpeg" alt="Lily"></a>
-        </div>
-
         <div id="container" class="clearfix masonry">
+
+          <div class="box photo col2 masonry-brick">
+            <a href="/wvr/assets/img/lily.jpeg" title="Lily"><img src="/wvr/assets/img/lily.jpeg" alt="Lily"></a>
+          </div>
 
           <div ng-repeat="facility in space.facilities" class="box photo col2 masonry-brick">
             <p><span>Name: </span><span>{{facility.name}}</span></p>

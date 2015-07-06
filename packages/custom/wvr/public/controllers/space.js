@@ -2,13 +2,21 @@
 
 /* jshint -W098 */
 angular.module('wvr.space')
-    .controller('SpaceListController', ['$scope', 'Global', 'Space',
-      function($scope, Global, Space) {
-        $scope.global = Global;
+    .controller('SpaceListController', ['$scope', 'Space',
+      function($scope, Space) {
         $scope.spaces = Space.query();
       }])
-    .controller('SpaceDetailController', ['$location', '$scope', 'Global', '$stateParams', 'Space',
-      function($location, $scope, Global, $stateParams, Space){
+    .controller('SpaceDetailController', ['$location', '$scope', '$rootScope', 'MeanUser', '$stateParams', 'Space',
+      function($location, $scope, $rootScope, MeanUser, $stateParams, Space){
+        $scope.loginUser = MeanUser.user;
+        $rootScope.$on('loggedin', function() {
+          $scope.loginUser = MeanUser.user;
+          /*console.log('$scope.loginUser: ' + $scope.loginUser);
+           for(var prop in $scope.loginUser) {
+           console.log(prop + ': ' + $scope.loginUser[prop]);
+           }*/
+        });
+
         Space.get({spaceId: $stateParams.spaceId}).$promise.then(
             function(space) {
               // Success!
@@ -17,9 +25,9 @@ angular.module('wvr.space')
               }
               $scope.space = space;
 
-              $scope.ableToOpenDefaultRoom = !space.owner || space.owner._id == Global.user._id;
+              $scope.ableToOpenDefaultRoom = !space.owner || space.owner._id == $scope.loginUser._id;
 
-              var showCraftToStudio = space.owner && space.owner._id == Global.user._id && space.type != 'Studio';
+              var showCraftToStudio = space.owner && space.owner._id == $scope.loginUser._id && space.type != 'Studio';
 
               $scope.showCraftToStudio = showCraftToStudio;
 
@@ -34,7 +42,7 @@ angular.module('wvr.space')
                           space.facilities.push({name: 'Seat - ' + i, type: 'Physical'});
                         }
 
-                        space.owner = Global.user._id;
+                        space.owner = $scope.loginUser._id;
 
                         space.$update({spaceId: space.uuid}, function(result) {
                           if(result && result.space) {
@@ -76,7 +84,7 @@ angular.module('wvr.space')
           $scope.alertStyle = 'alert-info';
 
           if(!spaceToOwn.owner) {
-            var loginUser = Global.user;
+            var loginUser = $scope.loginUser;
             if(loginUser && loginUser._id) {
               Space.get({spaceId: spaceToOwn.uuid}).$promise.then(
                   function(space) {
