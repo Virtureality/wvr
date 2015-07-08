@@ -2,10 +2,14 @@
 
 /* jshint -W098 */
 angular.module('wvr.mit')
-    .controller('MitListController', ['$scope', 'Global',
-      function($scope, Global) {
-        $scope.global = Global;
-        $scope.mits = {};
+    .controller('MitListController', ['$scope', '$rootScope', 'MeanUser',
+      function($scope, $rootScope, MeanUser) {
+          $scope.loginUser = MeanUser.user;
+          $rootScope.$on('loggedin', function() {
+              $scope.loginUser = MeanUser.user;
+          });
+
+          $scope.mits = {};
 
           $scope.objToArray = function(obj) {
               var result = [];
@@ -16,5 +20,12 @@ angular.module('wvr.mit')
               }
               return result;
           }
-      }]);
+      }])
+    .controller('MitDetailController', ['$scope', '$rootScope', 'MeanUser',
+        function($scope, $rootScope, MeanUser) {
+            $scope.loginUser = MeanUser.user;
+            $rootScope.$on('loggedin', function() {
+                $scope.loginUser = MeanUser.user;
+            });
+        }]);
 

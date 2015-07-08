@@ -14,11 +14,13 @@ $(function(){
 
 	var locationHref ;
 	var mname;
+	var scope;
 
 	setTimeout(startWatching, 1000);
 
 	function startWatching() {
 
+		scope = angular.element($("#mitArea")).scope();
 		//var mname = $('#mname').attr('value') || 'Anonymous';
 		//var mname = $('#mname').attr('value') || locationHref.substr(locationHref.lastIndexOf('/') + 1, locationHref.length);
 		locationHref = location.href;
@@ -174,8 +176,12 @@ $(function(){
 			// e.extra
 
 			//console.log('onmessage: ' + e);
+			var userName = e.userid;
+			if(userName.lastIndexOf('-') !== -1) {
+				userName = userName.substr(0, userName.lastIndexOf('-'));
+			}
 
-			messageArea.append($('<div>').append(e.userid + ': ' + e.data));
+			messageArea.append($('<div>').append(userName + ': ' + e.data));
 		}
 
 		//wvrmitConnection.fakeDataChannels = true;
@@ -191,13 +197,14 @@ $(function(){
 
 	function getUserID() {
 
-		var loginUser = window.user;
+		//var loginUser = window.user;
+		var loginUser = scope.loginUser;
 
 		if (loginUser && loginUser._id && loginUser._id !== '') {
 			return loginUser.username + '-' + loginUser._id;
 		}
 
-		return Math.round(Math.random() * 999999999) + 999999999;
+		return (Math.round(Math.random() * 999999999) + 999999999).toString();
 	}
 
 	function checkForSetup() {

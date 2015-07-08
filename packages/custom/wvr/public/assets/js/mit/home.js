@@ -26,7 +26,7 @@ $(function(){
 				if(!mits[session.sessionid]) {
 					scope.$apply(function(){
 						mits[session.sessionid] = session;
-					})
+					});
 				}
 			}
 
