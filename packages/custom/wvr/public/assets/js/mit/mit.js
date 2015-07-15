@@ -108,16 +108,50 @@ $(function(){
 			// e.isAudio ---- if it is an Audio stream
 			// e.isScreen --- if it is screen-sharing stream
 
-			if(event.isVideo && (event.type == 'local' || event.userid != this.userid)) {
+			/*if(event.isVideo && (event.type == 'local' || event.userid != this.userid)) {
 				var video = $(event.mediaElement).attr('id', event.streamid).attr('controls', true);
 				addVideo(video, container);
+			}*/
+			if(event.isVideo) {
+				var video = $(event.mediaElement).attr('id', event.userid).attr('controls', true).attr('height', '100%').attr('width', '100%');
+				if((event.type == 'local' && scope.loginUser._id == scope.space.owner._id) || (event.type == 'remote' && event.userid == scope.space.owner.name + '-' + scope.space.owner._id)) {
+				    //video.attr('id', 'ownerPresence');
+					//var ownerPresence = $('#ownerPresence');
+					var ownerPresence = $('#' + event.userid);
+					ownerPresence.replaceWith(video);
+				} else {
+					//addVideo(video, container);
+					//video.attr('id', event.userid);
+
+					var userPresenceBox = $('<div/>').attr('class', 'box photo col2 masonry-brick');
+					var userName = event.userid;
+					if(userName.lastIndexOf('-') !== -1) {
+						userName = userName.substr(0, userName.lastIndexOf('-'));
+					}
+					var userSpan = $('<span/>').text(userName);
+					userSpan.appendTo(userPresenceBox)
+					video.appendTo(userPresenceBox);
+					userPresenceBox.appendTo(container);
+
+					container.masonry('appended', userPresenceBox);
+				}
 			}
+			/*if(event.isVideo && (event.type == 'local' || event.userid != this.userid)) {
+				var videoId;
+				if(event.type == 'local') {
+					videoId = 'localVideoStream';
+				} else {
+					videoId = event.streamid;
+				}
+				var video = $(event.mediaElement).attr('id', videoId).attr('controls', true);
+				addVideo(video, container);
+			}*/
 
 		};
 
 		wvrmitConnection.onstreamended = function (e) {
-			//var video = document.getElementById(stream.id);
-			var video = document.getElementById(e.streamid);
+			var video = document.getElementById(e.userid);
+			//var video = document.getElementById(e.streamid);
 			if (video) video.parentNode.parentNode.removeChild(video.parentNode);
 		};
 
@@ -201,7 +235,8 @@ $(function(){
 		var loginUser = scope.loginUser;
 
 		if (loginUser && loginUser._id && loginUser._id !== '') {
-			return loginUser.username + '-' + loginUser._id;
+			//return loginUser.username + '-' + loginUser._id;
+			return loginUser.name + '-' + loginUser._id;
 		}
 
 		return (Math.round(Math.random() * 999999999) + 999999999).toString();

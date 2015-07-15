@@ -24,15 +24,17 @@
 
         <div id="container" class="clearfix masonry">
 
-          <div class="box photo col2 masonry-brick">
-            <a href="/wvr/assets/img/lily.jpeg" title="Lily"><img src="/wvr/assets/img/lily.jpeg" alt="Lily"></a>
+          <div id="ownerPresenceBox" class="box photo col2 masonry-brick">
+            <span ng-show="space.owner">{{space.owner.name}}</span>
+            <!--<p><a id="ownerPresence" href="/wvr/assets/img/lily.jpeg" title="Lily"><img src="/wvr/assets/img/lily.jpeg" alt="Lily"></a></p>-->
+            <p><a id="{{space.owner.name + '-' + space.owner._id}}" href="/wvr/assets/img/lily.jpeg" title="Lily"><img src="/wvr/assets/img/lily.jpeg" alt="Lily"></a></p>
           </div>
 
           <div ng-repeat="facility in space.facilities" class="box photo col2 masonry-brick">
+            <span ng-show="facility.owner">{{facility.owner.name}}</span>&nbsp;<span ng-show="loginUser._id == space.owner._id"><a>Assign</a></span>
+            <p></p>
             <p><span>Name: </span><span>{{facility.name}}</span></p>
-            <p>
-              <span>Owner: </span><span><a>{{facility.owner.name || 'Assign'}}</a></span>
-            </p>
+            <p><span><a>Take the Seat</a></span></p>
           </div>
 
         </div>
