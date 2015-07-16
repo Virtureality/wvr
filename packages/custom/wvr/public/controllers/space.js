@@ -26,8 +26,14 @@ angular.module('wvr.space')
               $scope.space = space;
 
               $scope.ableToOpenDefaultRoom = !space.owner || space.owner._id == $scope.loginUser._id;
+              
+              var isSpaceOwner = space.owner && space.owner._id == $scope.loginUser._id;
 
-              var showCraftToStudio = space.owner && space.owner._id == $scope.loginUser._id && space.type != 'Studio';
+              /*if(isSpaceOwner) {
+                $scope.space.visible = true;
+              }*/
+
+              var showCraftToStudio =  isSpaceOwner && space.type != 'Studio';
 
               $scope.showCraftToStudio = showCraftToStudio;
 
@@ -142,6 +148,10 @@ angular.module('wvr.space')
             $scope.operationInfo = 'Sorry! The space has been owned.';
             $scope.alertStyle = 'alert-warning';
           }
+        };
+
+        $scope.showSpace = function() {
+          $scope.space.visible = true;
         };
 
       }]);

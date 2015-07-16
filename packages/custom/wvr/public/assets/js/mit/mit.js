@@ -77,6 +77,10 @@ $(function(){
 			if(state.name == 'request-accepted') {
 				alert(state.reason);
 				setButton(actionButton, 'Conference Ongoing...', true);
+				if(scope.showSpace) {
+					scope.showSpace();
+					initSeats();
+				}
 			}
 
 			if(state.name == 'request-rejected') {
@@ -108,44 +112,33 @@ $(function(){
 			// e.isAudio ---- if it is an Audio stream
 			// e.isScreen --- if it is screen-sharing stream
 
-			/*if(event.isVideo && (event.type == 'local' || event.userid != this.userid)) {
-				var video = $(event.mediaElement).attr('id', event.streamid).attr('controls', true);
-				addVideo(video, container);
-			}*/
 			if(event.isVideo) {
 				var video = $(event.mediaElement).attr('id', event.userid).attr('controls', true).attr('height', '100%').attr('width', '100%');
-				if((event.type == 'local' && scope.loginUser._id == scope.space.owner._id) || (event.type == 'remote' && event.userid == scope.space.owner.name + '-' + scope.space.owner._id)) {
-				    //video.attr('id', 'ownerPresence');
-					//var ownerPresence = $('#ownerPresence');
-					var ownerPresence = $('#' + event.userid);
-					ownerPresence.replaceWith(video);
-				} else {
-					//addVideo(video, container);
-					//video.attr('id', event.userid);
 
-					var userPresenceBox = $('<div/>').attr('class', 'box photo col2 masonry-brick');
-					var userName = event.userid;
-					if(userName.lastIndexOf('-') !== -1) {
-						userName = userName.substr(0, userName.lastIndexOf('-'));
+				var userPresenceBox = $('<div/>').attr('class', 'box photo col2 masonry-brick').attr('data-space-type', 'freespace');
+				var userName = event.userid;
+
+				if(isSpaceOwner(event)) {
+					if(scope.showSpace) {
+						scope.showSpace();
+						initSeats();
 					}
-					var userSpan = $('<span/>').text(userName);
-					userSpan.appendTo(userPresenceBox)
-					video.appendTo(userPresenceBox);
-					userPresenceBox.appendTo(container);
+				}
+				if(userName.lastIndexOf('-') !== -1) {
+					userName = userName.substr(0, userName.lastIndexOf('-'));
+				}
+				var videoSpan = $('<span/>');
+				var userSpan = $('<span/>').text(userName);
+				var newPElement;
+				video.appendTo(videoSpan);
+				newPElement = $('<p/>');
+				videoSpan.appendTo(newPElement);
+				userSpan.appendTo(newPElement);
+				newPElement.appendTo(userPresenceBox);
+				userPresenceBox.appendTo(container);
 
-					container.masonry('appended', userPresenceBox);
-				}
+				container.masonry('appended', userPresenceBox);
 			}
-			/*if(event.isVideo && (event.type == 'local' || event.userid != this.userid)) {
-				var videoId;
-				if(event.type == 'local') {
-					videoId = 'localVideoStream';
-				} else {
-					videoId = event.streamid;
-				}
-				var video = $(event.mediaElement).attr('id', videoId).attr('controls', true);
-				addVideo(video, container);
-			}*/
 
 		};
 
@@ -217,6 +210,12 @@ $(function(){
 
 			messageArea.append($('<div>').append(userName + ': ' + e.data));
 		}
+
+		wvrmitConnection.onCustomMessage = function(msg) {
+			if(msg.msgType == 'SeatTaken') {
+				takeSeat(msg.seatID, msg.takerID);
+			}
+		};
 
 		//wvrmitConnection.fakeDataChannels = true;
 
@@ -339,5 +338,93 @@ $(function(){
 
 		container.masonry('appended', videoBox);
 	}
+
+	function initSeats() {
+
+		scope.$apply(function(){
+			var space = scope.space;
+			var seats;
+			var seat;
+			var seatElement;
+
+			if(space) {
+				if(space.facilities) {
+					seats = space.facilities;
+				}
+				if(space.owner && space.owner._id) {
+					seatElement = $('#' + space.owner._id);
+					if(seatElement.length == 1) {
+						var seatTakeElement = $('<button/>').attr('class', 'btn btn-success badge').text('Take the Seat').bind('click', takeSeatHandler);
+						seatElement.children().remove();
+						seatTakeElement.appendTo(seatElement);
+					}
+				}
+			}
+
+			for(var i = 0; i < seats.length; i++) {
+				seat = seats[i];
+
+				seatElement = $('#' + seat._id);
+				if(seatElement.length == 1) {
+					var seatTakeElement = $('<button/>').attr('class', 'btn btn-success badge').text('Take the Seat').bind('click', takeSeatHandler);
+					seatTakeElement.appendTo(seatElement);
+				}
+			}
+		});
+
+		container.masonry();
+	};
+
+	function takeSeatHandler() {
+		var seatTakeElement = $(this);
+		var desSeatElement = seatTakeElement.parent();
+		var desSeatID = desSeatElement.attr('id');
+		var userID = getUserID();
+
+		takeSeat(desSeatID, userID);
+
+		wvrmitConnection.sendCustomMessage({msgType: 'SeatTaken', seatID: desSeatID, takerID: userID});
+	}
+
+	function takeSeat(seatID, takerID) {
+		//console.log(takerID + ' is taking seat: ' + seatID);
+
+		if(seatID && takerID) {
+			var desSeatElement = $('#' + seatID);
+			var userVideoElement = $('#' + takerID);
+			var userPElement = userVideoElement.parent().parent();
+			var userDivElement = userPElement.parent();
+			var spaceType = userDivElement.attr('data-space-type');
+
+			if(desSeatElement.length == 1 && userVideoElement.length == 1) {
+
+				desSeatElement.children().remove();
+				userPElement.children().appendTo(desSeatElement);
+
+				if(spaceType && spaceType == 'seat') {
+					var seatTakeElement = $('<button/>').attr('class', 'btn btn-success badge').text('Take the Seat').bind('click', takeSeatHandler);
+					userPElement.children().remove();
+					seatTakeElement.appendTo(userPElement);
+				} else if(spaceType == 'freespace' && userDivElement) {
+					userDivElement.remove();
+				}
+
+				container.masonry();
+			}
+		}
+	};
+
+	function isSpaceOwner(event) {
+		var loginUser = scope.loginUser;
+		var space = scope.space;
+
+		if(space && space.owner && loginUser) {
+			if((event.type == 'local' && scope.loginUser._id == scope.space.owner._id) || (event.type == 'remote' && event.userid == scope.space.owner.name + '-' + scope.space.owner._id)) {
+				return true;
+			}
+		}
+
+		return false;
+	};
 
 });
