@@ -397,24 +397,35 @@ $(function(){
 	}
 
 	function takeSeat(seatID, takerID) {
-		//console.log(takerID + ' is taking seat: ' + seatID);
+		console.log(takerID + ' is taking seat: ' + seatID);
 
 		if(seatID && takerID) {
 			var desSeatElement = $('#' + seatID);
+			console.log('desSeatElement id: ' + desSeatElement.attr('id'));
 			var userVideoElement = $('#' + takerID);
+			console.log('userVideoElement id: ' + userVideoElement.attr('id'));
 			var userPElement = userVideoElement.parent().parent();
+			console.log('userPElement is P: ' + userPElement.is('P'));
 			var userDivElement = userPElement.parent();
+			console.log('userDivElement data-space-type: ' + userDivElement.attr('data-space-type'));
 			var spaceType = userDivElement.attr('data-space-type');
 
 			if(desSeatElement.length == 1 && userVideoElement.length == 1) {
+				console.log(takerID + ' is moving to seat: ' + seatID);
 
 				desSeatElement.children().remove();
+				console.log('desSeatElement.children().remove() was done.');
 				userPElement.children().appendTo(desSeatElement);
+				console.log('userPElement.children().appendTo(desSeatElement) was done.');
 
 				if(spaceType && spaceType == 'seat') {
-					var seatTakeElement = $('<button/>').attr('class', 'btn btn-success badge').text('Take the Seat').bind('click', takeSeatHandler);
+					//var seatTakeElement = $('<button/>').attr('class', 'btn btn-success badge').text('Take the Seat').bind('click', takeSeatHandler);
+					var seatTakeElement = $('<button/>').attr('class', 'btn btn-success badge').text('Take the Seat');
+					seatTakeElement.bind('click', takeSeatHandler);
 					userPElement.children().remove();
+					console.log('userPElement.children().remove() was done.');
 					seatTakeElement.appendTo(userPElement);
+					console.log('seatTakeElement.appendTo(userPElement) was done.');
 				} else if(spaceType == 'freespace' && userDivElement) {
 					userDivElement.remove();
 				}
