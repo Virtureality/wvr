@@ -113,10 +113,24 @@ $(function(){
 			// e.isScreen --- if it is screen-sharing stream
 
 			if(event.isVideo) {
-				var video = $(event.mediaElement).attr('id', event.userid).attr('controls', true).attr('height', '100%').attr('width', '100%');
+				console.log('event.userid: ' + event.userid);
+
+				//var video = $(event.mediaElement).attr('id', event.userid).attr('controls', true).attr('height', '100%').attr('width', '100%');
 
 				var userPresenceBox = $('<div/>').attr('class', 'box photo col2 masonry-brick').attr('data-space-type', 'freespace');
-				var userName = event.userid;
+				//var userName = event.userid;
+				var userTxt = event.userid;
+				var index = userTxt.lastIndexOf('-');
+				var userName;
+				var userID;
+				if(index !== -1) {
+					userName = userTxt.substr(0, index);
+					userID = userTxt.substr(index + 1, userTxt.length);
+				} else {
+					userName = userTxt;
+					userID = userTxt;
+				}
+				var video = $(event.mediaElement).attr('id', 'video-' + userID).attr('controls', true).attr('height', '100%').attr('width', '100%');
 
 				if(isSpaceOwner(event)) {
 					if(scope.showSpace) {
@@ -124,9 +138,9 @@ $(function(){
 						initSeats();
 					}
 				}
-				if(userName.lastIndexOf('-') !== -1) {
+				/*if(userName.lastIndexOf('-') !== -1) {
 					userName = userName.substr(0, userName.lastIndexOf('-'));
-				}
+				}*/
 				var videoSpan = $('<span/>');
 				var userSpan = $('<span/>').text(userName);
 				var newPElement;
@@ -389,7 +403,15 @@ $(function(){
 		var seatTakeElement = $(this);
 		var desSeatElement = seatTakeElement.parent();
 		var desSeatID = desSeatElement.attr('id');
-		var userID = getUserID();
+		//var userID = getUserID();
+		var userTxt = getUserID();
+		var index = userTxt.lastIndexOf('-');
+		var userID;
+		if(index !== -1) {
+			userID = userTxt.substr(index + 1, userTxt.length);
+		} else {
+			userID = userTxt;
+		}
 
 		takeSeat(desSeatID, userID);
 
@@ -402,7 +424,7 @@ $(function(){
 		if(seatID && takerID) {
 			var desSeatElement = $('#' + seatID);
 			console.log('desSeatElement id: ' + desSeatElement.attr('id'));
-			var userVideoElement = $('#' + takerID);
+			var userVideoElement = $('#' + 'video-' + takerID);
 			console.log('userVideoElement id: ' + userVideoElement.attr('id'));
 			var userPElement = userVideoElement.parent().parent();
 			console.log('userPElement is P: ' + userPElement.is('P'));
