@@ -314,7 +314,7 @@ $(function(){
 	}
 
 	function enableShare(mname){
-		var shareLink = $('<a/>').attr('class', 'pull-left').attr('target', '_blank').attr('href', location.href).text('Share Meeting: ' + mname);
+		var shareLink = $('<a/>').attr('class', 'pull-left').attr('target', '_blank').attr('href', location.href).text('Share: ' + mname);
 		shareLink.appendTo(actionArea);
 	}
 
@@ -340,6 +340,7 @@ $(function(){
 	}
 
 	function initSeats() {
+		console.log('Initializing seats...');
 
 		scope.$apply(function(){
 			var space = scope.space;
@@ -352,9 +353,13 @@ $(function(){
 					seats = space.facilities;
 				}
 				if(space.owner && space.owner._id) {
+					console.log('Initializing seat: ' + space.owner._id);
+
 					seatElement = $('#' + space.owner._id);
 					if(seatElement.length == 1) {
-						var seatTakeElement = $('<button/>').attr('class', 'btn btn-success badge').text('Take the Seat').bind('click', takeSeatHandler);
+						//var seatTakeElement = $('<button/>').attr('class', 'btn btn-success badge').text('Take the Seat').bind('click', takeSeatHandler);
+						var seatTakeElement = $('<button/>').attr('class', 'btn btn-success badge').text('Take the Seat');
+						seatTakeElement.bind('click', takeSeatHandler);
 						seatElement.children().remove();
 						seatTakeElement.appendTo(seatElement);
 					}
@@ -363,10 +368,13 @@ $(function(){
 
 			for(var i = 0; i < seats.length; i++) {
 				seat = seats[i];
+				console.log('Initializing seat: ' + seat._id);
 
 				seatElement = $('#' + seat._id);
 				if(seatElement.length == 1) {
-					var seatTakeElement = $('<button/>').attr('class', 'btn btn-success badge').text('Take the Seat').bind('click', takeSeatHandler);
+					//var seatTakeElement = $('<button/>').attr('class', 'btn btn-success badge').text('Take the Seat').bind('click', takeSeatHandler);
+					var seatTakeElement = $('<button/>').attr('class', 'btn btn-success badge').text('Take the Seat');
+					seatTakeElement.bind('click', takeSeatHandler);
 					seatTakeElement.appendTo(seatElement);
 				}
 			}
@@ -376,6 +384,8 @@ $(function(){
 	};
 
 	function takeSeatHandler() {
+		console.log('In takeSeatHandler...');
+
 		var seatTakeElement = $(this);
 		var desSeatElement = seatTakeElement.parent();
 		var desSeatID = desSeatElement.attr('id');
