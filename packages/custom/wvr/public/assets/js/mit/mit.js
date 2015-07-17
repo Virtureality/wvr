@@ -113,9 +113,6 @@ $(function(){
 			// e.isScreen --- if it is screen-sharing stream
 
 			if(event.isVideo) {
-				console.log('event.userid: ' + event.userid);
-
-				//var video = $(event.mediaElement).attr('id', event.userid).attr('controls', true).attr('height', '100%').attr('width', '100%');
 
 				var userPresenceBox = $('<div/>').attr('class', 'box photo col2 masonry-brick').attr('data-space-type', 'freespace');
 				//var userName = event.userid;
@@ -138,9 +135,6 @@ $(function(){
 						initSeats();
 					}
 				}
-				/*if(userName.lastIndexOf('-') !== -1) {
-					userName = userName.substr(0, userName.lastIndexOf('-'));
-				}*/
 				var videoSpan = $('<span/>');
 				var userSpan = $('<span/>').text(userName);
 				var newPElement;
@@ -158,7 +152,6 @@ $(function(){
 
 		wvrmitConnection.onstreamended = function (e) {
 			var video = document.getElementById(e.userid);
-			//var video = document.getElementById(e.streamid);
 			if (video) video.parentNode.parentNode.removeChild(video.parentNode);
 		};
 
@@ -194,7 +187,6 @@ $(function(){
 		sendMsgButton.on('click', function() {
 			var msgBody = $('#message-text').val() || '';
 			if (msgBody && msgBody !== '') {
-				//console.log('Sending message: ' + msgBody);
 				wvrmitConnection.send(msgBody);
 				messageArea.append($('<div>').append('Me: ' + msgBody));
 			} else{
@@ -354,7 +346,6 @@ $(function(){
 	}
 
 	function initSeats() {
-		console.log('Initializing seats...');
 
 		scope.$apply(function(){
 			var space = scope.space;
@@ -371,7 +362,6 @@ $(function(){
 
 					seatElement = $('#' + space.owner._id);
 					if(seatElement.length == 1) {
-						//var seatTakeElement = $('<button/>').attr('class', 'btn btn-success badge').text('Take the Seat').bind('click', takeSeatHandler);
 						var seatTakeElement = $('<button/>').attr('class', 'btn btn-success badge').text('Take the Seat');
 						seatTakeElement.bind('click', takeSeatHandler);
 						seatElement.children().remove();
@@ -382,11 +372,9 @@ $(function(){
 
 			for(var i = 0; i < seats.length; i++) {
 				seat = seats[i];
-				console.log('Initializing seat: ' + seat._id);
 
 				seatElement = $('#' + seat._id);
 				if(seatElement.length == 1) {
-					//var seatTakeElement = $('<button/>').attr('class', 'btn btn-success badge').text('Take the Seat').bind('click', takeSeatHandler);
 					var seatTakeElement = $('<button/>').attr('class', 'btn btn-success badge').text('Take the Seat');
 					seatTakeElement.bind('click', takeSeatHandler);
 					seatTakeElement.appendTo(seatElement);
@@ -398,12 +386,10 @@ $(function(){
 	};
 
 	function takeSeatHandler() {
-		console.log('In takeSeatHandler...');
 
 		var seatTakeElement = $(this);
 		var desSeatElement = seatTakeElement.parent();
 		var desSeatID = desSeatElement.attr('id');
-		//var userID = getUserID();
 		var userTxt = getUserID();
 		var index = userTxt.lastIndexOf('-');
 		var userID;
@@ -419,35 +405,24 @@ $(function(){
 	}
 
 	function takeSeat(seatID, takerID) {
-		console.log(takerID + ' is taking seat: ' + seatID);
 
 		if(seatID && takerID) {
 			var desSeatElement = $('#' + seatID);
-			console.log('desSeatElement id: ' + desSeatElement.attr('id'));
 			var userVideoElement = $('#' + 'video-' + takerID);
-			console.log('userVideoElement id: ' + userVideoElement.attr('id'));
 			var userPElement = userVideoElement.parent().parent();
-			console.log('userPElement is P: ' + userPElement.is('P'));
 			var userDivElement = userPElement.parent();
-			console.log('userDivElement data-space-type: ' + userDivElement.attr('data-space-type'));
 			var spaceType = userDivElement.attr('data-space-type');
 
 			if(desSeatElement.length == 1 && userVideoElement.length == 1) {
-				console.log(takerID + ' is moving to seat: ' + seatID);
 
 				desSeatElement.children().remove();
-				console.log('desSeatElement.children().remove() was done.');
 				userPElement.children().appendTo(desSeatElement);
-				console.log('userPElement.children().appendTo(desSeatElement) was done.');
 
 				if(spaceType && spaceType == 'seat') {
-					//var seatTakeElement = $('<button/>').attr('class', 'btn btn-success badge').text('Take the Seat').bind('click', takeSeatHandler);
 					var seatTakeElement = $('<button/>').attr('class', 'btn btn-success badge').text('Take the Seat');
 					seatTakeElement.bind('click', takeSeatHandler);
 					userPElement.children().remove();
-					console.log('userPElement.children().remove() was done.');
 					seatTakeElement.appendTo(userPElement);
-					console.log('seatTakeElement.appendTo(userPElement) was done.');
 				} else if(spaceType == 'freespace' && userDivElement) {
 					userDivElement.remove();
 				}
