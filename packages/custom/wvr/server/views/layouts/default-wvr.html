@@ -4,11 +4,7 @@
 
 <body data-ng-controller="ThemeController" ng-cloak class="ng-cloak" ng-class="state">
     <div class="navbar navbar-inverse navbar-fixed-top" data-ng-include="'/wvr/views/header-wvr.html'" data-role="navigation"></div>
-    {% if adminEnabled %}
-    <section class="admin-menu">
-        <div data-ng-include="'/mean-admin/views/index.html'"></div>
-    </section>
-    {% endif %}
+    <div data-ng-include="'/admin/views/index.html'"></div>
     <section class="content">
         <section class="container">
             {% block content %}{% endblock %}
