@@ -58,8 +58,8 @@ module.exports = {
         enabled: false
       },
       google: {
-        clientID: '1097113760048-sapo37bj7mr840fpqs8o3mfsn81iemst.apps.googleusercontent.com',
-        clientSecret: 'QpZVkwrMUlYisusa37FAI1Ge',
+        clientID: '643296998013-dj2kgmtltl3ickmuuae7f7nvs6fk2mrh.apps.googleusercontent.com',
+        clientSecret: 'DS6QjSWIFd6JLFmfUJurq5K9',
         callbackURL: 'http://wvr.edening.net/api/auth/google/callback',
         enabled: true
       },
@@ -72,7 +72,13 @@ module.exports = {
   },
     emailFrom: 'fbl.edening@gmail.com', // sender address like ABC <abc@example.com>
     mailer: {
-        service: 'gmail', // Gmail, SMTP
+        /*service: 'gmail', // Gmail, SMTP
+        auth: {
+            user: 'fbl.edening@gmail.com',
+            pass: 'fbl1111$'
+        }*/
+        host: 'smtp.gmail.com',
+        port: 25,
         auth: {
             user: 'fbl.edening@gmail.com',
             pass: 'fbl1111$'

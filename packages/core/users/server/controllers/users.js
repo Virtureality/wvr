@@ -21,8 +21,6 @@ var mongoose = require('mongoose'),
 function sendMail(mailOptions) {
     var transport = nodemailer.createTransport(config.mailer);
     transport.sendMail(mailOptions, function(err, response) {
-        console.log('err:' + err);
-        console.log('response:' + response);
         if (err) return err;
         return response;
     });
