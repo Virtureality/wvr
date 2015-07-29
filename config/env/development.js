@@ -50,9 +50,10 @@ module.exports = {
         enabled: true
       }
   },
-  emailFrom: 'fbl.edening@gmail.com', // sender address like ABC <abc@example.com>
+  emailFrom: 'sharphill@163.com', // sender address like ABC <abc@example.com>
   mailer: {
-      service: 'smtp.163.com',
+      host: 'smtp.163.com',
+      port: 25,
       auth: {
           user: 'sharphill@163.com',
           pass: 'mhf1111$'
