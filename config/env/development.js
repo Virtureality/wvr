@@ -38,25 +38,25 @@ module.exports = {
         enabled: false
       },
       google: {
-        clientID: 'DEFAULT_APP_ID',
-        clientSecret: 'APP_SECRET',
+        clientID: '1097113760048-sapo37bj7mr840fpqs8o3mfsn81iemst.apps.googleusercontent.com',
+        clientSecret: 'QpZVkwrMUlYisusa37FAI1Ge',
         callbackURL: 'http://localhost:3000/api/auth/google/callback',
-        enabled: false
+        enabled: true
       },
       linkedin: {
-        clientID: 'DEFAULT_API_KEY',
-        clientSecret: 'SECRET_KEY',
+        clientID: '75oseoz1ewy3lz',
+        clientSecret: 'maoSqRP5MIWsio5Y',
         callbackURL: 'http://localhost:3000/api/auth/linkedin/callback',
-        enabled: false
+        enabled: true
       }
   },
-  emailFrom: 'SENDER EMAIL ADDRESS', // sender address like ABC <abc@example.com>
+  emailFrom: 'fbl.edening@gmail.com', // sender address like ABC <abc@example.com>
   mailer: {
-    service: 'SERVICE_PROVIDER', // Gmail, SMTP
-    auth: {
-      user: 'EMAIL_ID',
-      pass: 'PASSWORD'
-    }
+      service: 'smtp.163.com',
+      auth: {
+          user: 'sharphill@163.com',
+          pass: 'mhf1111$'
+      }
   }, 
-  secret: 'SOME_TOKEN_SECRET'
+  secret: 'FBL_WVR_TOKEN_SECRET_DEV'
 };

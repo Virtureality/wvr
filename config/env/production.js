@@ -28,7 +28,7 @@ module.exports = {
     }
     */
   },
-  hostname: 'http://localhost:3000',
+  hostname: 'http://wvr.edening.net',
   app: {
     name: 'WVR - World Virtual Reality'
   },
@@ -58,10 +58,10 @@ module.exports = {
         enabled: false
       },
       google: {
-        clientID: 'APP_ID',
-        clientSecret: 'APP_SECRET',
-        callbackURL: 'http://localhost:3000/api/auth/google/callback',
-        enabled: false
+        clientID: '1097113760048-sapo37bj7mr840fpqs8o3mfsn81iemst.apps.googleusercontent.com',
+        clientSecret: 'QpZVkwrMUlYisusa37FAI1Ge',
+        callbackURL: 'http://wvr.edening.net/api/auth/google/callback',
+        enabled: true
       },
       linkedin: {
         clientID: 'API_KEY',
@@ -70,13 +70,13 @@ module.exports = {
         enabled: false
       }
   },
-  emailFrom: 'SENDER EMAIL ADDRESS', // sender address like ABC <abc@example.com>
-  mailer: {
-    service: 'SERVICE_PROVIDER',
-    auth: {
-      user: 'EMAIL_ID',
-      pass: 'PASSWORD'
-    }
-  },
-  secret: 'SOME_TOKEN_SECRET'
+    emailFrom: 'fbl.edening@gmail.com', // sender address like ABC <abc@example.com>
+    mailer: {
+        service: 'smtp.gmail.com', // Gmail, SMTP
+        auth: {
+            user: 'fbl.edening@gmail.com',
+            pass: 'fbl1111$'
+        }
+    },
+  secret: 'FBL_WVR_TOKEN_SECRET_PROD'
 };
