@@ -287,8 +287,17 @@ module.exports = function(MeanUser) {
                     response.message = 'User does not exist';
                     response.status = 'danger';
 
-                    MeanUser.events.publish('forgotpassword', {
+                    /*MeanUser.events.publish('forgotpassword', {
                         description: user.name + ' forgot his password.'
+                    });*/
+                    var forgotUser;
+                    if(user && user.name && user.name !== '') {
+                        forgotUser = user.name;
+                    } else {
+                        forgotUser = req.body.text;
+                    }
+                    MeanUser.events.publish('forgotpassword', {
+                        description: forgotUser + ' forgot his password.'
                     });
                 }
                 res.json(response);
