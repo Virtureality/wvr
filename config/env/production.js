@@ -72,13 +72,7 @@ module.exports = {
   },
     emailFrom: 'fbl.edening@gmail.com', // sender address like ABC <abc@example.com>
     mailer: {
-        /*service: 'gmail', // Gmail, SMTP
-        auth: {
-            user: 'fbl.edening@gmail.com',
-            pass: 'fbl1111$'
-        }*/
-        host: 'smtp.gmail.com',
-        port: 25,
+        service: 'gmail', // Gmail, SMTP
         auth: {
             user: 'fbl.edening@gmail.com',
             pass: 'fbl1111$'
