@@ -273,11 +273,15 @@ module.exports = function(MeanUser) {
                         from: config.emailFrom
                     };
                     mailOptions = templates.forgot_password_email(user, req, token, mailOptions);
-                    sendMail(mailOptions);
-                    done(null, user);
+                    /*sendMail(mailOptions);
+                    done(null, user);*/
+                    var transport = nodemailer.createTransport(config.mailer);
+                    transport.sendMail(mailOptions, function(err, response) {
+                        done(err, user, response);
+                    });
                 }
             ],
-            function(err, user) {
+            /*function(err, user) {
 
                 var response = {
                     message: 'Mail successfully sent',
@@ -287,9 +291,9 @@ module.exports = function(MeanUser) {
                     response.message = 'User does not exist';
                     response.status = 'danger';
 
-                    /*MeanUser.events.publish('forgotpassword', {
+                    /!*MeanUser.events.publish('forgotpassword', {
                         description: user.name + ' forgot his password.'
-                    });*/
+                    });*!/
                     var forgotUser;
                     if(user && user.name && user.name !== '') {
                         forgotUser = user.name;
@@ -300,6 +304,37 @@ module.exports = function(MeanUser) {
                         description: forgotUser + ' forgot his password.'
                     });
                 }
+                res.json(response);
+            });*/
+            function(err, user, result) {
+                console.log('err:' + err);
+                console.log('user:' + JSON.stringify(user));
+                console.log('result:' + JSON.stringify(result));
+
+                var response = {
+                    message: 'Mail sent unknown',
+                    status: 'unknown'
+                };
+                if(result) {
+                    response = result;
+                    if(result.response && result.response.indexOf('250') != -1) {
+                        response.message = 'Mail sent successfully';
+                        response.status = 'success';
+                    } else {
+                        response.message = 'Mail sent unknown';
+                        response.status = 'unknown';
+                    }
+                }
+
+                if (err) {
+                    response.message = 'Problem happened for processing forgotpassword for: ' + req.body.text + '. Reason: Probably user email does not exist!';
+                    response.status = 'danger';
+                }
+
+                MeanUser.events.publish('forgotpassword', {
+                    description: req.body.text + ' forgot his password.'
+                });
+
                 res.json(response);
             });
         }
