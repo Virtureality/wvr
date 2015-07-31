@@ -220,7 +220,7 @@ module.exports = function(MeanUser) {
                 user.password = req.body.password;
                 user.resetPasswordToken = undefined;
                 user.resetPasswordExpires = undefined;
-                user.save(function(err) {
+                /*user.save(function(err) {
 
                     MeanUser.events.publish('resetpassword', {
                         description: user.name + ' reset his password.'
@@ -232,6 +232,43 @@ module.exports = function(MeanUser) {
                             user: user
                         });
                     });
+                });*/
+                user.save(function(err) {
+                    if (err) {
+                        var modelErrors = [];
+
+                        if (err.errors) {
+
+                            for (var x in err.errors) {
+                                modelErrors.push({
+                                    param: x,
+                                    msg: err.errors[x].message,
+                                    value: err.errors[x].value
+                                });
+                            }
+
+                            res.status(400).json(modelErrors);
+                        }
+
+                        return res.status(400);
+                    }
+
+                    var payload = user;
+                    payload.redirect = req.body.redirect;
+                    var escaped = JSON.stringify(payload);
+                    escaped = encodeURI(escaped);
+                    req.logIn(user, function(err) {
+                        if (err) { return next(err); }
+
+                        MeanUser.events.publish('resetpassword', {
+                            description: user.name + ' reset his password.'
+                        });
+
+                        // We are sending the payload inside the token
+                        var token = jwt.sign(escaped, config.secret, { expiresInMinutes: 60*5 });
+                        res.json({ token: token });
+                    });
+                    res.status(200);
                 });
             });
         },
@@ -281,35 +318,7 @@ module.exports = function(MeanUser) {
                     });
                 }
             ],
-            /*function(err, user) {
-
-                var response = {
-                    message: 'Mail successfully sent',
-                    status: 'success'
-                };
-                if (err) {
-                    response.message = 'User does not exist';
-                    response.status = 'danger';
-
-                    /!*MeanUser.events.publish('forgotpassword', {
-                        description: user.name + ' forgot his password.'
-                    });*!/
-                    var forgotUser;
-                    if(user && user.name && user.name !== '') {
-                        forgotUser = user.name;
-                    } else {
-                        forgotUser = req.body.text;
-                    }
-                    MeanUser.events.publish('forgotpassword', {
-                        description: forgotUser + ' forgot his password.'
-                    });
-                }
-                res.json(response);
-            });*/
             function(err, user, result) {
-                console.log('err:' + err);
-                console.log('user:' + JSON.stringify(user));
-                console.log('result:' + JSON.stringify(result));
 
                 var response = {
                     message: 'Mail sent unknown',

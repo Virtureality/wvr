@@ -84,10 +84,12 @@ angular.module('mean.users').factory('MeanUser', [ '$rootScope', '$http', '$loca
       $location.path(response.redirect);
       this.loginError = 'Authentication failed.';
       this.registerError = response;
-      this.validationError = response.msg;
+      //this.validationError = response.msg;
+      this.validationError = response;
       this.resetpassworderror = response.msg;
       $rootScope.$emit('loginfailed');
       $rootScope.$emit('registerfailed');
+      $rootScope.$emit('resetpasswordfailed');
     };
 
     var MeanUser = new MeanUserKlass();

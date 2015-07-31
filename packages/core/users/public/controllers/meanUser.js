@@ -101,13 +101,18 @@ angular.module('mean.users')
       });
     }
   ])
-  .controller('ResetPasswordCtrl', ['MeanUser',
-    function(MeanUser) {
+  .controller('ResetPasswordCtrl', ['MeanUser', '$rootScope',
+    function(MeanUser, $rootScope) {
       var vm = this;
       vm.user = {};      
       vm.registerForm = MeanUser.registerForm = false;
       vm.resetpassword = function() {
         MeanUser.resetpassword(this.user);
       };
+
+      $rootScope.$on('resetpasswordfailed', function(){
+        vm.validationError = MeanUser.validationError;
+        vm.resetpassworderror = MeanUser.resetpassworderror;
+      });
     }
   ]);
