@@ -6,8 +6,8 @@ angular.module('wvr.space')
       function($scope, Space) {
         $scope.spaces = Space.query();
       }])
-    .controller('SpaceDetailController', ['$location', '$scope', '$rootScope', 'MeanUser', '$stateParams', 'Space',
-      function($location, $scope, $rootScope, MeanUser, $stateParams, Space){
+    .controller('SpaceDetailController', ['$location', '$scope', '$rootScope', 'MeanUser', '$stateParams', 'Space', '$http',
+      function($location, $scope, $rootScope, MeanUser, $stateParams, Space, $http){
         $scope.loginUser = MeanUser.user;
         $rootScope.$on('loggedin', function() {
           $scope.loginUser = MeanUser.user;
@@ -16,6 +16,82 @@ angular.module('wvr.space')
            console.log(prop + ': ' + $scope.loginUser[prop]);
            }*/
         });
+
+        $scope.userSearchDisplay = false;
+        $scope.showUserSearch = function(facility) {
+          $scope.facilityToAssign = facility;
+          $scope.userSearchDisplay = true;
+        };
+        $scope.hideUserSearch = function() {
+          $scope.userSearchDisplay = false;
+        };
+        $scope.searchUser = function() {
+          $scope.operationInfo = 'Searching for users ...';
+          $http.post('/api/wvr/user/users', { "keywords" : $scope.keywords}).
+              success(function(data, status) {
+                $scope.userSearchStatus = status;
+                $scope.userSearchData = data;
+                $scope.resultUserList = data;
+              }).
+              error(function(data, status) {
+                $scope.userSearchData = data || "Request failed";
+                $scope.userSearchStatus = status;
+              });
+        };
+        $scope.assignOwner = function(spaceForFacility, facilityToOwn, resultUser) {
+          $scope.operationInfo = 'Assigning owner ...';
+          $scope.alertStyle = 'alert-info';
+
+          if(!resultUser) {
+            $scope.operationInfo = 'You must choose a user for assigning to!';
+            $scope.alertStyle = 'alert-warning';
+          } else if(facilityToOwn && facilityToOwn.owner){
+            $scope.operationInfo = 'Sorry! The facility has been assigned.';
+            $scope.alertStyle = 'alert-warning';
+          } else {
+            Space.get({spaceId: spaceForFacility.uuid}).$promise.then(
+                function(space) {
+                  if(space && (!space.uuid || space.uuid === "")) {//Space not found
+                    $scope.operationInfo = 'Failed to assign the facility! Reason: ' + result.message;
+                    $scope.alertStyle = 'alert-danger';
+                  } else {//Space found, so to update the facility owner
+                    var facilities = space.facilities;
+                    var curFacility, targetFacility;
+                    for(var i = 0; i< facilities.length; i++) {
+                      curFacility = facilities[i];
+                      if(curFacility._id == facilityToOwn._id && !curFacility.owner) {
+                        targetFacility = curFacility;
+                      }
+                    }
+                    if(targetFacility && resultUser._id) {
+                      targetFacility.owner = resultUser._id;
+                      space.$update({spaceId: space.uuid}, function(result) {
+                        if(result && result.space) {
+                          $scope.userSearchDisplay = false;
+                          $scope.hideSpace();
+                          $scope.operationInfo = 'Congratulations! ' + result.message + ' Facility assigned as you wish, please refresh to enter the updated space! :)';
+                          $scope.alertStyle = 'alert-success';
+                        } else {
+                          $scope.operationInfo = 'Failed to assign the facility! Reason: ' + result.message;
+                          $scope.alertStyle = 'alert-danger';
+                        }
+                      }, function(error) {
+                        $scope.operationInfo = 'Failed to assign the facility! Reason: ' + error;
+                        $scope.alertStyle = 'alert-danger';
+                      });
+                    } else {
+                      $scope.operationInfo = 'Failed to assign the facility! Reason: Unknown.';
+                      $scope.alertStyle = 'alert-danger';
+                    }
+                  }
+                },
+                function(reason) {
+                  $scope.operationInfo = 'Oops, space service is in trouble right now! You may try again later.';
+                  $scope.alertStyle = 'alert-warning';
+                }
+            );
+          }
+        };
 
         Space.get({spaceId: $stateParams.spaceId}).$promise.then(
             function(space) {
@@ -28,10 +104,6 @@ angular.module('wvr.space')
               $scope.ableToOpenDefaultRoom = !space.owner || space.owner._id == $scope.loginUser._id;
               
               var isSpaceOwner = space.owner && space.owner._id == $scope.loginUser._id;
-
-              /*if(isSpaceOwner) {
-                $scope.space.visible = true;
-              }*/
 
               var showCraftToStudio =  isSpaceOwner && space.type != 'Studio';
 
@@ -152,6 +224,10 @@ angular.module('wvr.space')
 
         $scope.showSpace = function() {
           $scope.space.visible = true;
+        };
+
+        $scope.hideSpace = function() {
+          $scope.space.visible = false;
         };
 
       }]);

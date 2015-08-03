@@ -20,7 +20,21 @@
 
     <div ng-show="space.visible" class="row">
 
-      <div class="col-lg-9">
+      <div class="col-lg-9" style="position:relative">
+        <!--<div ng-show="userSearchDisplay" ng-controller="SearchCtrl" style="position:absolute; z-index: 1000;">-->
+        <div ng-show="userSearchDisplay">
+          <form class="well form-search">
+            <label>Search:</label>
+            <input type="text" ng-model="keywords" class="input-medium search-query" placeholder="Keywords...">
+            <button type="submit" class="btn" ng-click="searchUser()">Search</button>
+          </form>
+          <ul>
+            <li ng-repeat="resultUser in resultUserList">
+              <a ng-dblclick="assignOwner(space, facilityToAssign, resultUser)">{{resultUser.name + ' - ' + resultUser.email}}</a>
+            </li>
+          </ul>
+          <p><span><button ng-click="hideUserSearch()">Hide User Search</button></span></p>
+        </div>
 
         <div id="container" class="clearfix masonry">
 
@@ -33,7 +47,7 @@
           </div>
 
           <div ng-repeat="facility in space.facilities" class="box photo col2 masonry-brick" data-space-type="seat">
-            <p><span>{{facility.owner.name}}</span>&nbsp;<span ng-show="loginUser._id == space.owner._id"><a>Assign</a></span></p>
+            <p><span>{{facility.owner.name || facility.owner}}</span>&nbsp;<span ng-show="!facility.owner && loginUser._id == space.owner._id"><button ng-click="showUserSearch(facility)">Assign Seat Owner</button></span></p>
             <p id="{{facility._id}}"></p>
             <p><span id="{{'seat-' + facility._id}}">{{facility.name}}</span></p>
           </div>
