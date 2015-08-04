@@ -257,7 +257,7 @@ $(function(){
 
 	function setup() {
 
-		setButton(actionButton, 'Setup', false);
+		setButton(actionButton, 'Activate', false);
 
 		actionButton.bind('click', doSetup);
 
@@ -301,7 +301,7 @@ $(function(){
 			wvrmitConnection.dontCaptureUserMedia = true;
 		}
 
-		setButton(actionButton, 'Request to Join', false);
+		setButton(actionButton, 'Request to Access', false);
 
 		actionButton.bind('click', requestToJoinHandler);
 
@@ -358,7 +358,6 @@ $(function(){
 					seats = space.facilities;
 				}
 				if(space.owner && space.owner._id) {
-					console.log('Initializing seat: ' + space.owner._id);
 
 					seatElement = $('#' + space.owner._id);
 					if(seatElement.length == 1) {

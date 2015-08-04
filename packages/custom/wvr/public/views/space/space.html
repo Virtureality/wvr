@@ -47,7 +47,7 @@
           </div>
 
           <div ng-repeat="facility in space.facilities" class="box photo col2 masonry-brick" data-space-type="seat">
-            <p><span>{{facility.owner.name || facility.owner}}</span>&nbsp;<span ng-show="!facility.owner && loginUser._id == space.owner._id"><button ng-click="showUserSearch(facility)">Assign Seat Owner</button></span></p>
+            <p><span id="{{'seat-owner-' + facility._id}}">{{facility.owner.name || facility.owner}}</span>&nbsp;<button ng-show="isSpaceOwner" ng-click="showUserSearch(facility)">Assign Seat Owner</button></p>
             <p id="{{facility._id}}"></p>
             <p><span id="{{'seat-' + facility._id}}">{{facility.name}}</span></p>
           </div>
