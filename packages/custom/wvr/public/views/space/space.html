@@ -1,10 +1,10 @@
-<div id="mitArea" data-ng-controller="SpaceDetailController">
+<div data-ng-controller="SpaceDetailController" data-wvr-signaling data-wvr-space>
 
-  <div id="space" ng-model="space">
+  <div id="space" data-ng-model="space">
     <div class="row">
-      <p class="alert alert-info"><span>Welcome, {{loginUser.name||"Guest"}}! :)</span>&nbsp;|&nbsp;<span ng-show="space.owner" >This is <a class="text-primary" href="mailto:{{space.owner.email}}">{{space.owner.name}}</a>'s space.</span><span ng-show="!space.owner"> This is a free space.&nbsp;<a ng-show="!loginUser._id" href="/auth/login" target="_blank" class="btn btn-success badge">Login to Own</a><button ng-show="loginUser._id" ng-click="ownSpace(space)" class="btn btn-success badge">Own</button></span> &nbsp;<button ng-show="showCraftToStudio" ng-click="craftToStudio(space)" class="btn btn-success badge">Craft to Studio</button></p>
+      <p class="alert alert-info"><span>Welcome, {{loginUser.name||"Guest"}}! :)</span>&nbsp;|&nbsp;<span data-ng-show="space.owner" >This is <a class="text-primary" href="mailto:{{space.owner.email}}">{{space.owner.name}}</a>'s space.</span><span data-ng-show="!space.owner"> This is a free space.&nbsp;<a data-ng-show="!loginUser._id" href="/auth/login" target="_blank" class="btn btn-success badge">Login to Own</a><button data-ng-show="loginUser._id" data-ng-click="ownSpace(space)" class="btn btn-success badge">Own</button></span> &nbsp;<button data-ng-show="showCraftToStudio" data-ng-click="craftToStudio(space)" class="btn btn-success badge">Craft to Studio</button></p>
 
-      <p ng-show="operationInfo" class="{{alertStyle}}">{{operationInfo}}</p>
+      <p data-ng-show="operationInfo" class="{{alertStyle}}">{{operationInfo}}</p>
 
       <hr/>
     </div>
@@ -14,40 +14,35 @@
     </div>
     <hr/>
 
-    <input id="mname" type="hidden" name="mname" value="{{space.uuid}}" />
-
-    <input id="ableToSetup" type="hidden" name="ableToSetup" value={{ableToOpenDefaultRoom}} />
-
-    <div ng-show="space.visible" class="row">
+    <div data-ng-show="space.visible" class="row">
 
       <div class="col-lg-9" style="position:relative">
-        <!--<div ng-show="userSearchDisplay" ng-controller="SearchCtrl" style="position:absolute; z-index: 1000;">-->
-        <div ng-show="userSearchDisplay">
+        <div data-ng-show="userSearchDisplay">
           <form class="well form-search">
             <label>Search:</label>
-            <input type="text" ng-model="keywords" class="input-medium search-query" placeholder="Keywords...">
-            <button type="submit" class="btn" ng-click="searchUser()">Search</button>
+            <input type="text" data-ng-model="keywords" class="input-medium search-query" placeholder="Keywords...">
+            <button type="submit" class="btn" data-ng-click="searchUser()">Search</button>
           </form>
           <ul>
-            <li ng-repeat="resultUser in resultUserList">
-              <a ng-dblclick="assignOwner(space, facilityToAssign, resultUser)">{{resultUser.name + ' - ' + resultUser.email}}</a>
+            <li data-ng-repeat="resultUser in resultUserList">
+              <a data-ng-dblclick="assignOwner(space, facilityToAssign, resultUser)">{{resultUser.name + ' - ' + resultUser.email}}</a>
             </li>
           </ul>
-          <p><span><button ng-click="hideUserSearch()">Hide User Search</button></span></p>
+          <p><span><button data-ng-click="hideUserSearch()">Hide User Search</button></span></p>
         </div>
 
         <div id="container" class="clearfix masonry">
 
           <div id="ownerPresenceBox" class="box photo col2 masonry-brick" data-space-type="seat">
-            <p><span ng-show="space.owner">{{space.owner.name}}</span></p>
+            <p><span data-ng-show="space.owner">{{space.owner.name}}</span></p>
             <p id="{{space.owner._id}}">
               <span><a id="{{space.owner.name + '-' + space.owner._id}}" href="/wvr/assets/img/lily.jpeg" title="Lily"><img src="/wvr/assets/img/lily.jpeg" alt="Lily"></a></span>
             </p>
             <p><span id="{{'seat-' + space.owner._id}}">{{'Seat - Space Owner - ' + space.owner.name}}</span></p>
           </div>
 
-          <div ng-repeat="facility in space.facilities" class="box photo col2 masonry-brick" data-space-type="seat">
-            <p><span id="{{'seat-owner-' + facility._id}}">{{facility.owner.name || facility.owner}}</span>&nbsp;<button ng-show="isSpaceOwner" ng-click="showUserSearch(facility)">Assign Seat Owner</button></p>
+          <div data-ng-repeat="facility in space.facilities" class="box photo col2 masonry-brick" data-space-type="seat">
+            <p><span id="{{'seat-owner-' + facility._id}}">{{facility.owner.name || facility.owner}}</span>&nbsp;<button data-ng-show="isSpaceOwner" data-ng-click="showUserSearch(facility)">Assign Seat Owner</button></p>
             <p id="{{facility._id}}"></p>
             <p><span id="{{'seat-' + facility._id}}">{{facility.name}}</span></p>
           </div>
@@ -73,8 +68,6 @@
       <script type="text/javascript" src="/wvr/assets/js/mit/lib/socket.io.js"></script>
       <script type="text/javascript" src="/wvr/assets/js/mit/lib/RTCMultiConnection.js"></script>
 
-      <script type="text/javascript" src="/wvr/assets/js/mit/signaling.js"></script>
-      <script type="text/javascript" src="/wvr/assets/js/mit/mit.js"></script>
     </div>
   </div>
 
