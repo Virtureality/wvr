@@ -17,21 +17,47 @@
     <div data-ng-show="space.visible" class="row">
 
       <div class="col-lg-9" style="position:relative">
-        <div data-ng-show="userSearchDisplay">
-          <form class="well form-search">
-            <label>Search:</label>
-            <input type="text" data-ng-model="keywords" class="input-medium search-query" placeholder="Keywords...">
-            <button type="submit" class="btn" data-ng-click="searchUser()">Search</button>
-          </form>
-          <ul>
-            <li data-ng-repeat="resultUser in resultUserList">
-              <a data-ng-dblclick="assignOwner(space, facilityToAssign, resultUser)">{{resultUser.name + ' - ' + resultUser.email}}</a>
-            </li>
-          </ul>
-          <p><span><button data-ng-click="hideUserSearch()">Hide User Search</button></span></p>
+
+        <div data-ng-show="isSpaceOwner">
+          <button class="btn btn-info" ng-click="toggleDesignPanel()">Design Panel Toggle</button>
+          <div pageslide ps-open="designPanelOpen" ps-side="left" ps-custom-top="300px" ps-size="500px" ps-custom-height="800px" ps-class="wvr-pageslide">
+            <div style="padding:20px" id="space-design-panel" data-drop="true" jqyoui-droppable="{multiple:true}">
+              <h2>Space Design Panel</h2>
+              <div class="row" style="text-align: center;">
+                <div data-type="Space" class="box" data-ng-repeat="item in designerResources.spaces" data-drag="true" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" data-ng-model="designerResources.spaces" jqyoui-draggable="{index: {{$index}}, placeholder: 'keep', animate:true}" ng-hide="!item"><a>{{item}}</a></div>
+              </div>
+              <div class="row" style="text-align: center;">
+                <div data-type="Facility" class="box" data-ng-repeat="item in designerResources.facilities" data-drag="true" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" data-ng-model="designerResources.facilities" jqyoui-draggable="{index: {{$index}}, placeholder: 'keep', animate:true}" ng-hide="!item.name">{{item.name}}</div>
+              </div>
+              <div class="row" data-drop="true" data-ng-model="trash" jqyoui-droppable="{multiple:true}">
+                <h3>Trash:</h3>
+                <ul>
+                  <li data-type="{{item.type}}" class="box" data-ng-repeat="item in trash track by $index" ng-show="item" data-drag="true" data-jqyoui-options="{revert: 'invalid'}" data-ng-model="trash" jqyoui-draggable="{index: {{$index}},animate:true}">trash - {{item.name||item}}</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div data-ng-show="space.type" data-ng-model="space.type" data-drop="true" data-jqyoui-options="{accept: '[data-type|=Space]'}" jqyoui-droppable="{multiple:false}">
+            <p><span><h3>Space Type: {{space.type}}</h3>&nbsp;<span class="alert alert-info">Drop space type here to change! :)</span></span></p>
+          </div>
         </div>
 
-        <div id="container" class="clearfix masonry">
+        <div data-ng-show="userSearchDisplay">
+          <div pageslide ps-open="userSearchDisplay" ps-side="right" ps-custom-top="300px" ps-custom-height="200px" ps-class="wvr-pageslide">
+            <form class="well form-search">
+              <input type="text" data-ng-model="keywords" class="input-medium search-query" placeholder="Name or Email ...">&nbsp;
+              <button type="submit" class="btn-info" data-ng-click="searchUser()">Search</button>
+            </form>
+            <ul>
+              <li data-ng-repeat="resultUser in resultUserList">
+                <a data-ng-dblclick="assignOwner(space, facilityToAssign, resultUser)">{{resultUser.name + ' - ' + resultUser.email}}</a>
+              </li>
+            </ul>
+            <span>&nbsp;&nbsp;&nbsp;<button data-ng-click="hideUserSearch()" class="btn-info">Close</button></span>
+          </div>
+        </div>
+
+        <div id="container" class="clearfix masonry" data-ng-model="space.facilities" data-drop="true" data-jqyoui-options="{accept: '[data-type|=&quot;Facility&quot;]'}" jqyoui-droppable="{multiple:true}">
 
           <div id="ownerPresenceBox" class="box photo col2 masonry-brick" data-space-type="seat">
             <p><span data-ng-show="space.owner">{{space.owner.name}}</span></p>
@@ -41,7 +67,7 @@
             <p><span id="{{'seat-' + space.owner._id}}">{{'Seat - Space Owner - ' + space.owner.name}}</span></p>
           </div>
 
-          <div data-ng-repeat="facility in space.facilities" class="box photo col2 masonry-brick" data-space-type="seat">
+          <div data-ng-repeat="facility in space.facilities track by $index" class="box photo col2 masonry-brick" data-type="{{facility.type}}" data-space-type="seat" data-ng-show="facility.name" data-drag="true" data-jqyoui-options="{revert: 'invalid'}" ng-model="space.facilities" jqyoui-draggable="{index: {{$index}},animate:true}">
             <p><span id="{{'seat-owner-' + facility._id}}">{{facility.owner.name || facility.owner}}</span>&nbsp;<button data-ng-show="isSpaceOwner" data-ng-click="showUserSearch(facility)">Assign Seat Owner</button></p>
             <p id="{{facility._id}}"></p>
             <p><span id="{{'seat-' + facility._id}}">{{facility.name}}</span></p>

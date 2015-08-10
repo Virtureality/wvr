@@ -209,6 +209,28 @@ angular.module('wvr.space')
 
                   }
                 }
+
+                $scope.designPanelOpen = false; // This will be binded using the ps-open attribute
+
+                $scope.toggleDesignPanel = function(){
+                  $scope.designPanelOpen = !$scope.designPanelOpen
+                }
+
+                $scope.designerResources = {
+                  "facilities": [
+                    {
+                      "name": "Facility - Office",
+                      "type": "Facility-Office"
+                    },
+                    {
+                      "name": "Facility - Workspace",
+                      "type": "Facility-Workspace"
+                    }
+                  ],
+                  "spaces": ["Generic", "Studio"]
+                };
+                $scope.trash = [];
+
               }
 
               $scope.$emit('spaceReached');
