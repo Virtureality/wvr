@@ -2,7 +2,7 @@
 
   <div id="space" data-ng-model="space">
     <div class="row">
-      <p class="alert alert-info"><span>Welcome, {{loginUser.name||"Guest"}}! :)</span>&nbsp;|&nbsp;<span data-ng-show="space.owner" >This is <a class="text-primary" href="mailto:{{space.owner.email}}">{{space.owner.name}}</a>'s space.</span><span data-ng-show="!space.owner"> This is a free space.&nbsp;<a data-ng-show="!loginUser._id" href="/auth/login" target="_blank" class="btn btn-success badge">Login to Own</a><button data-ng-show="loginUser._id" data-ng-click="ownSpace(space)" class="btn btn-success badge">Own</button></span> &nbsp;<button data-ng-show="showCraftToStudio" data-ng-click="craftToStudio(space)" class="btn btn-success badge">Craft to Studio</button></p>
+      <p class="alert alert-info"><span>Welcome, {{loginUser.name||"Guest"}}! :)</span>&nbsp;|&nbsp;<span data-ng-show="space.owner" >This is <a class="text-primary" href="mailto:{{space.owner.email}}">{{space.owner.name}}</a>'s space.</span><span data-ng-show="!space.owner"> This is a free space.&nbsp;<a data-ng-show="!loginUser._id" href="/auth/login" target="_blank" class="btn btn-success badge">Login to Own</a><button data-ng-show="loginUser._id" data-ng-click="ownSpace(space)" class="btn btn-success badge">Own</button></span></p>
 
       <p data-ng-show="operationInfo" class="{{alertStyle}}">{{operationInfo}}</p>
 
@@ -20,25 +20,33 @@
 
         <div data-ng-show="isSpaceOwner">
           <button class="btn btn-info" ng-click="toggleDesignPanel()">Design Panel Toggle</button>
-          <div pageslide ps-open="designPanelOpen" ps-side="left" ps-custom-top="300px" ps-size="500px" ps-custom-height="800px" ps-class="wvr-pageslide">
-            <div style="padding:20px" id="space-design-panel" data-drop="true" jqyoui-droppable="{multiple:true}">
-              <h2>Space Design Panel</h2>
+          <div pageslide ps-open="designPanelOpen" ps-side="left" ps-custom-top="300px" ps-custom-height="800px" ps-class="wvr-pageslide">
+            <h2>Space Design Panel</h2>
+            <div style="padding:20px" id="space-design-panel">
+              <h3>Spaces:</h3>
+              <hr/>
               <div class="row" style="text-align: center;">
-                <div data-type="Space" class="box" data-ng-repeat="item in designerResources.spaces" data-drag="true" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" data-ng-model="designerResources.spaces" jqyoui-draggable="{index: {{$index}}, placeholder: 'keep', animate:true}" ng-hide="!item"><a>{{item}}</a></div>
+                <div data-type="Space" class="box" data-ng-repeat="item in designerResources.spaces" data-drag="true" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" data-ng-model="designerResources.spaces" jqyoui-draggable="{index: {{$index}}, placeholder: 'keep', animate: true}"><a>{{item.type}}</a></div>
               </div>
+              <h3>Facilities:</h3>
+              <hr/>
               <div class="row" style="text-align: center;">
-                <div data-type="Facility" class="box" data-ng-repeat="item in designerResources.facilities" data-drag="true" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" data-ng-model="designerResources.facilities" jqyoui-draggable="{index: {{$index}}, placeholder: 'keep', animate:true}" ng-hide="!item.name">{{item.name}}</div>
+                <div data-type="Facility" class="box" data-ng-repeat="item in designerResources.facilities" data-drag="true" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" data-ng-model="designerResources.facilities" jqyoui-draggable="{index: {{$index}}, placeholder: 'keep', animate: true}">{{item.type}}</div>
               </div>
-              <div class="row" data-drop="true" data-ng-model="trash" jqyoui-droppable="{multiple:true}">
+              <br/>
+              <hr/>
+              <div class="row" data-drop="true" data-ng-model="trash" data-jqyoui-options="{accept: '[data-type|=&quot;Facility&quot;]'}" jqyoui-droppable="{multiple:true}">
                 <h3>Trash:</h3>
+                <p><span class="alert-info">Drop stuff here as trash.</span></p>
                 <ul>
-                  <li data-type="{{item.type}}" class="box" data-ng-repeat="item in trash track by $index" ng-show="item" data-drag="true" data-jqyoui-options="{revert: 'invalid'}" data-ng-model="trash" jqyoui-draggable="{index: {{$index}},animate:true}">trash - {{item.name||item}}</li>
+                  <li data-type="Facility" data-ng-repeat="item in trash track by $index" data-drag="true" data-jqyoui-options="{revert: 'invalid'}" data-ng-model="trash" jqyoui-draggable="{index: {{$index}}, animate: true}">trash - {{item.name || item}}</li>
                 </ul>
               </div>
             </div>
           </div>
+
           <div data-ng-show="space.type" data-ng-model="space.type" data-drop="true" data-jqyoui-options="{accept: '[data-type|=Space]'}" jqyoui-droppable="{multiple:false}">
-            <p><span><h3>Space Type: {{space.type}}</h3>&nbsp;<span class="alert alert-info">Drop space type here to change! :)</span></span></p>
+            <p><span><h3>Space Type: {{space.type || 'Raw'}}</h3>&nbsp;<span class="alert-info">Drop space type here to change! :)</span></span></p>
           </div>
         </div>
 
@@ -57,7 +65,7 @@
           </div>
         </div>
 
-        <div id="container" class="clearfix masonry" data-ng-model="space.facilities" data-drop="true" data-jqyoui-options="{accept: '[data-type|=&quot;Facility&quot;]'}" jqyoui-droppable="{multiple:true}">
+        <div id="container" class="clearfix masonry">
 
           <div id="ownerPresenceBox" class="box photo col2 masonry-brick" data-space-type="seat">
             <p><span data-ng-show="space.owner">{{space.owner.name}}</span></p>
@@ -67,12 +75,22 @@
             <p><span id="{{'seat-' + space.owner._id}}">{{'Seat - Space Owner - ' + space.owner.name}}</span></p>
           </div>
 
-          <div data-ng-repeat="facility in space.facilities track by $index" class="box photo col2 masonry-brick" data-type="{{facility.type}}" data-space-type="seat" data-ng-show="facility.name" data-drag="true" data-jqyoui-options="{revert: 'invalid'}" ng-model="space.facilities" jqyoui-draggable="{index: {{$index}},animate:true}">
+          <div data-type="Facility" data-ng-repeat="facility in space.facilities track by $index" class="box photo col2 masonry-brick" data-space-type="seat" data-drag="true" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" data-ng-model="space.facilities" jqyoui-draggable="{index: {{$index}}, animate: true}">
             <p><span id="{{'seat-owner-' + facility._id}}">{{facility.owner.name || facility.owner}}</span>&nbsp;<button data-ng-show="isSpaceOwner" data-ng-click="showUserSearch(facility)">Assign Seat Owner</button></p>
             <p id="{{facility._id}}"></p>
             <p><span id="{{'seat-' + facility._id}}">{{facility.name}}</span></p>
           </div>
 
+        </div>
+
+        <div data-ng-model="newFacilities" data-drop="true" data-jqyoui-options="{accept: '[data-type|=&quot;Facility&quot;]'}" jqyoui-droppable="{multiple:true, onDrop: 'onFacilityDropped', containment: 'position'}">
+          <p><span class="alert-info">Drop new facilities here! :)</span></p>
+          <div class="box photo col2 masonry-brick" data-type="Facility" data-ng-repeat="facility in newFacilities track by $index" data-ng-model="newFacilities" data-drag="true" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" jqyoui-draggable="{index: {{$index}}, animate: true}">
+            <!--<p><span id="{{'seat-owner-' + facilityDroppedTime}}">{{facility.owner.name || facility.owner}}</span>&nbsp;<button data-ng-show="isSpaceOwner" data-ng-click="showUserSearch(facility)">Assign Seat Owner</button></p>
+            <p id="{{facilityDroppedTime}}"></p>
+            <p><span id="{{'seat-' + facilityDroppedTime}}">{{'New - ' + facility.type}}</span></p>-->
+            <p><span id="{{'seat-' + facilityDroppedTime}}">{{facility.type}}</span></p>
+          </div>
         </div>
 
       </div>
@@ -95,6 +113,11 @@
       <script type="text/javascript" src="/wvr/assets/js/mit/lib/RTCMultiConnection.js"></script>
 
     </div>
+
+    <div class="row">
+      <button class="btn-info" data-ng-show="isSpaceOwner && spaceChanged" data-ng-click="updateSpace()">Update the Space</button>
+    </div>
+
   </div>
 
 </div>

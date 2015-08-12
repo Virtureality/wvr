@@ -168,68 +168,79 @@ angular.module('wvr.space')
                   }
                 };
 
-                var showCraftToStudio =  isSpaceOwner && space.type != 'Studio';
-
-                $scope.showCraftToStudio = showCraftToStudio;
-
-                if(showCraftToStudio) {
-                  $scope.craftToStudio = function(spaceToCraft) {
-
-                    Space.get({spaceId: spaceToCraft.uuid}).$promise.then(
-                        function(space) {
-                          space.type = 'Studio';
-
-                          for(var i = 1; i <= 6; i++) {
-                            space.facilities.push({name: 'Seat - ' + i, type: 'Physical'});
-                          }
-
-                          space.owner = $scope.loginUser._id;
-
-                          space.$update({spaceId: space.uuid}, function(result) {
-                            if(result && result.space) {
-                              $scope.showCraftToStudio = false;
-
-                              $scope.space.facilities = result.space.facilities;
-                              $scope.operationInfo = 'Congratulations! ' + result.message + ' to Studio now! :)';
-                              $scope.alertStyle = 'alert-success';
-                            } else {
-                              $scope.operationInfo = 'Failed to craft the space! Reason: ' + result.message;
-                              $scope.alertStyle = 'alert-danger';
-                            }
-                          }, function(error) {
-                            $scope.operationInfo = 'Failed to craft the space! Reason: ' + error;
-                            $scope.alertStyle = 'alert-danger';
-                          });
-                        },
-                        function(reason) {
-                          $scope.operationInfo = 'Oops, space service is in trouble right now! You may try again later.';
-                          $scope.alertStyle = 'alert-warning';
-                        }
-                    );
-
-                  }
-                }
-
                 $scope.designPanelOpen = false; // This will be binded using the ps-open attribute
 
                 $scope.toggleDesignPanel = function(){
                   $scope.designPanelOpen = !$scope.designPanelOpen
                 }
 
+                /*$scope.designerResources = {
+                  "facilities": [{type: "Cabinet"}, {type: "Screen"}, {type: "Seat"}],
+                  "spaces": [{type: "Building"}, {type: "Room"}, {type: "Office"}, {type: "Studio"}, {type: "Workspace"}]
+                };*/
                 $scope.designerResources = {
-                  "facilities": [
-                    {
-                      "name": "Facility - Office",
-                      "type": "Facility-Office"
-                    },
-                    {
-                      "name": "Facility - Workspace",
-                      "type": "Facility-Workspace"
-                    }
-                  ],
-                  "spaces": ["Generic", "Studio"]
+                  "facilities": [{type: "Seat"}],
+                  "spaces": [{type: "Studio"}]
                 };
                 $scope.trash = [];
+                $scope.newFacilities = [];
+                $scope.spaceChanged = false;
+
+                $scope.onFacilityDropped = function(event, ui) {
+                  //alert('Facility dropped!');
+                  /*console.log("event: ");
+                  for(var prop in event) {
+                    console.log(prop + ": " + event[prop]);
+                  }
+                  console.log("ui: " + JSON.stringify(ui));
+
+                  $scope.facilityIndex++;
+                  console.log('facilityIndex: ' + $scope.facilityIndex);*/
+
+                  $scope.facilityDroppedTime = event.timeStamp;
+
+                  $scope.spaceChanged = true;
+
+                  $('#container').masonry();
+                };
+
+                $scope.updateSpace = function() {
+                  Space.get({spaceId: $scope.space.uuid}).$promise.then(
+                      function(space) {
+                        space.type = $scope.space.type;
+
+                        var newFacilities = $scope.newFacilities;
+
+                        for(var i = 0; i < newFacilities.length; i++) {
+                          space.facilities.push({name: newFacilities[i].type, type: newFacilities[i].type});
+                        }
+
+                        space.owner = $scope.loginUser._id;
+
+                        space.$update({spaceId: space.uuid}, function(result) {
+                          if(result && result.space) {
+                            $scope.space.type = result.space.type;
+                            $scope.space.facilities = result.space.facilities;
+                            $scope.trash = [];
+                            $scope.newFacilities = [];
+                            $scope.spaceChanged = false;
+                            $scope.operationInfo = 'Congratulations! ' + result.message;
+                            $scope.alertStyle = 'alert-success';
+                          } else {
+                            $scope.operationInfo = 'Failed to update the space! Reason: ' + result.message;
+                            $scope.alertStyle = 'alert-danger';
+                          }
+                        }, function(error) {
+                          $scope.operationInfo = 'Failed to update the space! Reason: ' + error;
+                          $scope.alertStyle = 'alert-danger';
+                        });
+                      },
+                      function(reason) {
+                        $scope.operationInfo = 'Oops, space service is in trouble right now! You may try again later.';
+                        $scope.alertStyle = 'alert-warning';
+                      }
+                  );
+                };
 
               }
 

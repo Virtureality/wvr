@@ -10,11 +10,11 @@ var mongoose = require('mongoose'),
  * Facility Schema
  */
 var FacilitySchema = new Schema({
-    //uuid: {type: String, unique: true, sparse: true, default: _id},
     uuid: {type: String, unique: true, sparse: true},
     name: {type: String},
     owner: {type: Schema.ObjectId, ref: 'User'},
-    type: {type: String, enum: ['Generic', 'Physical', 'Virtual'], default: 'Generic', required: true}
+    type: {type: String},
+    extra: {}
 }, { strict: true });
 
 FacilitySchema.pre('save', function(next){
@@ -29,16 +29,14 @@ FacilitySchema.pre('save', function(next){
  * Space Schema
  */
 var SpaceSchema = new Schema({
-    //uuid: {type: String, unique: true, sparse: true, default: _id},
-    //uuid: {type: String, unique: true, sparse: true, default: id},
     __v: { type: Number, select: false},
     uuid: {type: String, unique: true, sparse: true},
     name: {type: String},
     owner: {type: Schema.ObjectId, ref: 'User'},
-    type: {type: String, enum: ['Generic', 'Event', 'Org', 'Studio'], default: 'Generic', required: true},
+    type: {type: String},
     facilities: [FacilitySchema],
-    spaces: [{type: Schema.Types.ObjectId, ref: 'SpaceSchema'}]
-    //spaces: [this]
+    spaces: [{type: Schema.Types.ObjectId, ref: 'SpaceSchema'}],
+    extra: {}
 }, { strict: true });
 
 /**/
@@ -49,9 +47,5 @@ SpaceSchema.pre('save', function(next){
 
     next();
 });
-
-/*SpaceSchema.methods.populate = function(spaceObj) {
-
-}*/
 
 mongoose.model('Space', SpaceSchema);
