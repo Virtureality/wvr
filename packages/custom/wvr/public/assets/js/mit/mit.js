@@ -151,8 +151,8 @@ $(function(){
 		};
 
 		wvrmitConnection.onstreamended = function (e) {
-			var video = document.getElementById(e.userid);
-			if (video) video.parentNode.parentNode.removeChild(video.parentNode);
+			var video = document.getElementById('video-' + e.userid);
+			if (video) video.parentNode.parentNode.parentNode.parentNode.removeChild(video.parentNode.parentNode.parentNode);
 		};
 
 		//wvrmitConnection.transmitRoomOnce = true;
