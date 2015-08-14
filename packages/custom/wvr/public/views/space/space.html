@@ -21,16 +21,16 @@
         <div data-ng-show="isSpaceOwner">
           <button class="btn btn-info" ng-click="toggleDesignPanel()">Design Panel Toggle</button>
           <div pageslide ps-open="designPanelOpen" ps-side="left" ps-custom-top="300px" ps-custom-height="800px" ps-class="wvr-pageslide">
-            <h2>Space Design Panel</h2>
+            <h2 style="text-align: center;">Space Design Panel</h2>
             <div style="padding:20px" id="space-design-panel">
-              <h3>Spaces:</h3>
+              <!--<h3>Spaces:</h3>
               <hr/>
-              <div class="row" style="text-align: center;">
+              <div class="row">
                 <div data-type="Space" class="box" data-ng-repeat="item in designerResources.spaces" data-drag="true" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" data-ng-model="designerResources.spaces" jqyoui-draggable="{index: {{$index}}, placeholder: 'keep', animate: true}"><a>{{item.type}}</a></div>
-              </div>
-              <h3>Facilities:</h3>
-              <hr/>
-              <div class="row" style="text-align: center;">
+              </div>-->
+              <div class="row">
+                <h3>Facilities:</h3>
+                <hr/>
                 <div data-type="Facility" class="box" data-ng-repeat="item in designerResources.facilities" data-drag="true" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" data-ng-model="designerResources.facilities" jqyoui-draggable="{index: {{$index}}, placeholder: 'keep', animate: true}">{{item.type}}</div>
               </div>
               <br/>
@@ -45,9 +45,9 @@
             </div>
           </div>
 
-          <div data-ng-show="space.type" data-ng-model="space.type" data-drop="true" data-jqyoui-options="{accept: '[data-type|=Space]'}" jqyoui-droppable="{multiple:false}">
-            <p><span><h3>Space Type: {{space.type || 'Raw'}}</h3>&nbsp;<span class="alert-info">Drop space type here to change! :)</span></span></p>
-          </div>
+          <!--<div data-ng-show="designPanelOpen" data-ng-model="spaceType" data-drop="true" data-jqyoui-options="{accept: '[data-type|=Space]'}" jqyoui-droppable="{multiple:false}">
+            <p><span><h3>Space Type: {{spaceType.type || 'Raw'}}</h3>&nbsp;<span class="alert-info">Drop space type here to change! :)</span></span></p>
+          </div>-->
         </div>
 
         <div data-ng-show="userSearchDisplay">
@@ -83,7 +83,7 @@
 
         </div>
 
-        <div data-ng-show="isSpaceOwner" data-ng-model="newFacilities" data-drop="true" data-jqyoui-options="{accept: '[data-type|=&quot;Facility&quot;]'}" jqyoui-droppable="{multiple:true, onDrop: 'onFacilityDropped', containment: 'position'}">
+        <div data-ng-show="designPanelOpen" data-ng-model="newFacilities" data-drop="true" data-jqyoui-options="{accept: '[data-type|=&quot;Facility&quot;]'}" jqyoui-droppable="{multiple:true, onDrop: 'onFacilityDropped', containment: 'position'}">
           <p><span class="alert-info">Drop new facilities here! :)</span></p>
           <div class="box photo col2 masonry-brick" data-type="Facility" data-ng-repeat="facility in newFacilities track by $index" data-ng-model="newFacilities" data-drag="true" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" jqyoui-draggable="{index: {{$index}}, animate: true}">
             <p><span id="{{'seat-' + facilityDroppedTime}}">{{facility.type}}</span></p>

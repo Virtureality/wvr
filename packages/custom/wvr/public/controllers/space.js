@@ -187,15 +187,6 @@ angular.module('wvr.space')
                 $scope.spaceChanged = false;
 
                 $scope.onFacilityDropped = function(event, ui) {
-                  //alert('Facility dropped!');
-                  /*console.log("event: ");
-                  for(var prop in event) {
-                    console.log(prop + ": " + event[prop]);
-                  }
-                  console.log("ui: " + JSON.stringify(ui));
-
-                  $scope.facilityIndex++;
-                  console.log('facilityIndex: ' + $scope.facilityIndex);*/
 
                   $scope.facilityDroppedTime = event.timeStamp;
 
