@@ -7,60 +7,57 @@
     <form id="register_form" ng-submit="reg.register()">
         <h2>Sign Up</h2>
 
-        <div class="input-wrapper">
+        <div class="wvr-input-wrapper">
             <input required id="name" type="text" name="name" placeholder="Full Name"
                    ng-model="reg.user.name">
 
-            <div class="error_message">Please enter a correct info #</div>
-            <span class="pic user"></span>
+            <div class="wvr-error_message">Please enter a correct info #</div>
+            <span class="wvr-pic user"></span>
         </div>
 
-        <div class="input-wrapper">
+        <div class="wvr-input-wrapper">
             <input required id="email_block" type="email" name="email" placeholder="Email Address"
                    ng-model="reg.user.email">
 
-            <div class="error_message">Please enter a correct info #</div>
-            <span class="pic email"></span>
+            <div class="wvr-error_message">Please enter a correct info #</div>
+            <span class="wvr-pic email"></span>
         </div>
 
-        <div class="input-wrapper">
+        <div class="wvr-input-wrapper">
             <input required id="username" type="text" name="username" placeholder="Username"
                    ng-model="reg.user.username">
 
-            <div class="error_message">Please enter a correct info #</div>
-            <span class="pic username"></span>
+            <div class="wvr-error_message">Please enter a correct info #</div>
+            <span class="wvr-pic username"></span>
         </div>
 
-        <div class="input-wrapper">
+        <div class="wvr-input-wrapper">
             <input required id="password_block" name="password" type="{{reg.input.type}}"
                    placeholder="{{reg.input.placeholder}}" ng-model="reg.user.password">
 
-            <div class="error_message">Please enter a correct info #</div>
-        <span class="pic password {{reg.input.iconClass}}" ng-click="reg.togglePasswordVisible()">
-              <div class="hide_text_password">
+            <div class="wvr-error_message">Please enter a correct info #</div>
+        <span class="wvr-pic password {{reg.input.iconClass}}" ng-click="reg.togglePasswordVisible()">
+              <div class="wvr-hide_text_password">
                   {{reg.input.tooltipText}}
               </div>
         </span>
         </div>
-        <div class="input-wrapper">
+        <div class="wvr-input-wrapper">
             <input required id="confirm_password" name="confirm_password" type="{{reg.input.type}}"
                    placeholder="{{reg.input.placeholderConfirmPass}}" ng-model="reg.user.confirmPassword">
 
-            <div class="error_message">Please enter a correct info #</div>
-        <span class="pic password {{reg.input.iconClassConfirmPass}}" ng-click="reg.togglePasswordConfirmVisible()">
-              <div class="hide_text_password">
+            <div class="wvr-error_message">Please enter a correct info #</div>
+        <span class="wvr-pic password {{reg.input.iconClassConfirmPass}}" ng-click="reg.togglePasswordConfirmVisible()">
+              <div class="wvr-hide_text_password">
                   {{reg.input.tooltipTextConfirmPass}}
               </div>
         </span>
         </div>
 
-        <div class="button_register">
-            <button type="submit" class="submit_button">Sign up</button>
-            <p>Already have an account?</p>
+        <div class="wvr-button_register">
+            <button type="submit" class="wvr-submit_button">Sign up</button>
+            <p>Having Account?</p>
             <a ui-sref='auth.login'>Log in</a>
         </div>
-        <!--<div class="woman_ninja_bottom">
-            <img src="/theme/assets/img/woman_ninja.png" alt="#">
-        </div>-->
     </form>
 </div>

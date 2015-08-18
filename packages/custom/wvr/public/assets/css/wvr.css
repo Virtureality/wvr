@@ -6,3 +6,404 @@
     background-color:rgba(192,213,219,0.5);
     opacity: 0.9;
 }
+
+/* Begin - User Management */
+body.reset-tokenId {
+    background: url("/theme/assets/img/bg.png");
+    height: 100%;
+    position: relative;
+}
+.wvr-form {
+    background: #ffffff;
+    box-shadow: 0 1px 3px 1px #003644;
+    margin-top: 35px;
+    position: relative;
+}
+
+.wvr-main-form {
+    width: 100%;
+    height: 333px;
+}
+
+.wvr-main-form.wvr-register-form {
+    height: 622px;
+}
+
+.wvr-login-form__left {
+    width: 100%;
+    height: 100%;
+    float: left;
+    padding: 34px 0 0 27px;
+}
+
+.wvr-login-form__left h2, .wvr-forgot_password_form h2 {
+    font-size: 30px;
+    padding-bottom: 4px;
+    font-family: "futura_bkbook";
+    margin: 0;
+    text-transform: uppercase;
+}
+
+.wvr-login-form__left p, .wvr-forgot_password_form p {
+    font-size: 16px;
+    font-family: 'proxima_nova_rgregular';
+}
+
+.wvr-main-form .wvr-input-wrapper {
+    position: relative;
+    margin-bottom: 10px;
+}
+
+.wvr-main-form .wvr-input-wrapper input {
+    width: 80%;
+    border: 1px solid #d3d3d3;
+    border-radius: 5px;
+    padding: 18px 0 18px 16px;
+    outline: none;
+    font-size: 15px;
+    font-family: 'proxima_nova_rgregular';
+    line-height: 22px;
+}
+
+.wvr-main-form .wvr-input-wrapper input:invalid {
+    box-shadow: none;
+}
+
+.wvr-main-form .wvr-input-wrapper input:focus {
+    border-color: #66afe9;
+    outline: 0;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,0.075),0 0 8px rgba(102,175,233,0.6);
+    box-shadow: inset 0 1px 1px rgba(0,0,0,0.075),0 0 8px rgba(102,175,233,0.6);
+}
+
+.wvr-pic.email {
+    position: absolute;
+    background: url("/theme/assets/img/mail_login.png") no-repeat;
+    width: 30px;
+    height: 21px;
+    top: 18px;
+    right: 28px;
+}
+
+.wvr-pic.password {
+    position: absolute;
+    background: url("/theme/assets/img/eye_password.png") no-repeat 50% 50%;
+    width: 40px;
+    height: 30px;
+    top: 16px;
+    right: 22px;
+    cursor: pointer;
+}
+
+.wvr-login-form__left .wvr-icon_hide_password {
+    background: url("/theme/assets/img/eye_password_disabled.png") no-repeat 50% 50%;
+    width: 40px;
+    height: 30px;
+    top: 16px;
+    right: 22px;
+}
+
+.wvr-login-form__left .wvr-hide_text_password {
+    display: none;
+    position: absolute;
+    line-height: 38px;
+    width: 125px;
+    height: 34px;
+    bottom: 39px;
+    right: -40px;
+    background: #0588a0;
+    text-align: center;
+    border-radius: 5px;
+    font-family: "proxima_nova_rgregular";
+    color: white;
+}
+
+.wvr-login-form__left .wvr-hide_text_password:after {
+    content: '';
+    display: block;
+    position: absolute;
+    left: 50%;
+    top: 100%;
+    border-top: 10px solid #0588a0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    margin-left: -4px;
+}
+
+.wvr-pic.password:hover .wvr-hide_text_password {
+    display: block;
+}
+
+.wvr-icon_hide_password:hover .wvr-hide_text_password {
+    display: block;
+}
+
+.wvr-error_message {
+    display: none;
+    position: absolute;
+    line-height: 29px;
+    height: auto;
+    bottom: 67px;
+    left: 0;
+    background: blue;
+    text-align: center;
+    border-radius: 3px;
+    min-width: 30px;
+    max-width: 150px;
+}
+
+.wvr-error_message:after {
+    content: '';
+    display: block;
+    position: absolute;
+    left: 50%;
+    top: 100%;
+    border-top: 10px solid blue;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    margin-left: -4px;
+}
+
+.wvr-login-form__left .wvr-forgot_password .wvr-reset_password {
+    margin-top: -5px;
+    margin-left: 8px;
+}
+
+.wvr-login-form__left .wvr-forgot_password a {
+    font-size: 15px;
+    color: #68a80c;
+    text-decoration: none;
+    font-family: "open_sans_hebrewregular";
+}
+
+.wvr-login-form__left .wvr-button_login {
+    margin-top: 23px;
+}
+
+.wvr-submit_button {
+    display: inline-block;
+    border: none;
+    cursor: pointer;
+    background: url("/theme/assets/img/button_login.png") no-repeat 50% 50%;
+    width: 107px;
+    height: 47px;
+    font-size: 21px;
+    color: white;
+    font-family: "open_sans_hebrewregular";
+}
+
+.wvr-submit_button:hover {
+    background: url("/theme/assets/img/button_login_hover.png") no-repeat 50% 50%;
+}
+
+.wvr-submit_button:focus {
+    outline: none;
+}
+
+.wvr-button_login p,
+.wvr-button_send p,
+.wvr-button_register p {
+    display: inline-block;
+    font-size: 15px;
+    margin-left: 15px;
+    font-family: "open_sans_hebrewregular";
+    vertical-align: top;
+    padding-top: 11px;
+}
+
+.wvr-button_send p {
+    margin-left: 30px;
+}
+
+.wvr-button_register {
+    margin-top: 25px;
+}
+
+.wvr-button_login a,
+.wvr-button_send a,
+.wvr-button_register a {
+    display: inline-block;
+    font-size: 15px;
+    color: #68a80c;
+    text-decoration: none;
+    margin-left: 1px;
+    padding-top: 11px;
+    vertical-align: top;
+    font-family: "open_sans_hebrewregular";
+}
+
+.wvr-login-form__center {
+    height: 100%;
+    float: left;
+    background: url("/theme/assets/img/devide_line.png") no-repeat 50% 30%;
+    padding: 0 10px;
+}
+
+.wvr-register-form .wvr-login-form__center {
+    margin-top: 38px;
+    background: url("/theme/assets/img/devide_line_long.png") no-repeat 50% 0;
+}
+
+.wvr-login-form__center p {
+    margin-top: 155px;
+    font-family: 'proxima_novalight';
+    font-size: 16px;
+}
+
+.wvr-register-form .wvr-login-form__center p {
+    margin-top: 227px;
+}
+
+.wvr-login-form__right {
+    height: 100%;
+    float: left;
+    width: 36%;
+    padding-left: 10%;
+}
+
+.wvr-login-form__right .wvr-social_wrap {
+    width: 235px;
+    height: 270px;
+    margin-top: 36px;
+    padding-left: 0;
+    display: block;
+    position:relative;
+}
+
+.wvr-register-form .wvr-login-form__right .wvr-social_wrap {
+    height: 483px;
+}
+
+.wvr-login-form__right .wvr-bigger {
+    height: 345px;
+    margin-top: 35px;
+}
+
+.wvr-login-form__right .wvr-bigger .wvr-social {
+    top: inherit;
+    -ms-transform: none; /* IE 9 */
+    -webkit-transform: none; /* Chrome, Safari, Opera */
+    transform: none;
+}
+
+.wvr-login-form__right .wvr-social {
+    margin: 0;
+    padding-left: 0;
+    display: block;
+    list-style:none;
+    position:absolute;
+    top:50%;
+    left:0;
+    right:0;
+    -ms-transform: translate(0, -50%); /* IE 9 */
+    -webkit-transform: translate(0, -50%); /* Chrome, Safari, Opera */
+    transform: translate(0, -50%);
+}
+
+.wvr-login-form__right .wvr-social_icon {
+    width: 230px;
+    height: 60px;
+    border: 1px solid #e1e1e0;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    list-style-type: none;
+    vertical-align: middle;
+    display: inline-block;
+}
+
+.wvr-login-form__right .wvr-social_icon:hover {
+    background: #f1f1f1;
+}
+
+.wvr-login-form__right .wvr-social_icon .wvr-button {
+    display: block;
+    text-decoration: none;
+    padding: 22px 0 22px 60px;
+    line-height: 1;
+    color: #959595;
+    position: relative;
+}
+
+.wvr-login-form__right .wvr-social_icon .wvr-button:active {
+    color: #959595;
+}
+
+.wvr-login-form__right .wvr-social_icon .wvr-button span {
+    font-size: 15px;
+    font-family: 'open_sans_hebrewlight';
+}
+
+.wvr-login-form__right .wvr-social_icon .wvr-button span:visited {
+    color: #959595;
+}
+
+.wvr-login-form__right .wvr-social_icon_linkedin .wvr-button:before {
+    content: '';
+    position: absolute;
+    background: url("/theme/assets/img/social_in.png") no-repeat 50% 50%;
+    width: 50px;
+    height: 47px;
+    top: 10px;
+    left: 0;
+}
+
+.wvr-login-form__right .wvr-social_icon_facebook .wvr-button:before {
+    content: '';
+    position: absolute;
+    background: url("/theme/assets/img/social_fb.png") no-repeat 50% 50%;
+    width: 41px;
+    height: 40px;
+    top: 10px;
+    left: 8px;
+}
+
+.wvr-login-form__right .wvr-social_icon_github .wvr-button:before {
+    content: '';
+    position: absolute;
+    background: url("/theme/assets/img/social_github.png") no-repeat 50% 50%;
+    width: 40px;
+    height: 40px;
+    top: 10px;
+    left: 8px;
+}
+
+.wvr-login-form__right .wvr-social_icon_twitter .wvr-button:before {
+    content: '';
+    position: absolute;
+    background: url("/theme/assets/img/social_tw.png") no-repeat 50% 50%;
+    width: 40px;
+    height: 41px;
+    top: 10px;
+    left: 8px;
+}
+
+.wvr-login-form__right .wvr-social_icon_google .wvr-button:before {
+    content: '';
+    position: absolute;
+    background: url("/theme/assets/img/social_g+.png") no-repeat 50% 50%;
+    width: 40px;
+    height: 41px;
+    top: 10px;
+    left: 8px;
+}
+
+.wvr-registration_form {
+    width: 440px;
+    float: left;
+    margin-right: 10px;
+}
+
+.wvr-forgot_password_form {
+    padding: 34px 27px;
+    min-height: 280px;
+    height: auto;
+    width: 100%;
+}
+
+.wvr-reset_password_form {
+    padding: 34px 27px;
+    min-height: 280px;
+    height: auto;
+    width: 100%;
+}
+/* End - User Management */
