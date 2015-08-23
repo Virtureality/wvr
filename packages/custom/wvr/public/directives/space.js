@@ -136,31 +136,51 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                             userPresenceBox.appendTo(container);
 
                             container.masonry('appended', userPresenceBox);
+                        } else if(e.isScreen) {
+                            var screenDisplayElement = $('#screenDisplay');
+                            var screenMediaElement = $(e.mediaElement).attr('height', '100%').attr('width', '100%');
+                            screenMediaElement.appendTo(screenDisplayElement);
+                            rotateVideo(e.mediaElement);
+
+                            if(e.type === 'local') {
+                                setButton($('#screenActionButton'), 'You are sharing screen ...', true);
+                            }
                         }
 
                     };
 
                     wvrmitConnection.onstreamended = function (e) {
-                        var userTxt = e.userid;
-                        var streamUserID = userTxt;
-                        var index = userTxt.lastIndexOf('-');
-                        if(index !== -1) {
-                            streamUserID = userTxt.substr(index + 1, userTxt.length);
-                        }
-
-                        var userVideo = $('#video-' + streamUserID);
-                        if(userVideo) {
-                            var userVideoBox = userVideo.parent().parent().parent();
-                            var userVideoBoxType = userVideoBox.attr('data-space-type');
-                            if(userVideoBoxType === 'freespace') {
-                                userVideoBox.remove();
-                            } else if(userVideoBoxType === 'seat') {
-                                var seatTakeElement = $('<button/>').attr('class', 'btn btn-success badge').text('Take the Seat');
-                                seatTakeElement.bind('click', takeSeatHandler);
-                                var userVideoPElement = userVideo.parent().parent();
-                                userVideoPElement.children().remove();
-                                userVideoPElement.append(seatTakeElement);
+                        if(e.isVideo) {
+                            var userTxt = e.userid;
+                            var streamUserID = userTxt;
+                            var index = userTxt.lastIndexOf('-');
+                            if(index !== -1) {
+                                streamUserID = userTxt.substr(index + 1, userTxt.length);
                             }
+
+                            var userVideo = $('#video-' + streamUserID);
+                            if(userVideo) {
+                                var userVideoBox = userVideo.parent().parent().parent();
+                                var userVideoBoxType = userVideoBox.attr('data-space-type');
+                                if(userVideoBoxType === 'freespace') {
+                                    userVideoBox.remove();
+                                } else if(userVideoBoxType === 'seat') {
+                                    var seatTakeElement = $('<button/>').attr('class', 'btn btn-success badge').text('Take the Seat');
+                                    seatTakeElement.bind('click', takeSeatHandler);
+                                    var userVideoPElement = userVideo.parent().parent();
+                                    userVideoPElement.children().remove();
+                                    userVideoPElement.append(seatTakeElement);
+                                }
+                            }
+                        } else if(e.isScreen) {
+                            e.mediaElement.style.opacity = 0;
+                            rotateVideo(e.mediaElement);
+                            setTimeout(function() {
+                                if (e.mediaElement.parentNode) {
+                                    e.mediaElement.parentNode.removeChild(e.mediaElement);
+                                }
+                                setButton($('#screenActionButton'), 'Share Screen', false);
+                            }, 1000);
                         }
                     };
 
@@ -181,6 +201,9 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                             if(!joinDisabled) {
                                 enableRequestToJoin();
                             }
+                        } else if(session.sessionid == mname + '-screen') {
+                            console.log('Screen shared by: ' + session.userid);
+                            session.join();
                         }
 
                         detectingRoom = false;
@@ -271,13 +294,15 @@ angular.module('wvr.space').directive('wvrSpace', function() {
 
                         wvrmitConnection.isInitiator = true;
                         wvrmitConnection.onRequest = function(request) {
-                            var acceptDecision = confirm(request.userid + ' is requesting to join, would you like to accept?');
+                            if(request.userid !== wvrmitConnection.userid) {
+                                var acceptDecision = confirm(request.userid + ' is requesting to join, would you like to accept?');
 
-                            wvrmitConnection.dontCaptureUserMedia = true;
-                            if(acceptDecision) {
-                                wvrmitConnection.accept(request);
-                            } else {
-                                wvrmitConnection.reject(request);
+                                wvrmitConnection.dontCaptureUserMedia = true;
+                                if(acceptDecision) {
+                                    wvrmitConnection.accept(request);
+                                } else {
+                                    wvrmitConnection.reject(request);
+                                }
                             }
                         };
                         wvrmitConnection.session = {
@@ -378,12 +403,82 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                                     }
                                 }
                             }
+
+                            enableScreen();
                         }
 
                     });
 
                     container.masonry();
 
+                }
+
+                function enableScreen() {
+
+                    wvrmitConnection.sdpConstraints.mandatory = {
+                        OfferToReceiveAudio: false,
+                        OfferToReceiveVideo: true
+                    };
+
+                    wvrmitConnection.session.video = false;
+                    wvrmitConnection.session.audio = false;
+                    wvrmitConnection.session.screen = true;
+                    wvrmitConnection.session.oneway = true;
+
+                    scope.showScreen = true;
+                    scope.screenOpen = false;
+                    scope.toggleScreen = function() {
+                        scope.screenOpen = !scope.screenOpen;
+                    };
+                    scope.screenAction = function() {
+                        //alert('You requested to share screen!');
+                        setButton($('#screenActionButton'), 'Processing...', true);
+                        // screen sender don't need to receive any media.
+                        // so both media-lines must be "sendonly".
+                        wvrmitConnection.sdpConstraints.mandatory = {
+                            OfferToReceiveAudio: false,
+                            OfferToReceiveVideo: false
+                        };
+                        wvrmitConnection.open(mname + '-screen');
+                    };
+
+                    //window.onresize = scaleVideos;
+                }
+
+                function rotateVideo(mediaElement) {
+                    mediaElement.style[navigator.mozGetUserMedia ? 'transform' : '-webkit-transform'] = 'rotate(0deg)';
+                    setTimeout(function() {
+                        mediaElement.style[navigator.mozGetUserMedia ? 'transform' : '-webkit-transform'] = 'rotate(360deg)';
+                    }, 1000);
+                }
+
+                function scaleVideos() {
+                    var videos = document.querySelectorAll('video'),
+                        length = videos.length,
+                        video;
+                    var minus = 130;
+                    var windowHeight = 700;
+                    var windowWidth = 600;
+                    var windowAspectRatio = windowWidth / windowHeight;
+                    var videoAspectRatio = 4 / 3;
+                    var blockAspectRatio;
+                    var tempVideoWidth = 0;
+                    var maxVideoWidth = 0;
+                    for (var i = length; i > 0; i--) {
+                        blockAspectRatio = i * videoAspectRatio / Math.ceil(length / i);
+                        if (blockAspectRatio <= windowAspectRatio) {
+                            tempVideoWidth = videoAspectRatio * windowHeight / Math.ceil(length / i);
+                        } else {
+                            tempVideoWidth = windowWidth / i;
+                        }
+                        if (tempVideoWidth > maxVideoWidth)
+                            maxVideoWidth = tempVideoWidth;
+                    }
+                    for (var i = 0; i < length; i++) {
+                        video = videos[i];
+                        if (video)
+                            video.width = maxVideoWidth - minus;
+                    }
                 }
 
                 function takeSeatHandler() {

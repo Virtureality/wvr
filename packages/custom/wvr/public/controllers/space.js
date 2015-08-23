@@ -172,7 +172,7 @@ angular.module('wvr.space')
 
                 $scope.toggleDesignPanel = function(){
                   $scope.designPanelOpen = !$scope.designPanelOpen
-                }
+                };
 
                 /*$scope.designerResources = {
                   "facilities": [{type: "Cabinet"}, {type: "Screen"}, {type: "Seat"}],
