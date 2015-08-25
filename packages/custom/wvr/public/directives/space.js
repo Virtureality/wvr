@@ -6,10 +6,12 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                 var defaultChannel = 'wvrmit';
 
                 var wvrmitConnection;
+                var wvrmitScreenConnection;
 
                 var detectingRoom = false;
                 var roomDetected = false;
                 var joinDisabled = false;
+                var screenSharingDisabled = true;
 
                 var actionArea = $('#action-area');
                 var actionButton = $('#action-button');
@@ -136,15 +138,6 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                             userPresenceBox.appendTo(container);
 
                             container.masonry('appended', userPresenceBox);
-                        } else if(e.isScreen) {
-                            var screenDisplayElement = $('#screenDisplay');
-                            var screenMediaElement = $(e.mediaElement).attr('height', '100%').attr('width', '100%');
-                            screenMediaElement.appendTo(screenDisplayElement);
-                            rotateVideo(e.mediaElement);
-
-                            if(e.type === 'local') {
-                                setButton($('#screenActionButton'), 'You are sharing screen ...', true);
-                            }
                         }
 
                     };
@@ -172,15 +165,6 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                                     userVideoPElement.append(seatTakeElement);
                                 }
                             }
-                        } else if(e.isScreen) {
-                            e.mediaElement.style.opacity = 0;
-                            rotateVideo(e.mediaElement);
-                            setTimeout(function() {
-                                if (e.mediaElement.parentNode) {
-                                    e.mediaElement.parentNode.removeChild(e.mediaElement);
-                                }
-                                setButton($('#screenActionButton'), 'Share Screen', false);
-                            }, 1000);
                         }
                     };
 
@@ -192,6 +176,8 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                         // session.extra
                         // session.session i.e. {audio,video,screen,data}
 
+                        console.log('New Session: ' + session.sessionid);
+
                         detectingRoom = true;
                         setButton(actionButton, 'Checking ...', true);
 
@@ -201,9 +187,6 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                             if(!joinDisabled) {
                                 enableRequestToJoin();
                             }
-                        } else if(session.sessionid == mname + '-screen') {
-                            console.log('Screen shared by: ' + session.userid);
-                            session.join();
                         }
 
                         detectingRoom = false;
@@ -229,7 +212,12 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                         // e.extra
 
                         setButton(sendMsgButton, 'Send', false);
+
+                        if(screenSharingDisabled) {
+                            enableScreenSharing();
+                        }
                     };
+
                     wvrmitConnection.onmessage = function(e) {
                         // e.data     ---- translated text
                         // e.original ---- original text
@@ -415,34 +403,119 @@ angular.module('wvr.space').directive('wvrSpace', function() {
 
                 function enableScreen() {
 
-                    wvrmitConnection.sdpConstraints.mandatory = {
-                        OfferToReceiveAudio: false,
-                        OfferToReceiveVideo: true
+                    wvrmitScreenConnection = new RTCMultiConnection(defaultChannel + '-screen');
+                    wvrmitScreenConnection.userid = userID;
+
+                    if(window.openSignalingChannel) {
+                        wvrmitScreenConnection.openSignalingChannel = window.openSignalingChannel;
+                    } else if(window.customSignaling && window.customSignaling === 'firebase' && window.signalingServer) {
+                        wvrmitScreenConnection.firebase = window.signalingServer;
+                    }
+
+                    wvrmitScreenConnection.waitUntilRemoteStreamStartsFlowing = false;
+
+                    wvrmitScreenConnection.onstream = function(e) {
+                        if(e.isScreen) {
+                            var screenDisplayElement = $('#screenDisplay');
+                            var screenMediaElement = $(e.mediaElement).attr('height', '96%').attr('width', '96%').attr('autoplay', 'true');
+                            screenMediaElement.appendTo(screenDisplayElement);
+                            //rotateVideo(e.mediaElement);
+
+                            if(e.type === 'local') {
+                                scope.screenAction = function() {
+                                    setButton($('#screenActionButton'), 'Processing...', true);
+                                    var peers = Object.keys(wvrmitScreenConnection.peers);
+                                    for(var i = 0; i < peers.length; i++) {
+                                        wvrmitScreenConnection.remove(peers[i]);
+                                    }
+                                    wvrmitScreenConnection.close();
+                                    wvrmitScreenConnection.sessionid = undefined;
+                                    setTimeout(enableScreenSharing, 1000);
+                                };
+                                setButton($('#screenActionButton'), 'You are sharing screen ... Click to Close!', false);
+                            } else {
+                                if(e.mediaElement.play) {
+                                    e.mediaElement.play();
+                                }
+                                setButton($('#screenActionButton'), e.userid + ' is sharing screen ...', true);
+                            }
+                        }
                     };
 
-                    wvrmitConnection.session.video = false;
-                    wvrmitConnection.session.audio = false;
-                    wvrmitConnection.session.screen = true;
-                    wvrmitConnection.session.oneway = true;
+                    wvrmitScreenConnection.onstreamended = function(e) {
+                        if(e.isScreen && e.type === 'local') {
+                            //e.mediaElement.style.opacity = 0;
+                            //rotateVideo(e.mediaElement);
+                            setTimeout(function() {
+                                if (e.mediaElement.parentNode) {
+                                    e.mediaElement.parentNode.removeChild(e.mediaElement);
+                                }
+                            }, 1000);
+                        }
+                    };
+
+                    wvrmitScreenConnection.onSessionClosed = function(e) {
+                        wvrmitScreenConnection.sessionid = undefined;
+
+                        if(wvrmitScreenConnection.sessionDescriptions[e.session.sessionid]) {
+                            delete wvrmitScreenConnection.sessionDescriptions[e.session.sessionid];
+                        }
+
+                        $('#screenDisplay').children().remove();
+                        setTimeout(enableScreenSharing, 1000);
+                    };
+
+                    wvrmitScreenConnection.onNewSession = function(session) {
+
+                        if(session.sessionid == mname + '-screen') {
+                            session.join();
+                        }
+                    };
 
                     scope.showScreen = true;
                     scope.screenOpen = false;
                     scope.toggleScreen = function() {
                         scope.screenOpen = !scope.screenOpen;
                     };
-                    scope.screenAction = function() {
-                        //alert('You requested to share screen!');
-                        setButton($('#screenActionButton'), 'Processing...', true);
-                        // screen sender don't need to receive any media.
-                        // so both media-lines must be "sendonly".
-                        wvrmitConnection.sdpConstraints.mandatory = {
-                            OfferToReceiveAudio: false,
-                            OfferToReceiveVideo: false
-                        };
-                        wvrmitConnection.open(mname + '-screen');
-                    };
+
+                    wvrmitScreenConnection.connect();
 
                     //window.onresize = scaleVideos;
+                }
+
+                function enableScreenSharing() {
+
+                    wvrmitScreenConnection.refresh();
+
+                    setTimeout(function() {
+                        wvrmitScreenConnection.sdpConstraints.mandatory = {
+                            OfferToReceiveAudio: false,
+                            OfferToReceiveVideo: true
+                        };
+
+                        wvrmitScreenConnection.session = {
+                            screen: true,
+                            oneway: true
+                        };
+
+                        scope.screenAction = startSharing;
+                        setButton($('#screenActionButton'), 'Share Screen', false);
+                        screenSharingDisabled = true;
+                    }, 3000);
+
+                }
+
+                function startSharing() {
+                    setButton($('#screenActionButton'), 'Processing...', true);
+
+                    wvrmitScreenConnection.isInitiator = true;
+                    // screen sender don't need to receive any media.
+                    // so both media-lines must be "sendonly".
+                    wvrmitScreenConnection.sdpConstraints.mandatory = {
+                        OfferToReceiveAudio: false,
+                        OfferToReceiveVideo: false
+                    };
+                    wvrmitScreenConnection.open(mname + '-screen');
                 }
 
                 function rotateVideo(mediaElement) {
