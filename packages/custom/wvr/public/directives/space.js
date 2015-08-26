@@ -143,27 +143,25 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                     };
 
                     wvrmitConnection.onstreamended = function (e) {
-                        if(e.isVideo) {
-                            var userTxt = e.userid;
-                            var streamUserID = userTxt;
-                            var index = userTxt.lastIndexOf('-');
-                            if(index !== -1) {
-                                streamUserID = userTxt.substr(index + 1, userTxt.length);
-                            }
+                        var userTxt = e.userid;
+                        var streamUserID = userTxt;
+                        var index = userTxt.lastIndexOf('-');
+                        if(index !== -1) {
+                            streamUserID = userTxt.substr(index + 1, userTxt.length);
+                        }
 
-                            var userVideo = $('#video-' + streamUserID);
-                            if(userVideo) {
-                                var userVideoBox = userVideo.parent().parent().parent();
-                                var userVideoBoxType = userVideoBox.attr('data-space-type');
-                                if(userVideoBoxType === 'freespace') {
-                                    userVideoBox.remove();
-                                } else if(userVideoBoxType === 'seat') {
-                                    var seatTakeElement = $('<button/>').attr('class', 'btn btn-success badge').text('Take the Seat');
-                                    seatTakeElement.bind('click', takeSeatHandler);
-                                    var userVideoPElement = userVideo.parent().parent();
-                                    userVideoPElement.children().remove();
-                                    userVideoPElement.append(seatTakeElement);
-                                }
+                        var userVideo = $('#video-' + streamUserID);
+                        if(userVideo) {
+                            var userVideoBox = userVideo.parent().parent().parent();
+                            var userVideoBoxType = userVideoBox.attr('data-space-type');
+                            if(userVideoBoxType === 'freespace') {
+                                userVideoBox.remove();
+                            } else if(userVideoBoxType === 'seat') {
+                                var seatTakeElement = $('<button/>').attr('class', 'btn btn-success badge').text('Take the Seat');
+                                seatTakeElement.bind('click', takeSeatHandler);
+                                var userVideoPElement = userVideo.parent().parent();
+                                userVideoPElement.children().remove();
+                                userVideoPElement.append(seatTakeElement);
                             }
                         }
                     };
@@ -175,8 +173,6 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                         // session.sessionid
                         // session.extra
                         // session.session i.e. {audio,video,screen,data}
-
-                        console.log('New Session: ' + session.sessionid);
 
                         detectingRoom = true;
                         setButton(actionButton, 'Checking ...', true);
@@ -282,15 +278,13 @@ angular.module('wvr.space').directive('wvrSpace', function() {
 
                         wvrmitConnection.isInitiator = true;
                         wvrmitConnection.onRequest = function(request) {
-                            if(request.userid !== wvrmitConnection.userid) {
-                                var acceptDecision = confirm(request.userid + ' is requesting to join, would you like to accept?');
+                            var acceptDecision = confirm(request.userid + ' is requesting to join, would you like to accept?');
 
-                                wvrmitConnection.dontCaptureUserMedia = true;
-                                if(acceptDecision) {
-                                    wvrmitConnection.accept(request);
-                                } else {
-                                    wvrmitConnection.reject(request);
-                                }
+                            wvrmitConnection.dontCaptureUserMedia = true;
+                            if(acceptDecision) {
+                                wvrmitConnection.accept(request);
+                            } else {
+                                wvrmitConnection.reject(request);
                             }
                         };
                         wvrmitConnection.session = {
@@ -412,8 +406,6 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                         wvrmitScreenConnection.firebase = window.signalingServer;
                     }
 
-                    wvrmitScreenConnection.waitUntilRemoteStreamStartsFlowing = false;
-
                     wvrmitScreenConnection.onstream = function(e) {
                         if(e.isScreen) {
                             var screenDisplayElement = $('#screenDisplay');
@@ -429,7 +421,6 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                                         wvrmitScreenConnection.remove(peers[i]);
                                     }
                                     wvrmitScreenConnection.close();
-                                    wvrmitScreenConnection.sessionid = undefined;
                                     setTimeout(enableScreenSharing, 1000);
                                 };
                                 setButton($('#screenActionButton'), 'You are sharing screen ... Click to Close!', false);
@@ -455,12 +446,6 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                     };
 
                     wvrmitScreenConnection.onSessionClosed = function(e) {
-                        wvrmitScreenConnection.sessionid = undefined;
-
-                        if(wvrmitScreenConnection.sessionDescriptions[e.session.sessionid]) {
-                            delete wvrmitScreenConnection.sessionDescriptions[e.session.sessionid];
-                        }
-
                         $('#screenDisplay').children().remove();
                         setTimeout(enableScreenSharing, 1000);
                     };
