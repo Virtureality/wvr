@@ -68,12 +68,12 @@
 
         <div id="container" class="clearfix masonry">
 
-          <div data-ng-show="space.owner" id="ownerPresenceBox" class="box photo col2 masonry-brick" data-space-type="seat">
+          <div id="ownerPresenceBox" class="box photo col2 masonry-brick" data-space-type="seat">
             <p><span data-ng-show="space.owner">{{space.owner.name}}</span></p>
             <p id="{{space.owner._id}}">
               <span><a id="{{space.owner.name + '-' + space.owner._id}}" href="/wvr/assets/img/lily.jpeg" title="Lily"><img src="/wvr/assets/img/lily.jpeg" alt="Lily"></a></span>
             </p>
-            <p><span id="{{'seat-' + space.owner._id}}">{{'Seat - Space Owner - ' + space.owner.name}}</span></p>
+            <p data-ng-show="space.owner" ><span id="{{'seat-' + space.owner._id}}">{{'Seat - Space Owner - ' + space.owner.name}}</span></p>
           </div>
 
           <div data-type="Facility" data-ng-repeat="facility in space.facilities track by $index" class="box photo col2 masonry-brick" data-space-type="seat" data-drag="true" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" data-ng-model="space.facilities" jqyoui-draggable="{index: {{$index}}, animate: true}">
