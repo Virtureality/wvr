@@ -1,17 +1,36 @@
 <div data-ng-controller="SpaceDetailController" data-wvr-signaling data-wvr-space>
 
-  <div id="space" data-ng-model="space">
-    <div class="row">
-      <p class="alert alert-info"><span>Welcome, {{loginUser.name||"Guest"}}! :)</span>&nbsp;|&nbsp;<span data-ng-show="space.owner" >This is <a class="text-primary" href="mailto:{{space.owner.email}}">{{space.owner.name}}</a>'s space.</span><span data-ng-show="!space.owner"> This is a free space.&nbsp;<a data-ng-show="!loginUser._id" href="/auth/login" target="_blank" class="btn btn-success badge">Login to Own</a><button data-ng-show="loginUser._id" data-ng-click="ownSpace(space)" class="btn btn-success badge">Own</button></span></p>
+  <div id="space" data-ng-model="space" class="container">
+    <div class="row stdbkg">
 
-      <p data-ng-show="operationInfo" class="{{alertStyle}}">{{operationInfo}}</p>
+      <div class="col-lg-12">
+        <div class="input-group col-lg-6">
+          <p ><span>Welcome, {{global.user.name||"Guest"}}! :)</span>&nbsp;|&nbsp;<span ng-show="space.owner" >This is <a class="text-primary" href="mailto:{{space.owner.email}}">{{space.owner.name}}</a>'s space.</span><span ng-show="!space.owner"> This is a free space.&nbsp;<a ng-show="!global.user._id" href="/#!/auth/login" target="_blank" class="btn btn-success badge">Login to Own</a><button ng-show="global.user._id" ng-click="ownSpace(space)" class="btn btn-success badge">Own</button></span></p>
+          <p ng-show="operationInfo" class="{{alertStyle}}">{{operationInfo}}</p>
+
+          <p>Share ->&nbsp;<a id="shareLink" target="_blank">{{space.name||space.uuid}}</a></p>
+          <script type="text/javascript">
+            document.getElementById('shareLink').href = location.href;
+          </script>
+        </div>
+        <div class="col-lg-6">
+          <button id="action-button">Welcome</button>
+        </div>
+      </div>
+    </div>
+
+    <!--<div class="row">
+      <p class="alert alert-info"><span>Welcome, {{global.user.name||"Guest"}}! :)</span>&nbsp;|&nbsp;<span ng-show="space.owner" >This is <a class="text-primary" href="mailto:{{space.owner.email}}">{{space.owner.name}}</a>'s space.</span><span ng-show="!space.owner"> This is a free space.&nbsp;<a ng-show="!global.user._id" href="/#!/auth/login" target="_blank" class="btn btn-success badge">Login to Own</a><button ng-show="global.user._id" ng-click="ownSpace(space)" class="btn btn-success badge">Own</button></span></p>
+      <p ng-show="operationInfo" class="{{alertStyle}}">{{operationInfo}}</p>
+
+      <p>Share ->&nbsp;<a id="shareLink" target="_blank">{{space.name||space.uuid}}</a></p>
+      <script type="text/javascript">
+        document.getElementById('shareLink').href = location.href;
+      </script>
+      <button id="action-button">Welcome</button>
 
       <hr/>
-    </div>
-
-    <div class="row" id="action-area">
-      &nbsp;<button id="action-button" class="btn btn-success badge">Welcome</button>&nbsp;
-    </div>
+    </div>-->
     <hr/>
 
     <div data-ng-show="space.visible" class="row">
@@ -64,6 +83,8 @@
             <span>&nbsp;&nbsp;&nbsp;<button data-ng-click="hideUserSearch()" class="btn-info">Close</button></span>
           </div>
         </div>
+
+        <div id="screen" class="row"></div>
 
         <div id="container" class="clearfix masonry">
 
