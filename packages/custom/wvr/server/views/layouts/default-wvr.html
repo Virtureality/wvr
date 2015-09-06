@@ -5,11 +5,12 @@
 <body data-ng-controller="ThemeController" ng-cloak class="ng-cloak" ng-class="state">
     <div class="navbar navbar-inverse navbar-fixed-top" data-ng-include="'/wvr/views/header-wvr.html'" data-role="navigation"></div>
     <div data-ng-include="'/admin/views/index.html'"></div>
-    <section class="content">
+    <!--<section class="content">
         <section class="container" style="margin-top: 136px;">
             {% block content %}{% endblock %}
         </section>
-    </section>
+    </section>-->
+    {% block content %}{% endblock %}
     {% include '../includes/foot-wvr.html' %}
 </body>
 
