@@ -1,39 +1,108 @@
-<div class="page-header" data-ng-controller="WvrHeaderController">
-    <div class="logo pull-left">
-        <a class="navbar-brand" ui-sref="wvrhome" mean-token="'site-title'">WVR</a>
-    </div>
 
-    <div class="left pull-left">
-        <ul class="navbar-nav nav">
-            <li data-ng-repeat="item in menus.wvr" ui-route="/{{item.link}}" ng-class="{active: $uiRoute}">
-                <a mean-token="item.link" ui-sref='{{item.link}}'>{{item.title}}</a>
-            </li>
-        </ul>
-    </div>
+<!--<div class="logo pull-left">
+    <a class="navbar-brand" ui-sref="wvrhome" mean-token="'site-title'">WVR</a>
+</div>-->
+<header data-ng-controller="WvrHeaderController">
+    <div class="navbar navbar-default navbar-static-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="index.html"><span>W</span>VR</a>
+            </div>
 
-    <div class="account">
-        <div class="text-edit">
-            <div class="pull-right" data-ng-show="global.authenticated" mean-token-editable></div>
-            <div class="pull-right" data-ng-show="global.authenticated" mean-translate></div>
-        </div>
-        <ul class="navbar-nav nav" data-ng-hide="global.authenticated">
-            <li><a ui-sref='auth.register'>Join</a>
-            </li>
-            <li class="divider-vertical"></li>
-            <li><a ui-sref='auth.login'>Log In</a>
-            </li>
-        </ul>
-
-        <ul class="navbar-nav nav"  data-ng-show="global.authenticated">
-            <li ng-if="global.user.profile" class="dropdown" mean-profile-menu>x</li>
-            <li ng-if="!global.user.profile" class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                    {{global.user.name}} <b class="caret"></b>
-                </a>
-                <ul class="dropdown-menu">
-                    <li><a href="/logout">Log Out</a></li>
+            <div class="navbar-collapse collapse ">
+                <ul  class="nav navbar-nav" data-ng-hide="global.authenticated">
+                    <li><a ui-sref='auth.register'>Join</a>
+                    </li>
+                    <li><a ui-sref='auth.login'>Log In</a>
+                    </li>
                 </ul>
-            </li>
-        </ul>
+
+                <ul class="nav navbar-nav">
+                    <li class="active"><a href="index.html">Home</a></li>
+                    <li data-ng-repeat="item in menus.wvr" ui-route="/{{item.link}}"><a mean-token="item.link" ui-sref='{{item.link}}'>{{item.title}}</a></li>
+
+                    <li class="dropdown"  data-ng-show="global.authenticated">
+                        <a href="#" class="dropdown-toggle " data-toggle="dropdown" data-hover="dropdown" data-delay="0" data-close-others="false">{{global.user.name}}  <b class=" icon-angle-down"></b></a>
+                        <ul class="dropdown-menu">
+
+                            <li><a href="/logout">Log Out</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
     </div>
-</div>
+</header>
+<!--old version-->
+<!-- <div class="account">
+     <div class="text-edit">
+         <div class="pull-right" data-ng-show="global.authenticated" mean-token-editable></div>
+         <div class="pull-right" data-ng-show="global.authenticated" mean-translate></div>
+     </div>
+     <ul class="navbar-nav nav" data-ng-hide="global.authenticated">
+         <li><a ui-sref='auth.register'>Join</a>
+         </li>
+         <li class="divider-vertical"></li>
+         <li><a ui-sref='auth.login'>Log In</a>
+         </li>
+     </ul>
+
+     <ul class="navbar-nav nav"  data-ng-show="global.authenticated">
+         <li ng-if="global.user.profile" class="dropdown" mean-profile-menu>x</li>
+         <li ng-if="!global.user.profile" class="dropdown">
+             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                 {{global.user.name}} <b class="caret"></b>
+             </a>
+             <ul class="dropdown-menu">
+                 <li><a href="/logout">Log Out</a></li>
+             </ul>
+         </li>
+     </ul>
+ </div>-->
+<!--new version for login and phone-->
+<!--<div class="navbar navbar-inverse navbar-fixed-top" data-role="navigation" ng-controller="WvrHeaderController as hdrctr">
+    <div class="page-header">
+        <div class="inner">
+            <div class="logo pull-left">
+                <a class="navbar-brand" ui-sref="wvrhome" mean-token="'site-title'">WVR</a>
+            </div>
+
+            <div class="left pull-left">
+                <ul class="navbar-nav nav">
+                    <li ui-route="/{{item.link}}" ng-class="{active: $uiRoute}" ng-repeat="item in hdrctr.menus.main">
+                        <a mean-token="item.link" ui-sref='{{item.link}}'>{{item.title}}</a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="right pull-right">
+                <div class="text-edit" ng-show="hdrctr.hdrvars.authenticated">
+                    <div class="pull-right" mean-token-editable></div>
+                    <div class="pull-right" mean-translate></div>
+                </div>
+                <ul class="navbar-nav nav auth-link" ng-show="!hdrctr.hdrvars.authenticated">
+                    <li><a ui-sref='auth.register'>Join</a></li>
+                    <li class="divider-vertical"></li>
+                    <li><a ui-sref='auth.login'>Log In</a></li>
+                </ul>
+                <ul class="navbar-nav nav" ng-show="hdrctr.hdrvars.authenticated">
+                    <li class="dropdown" dropdown on-toggle="toggled(open)">
+                        <a href="#" class="dropdown-toggle" dropdown-toggle>
+                            <span>{{hdrctr.hdrvars.user.name}}</span> <b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#" ng-click="hdrctr.logout()">Log Out</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+    </div>
+
+</div>-->

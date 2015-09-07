@@ -1,35 +1,94 @@
-<div data-ng-controller="SpaceDetailController">
+<div data-ng-controller="SpaceDetailController" data-wvr-signaling data-wvr-space>
 
-  <div id="space" ng-model="space">
+  <div id="space" data-ng-model="space">
     <div class="row">
-      <p class="alert alert-info"><span>Welcome, {{global.user.name||"Guest"}}! :)</span>&nbsp;|&nbsp;<span ng-show="space.owner" >This is <a class="text-primary" href="mailto:{{space.owner.email}}">{{space.owner.name}}</a>'s space.</span><span ng-show="!space.owner"> This is a free space.&nbsp;<a ng-show="!global.user._id" href="/#!/auth/login" target="_blank" class="btn btn-success badge">Login to Own</a><button ng-show="global.user._id" ng-click="ownSpace(space)" class="btn btn-success badge">Own</button></span></p>
-      <p ng-show="operationInfo" class="{{alertStyle}}">{{operationInfo}}</p>
+      <p class="alert alert-info"><span>Welcome, {{loginUser.name||"Guest"}}! :)</span>&nbsp;|&nbsp;<span data-ng-show="space.owner" >This is <a class="text-primary" href="mailto:{{space.owner.email}}">{{space.owner.name}}</a>'s space.</span><span data-ng-show="!space.owner"> This is a free space.&nbsp;<a data-ng-show="!loginUser._id" href="/auth/login" target="_blank" class="btn btn-success badge">Login to Own</a><button data-ng-show="loginUser._id" data-ng-click="ownSpace(space)" class="btn btn-success badge">Own</button></span></p>
 
-      <p>Share ->&nbsp;<a id="shareLink" target="_blank">{{space.name||space.uuid}}</a></p>
-      <script type="text/javascript">
-        document.getElementById('shareLink').href = location.href;
-      </script>
-      <button id="action-button">Welcome</button>
+      <p data-ng-show="operationInfo" class="{{alertStyle}}">{{operationInfo}}</p>
 
       <hr/>
     </div>
 
-    <div class="row">
+    <div class="row" id="action-area">
+      &nbsp;<button id="action-button" class="btn btn-success badge">Welcome</button>&nbsp;
+    </div>
+    <hr/>
 
-      <input id="mname" type="hidden" name="mname" value="{{space.uuid}}" />
-      <input id="userid" type="hidden" name="user" value="{{global.user.name}}-{{global.user._id}}" />
-      <input id="user" type="hidden" name="global.user" value="{{global.user}}" />
+    <div data-ng-show="space.visible" class="row">
 
-      <input id="ableToSetup" type="hidden" name="ableToSetup" value={{ableToOpenDefaultRoom}} />
+      <div class="col-lg-9" style="position:relative">
 
-      <div class="col-lg-9">
+        <div data-ng-show="isSpaceOwner">
+          <button class="btn btn-info" ng-click="toggleDesignPanel()">Design Panel Toggle</button>
+          <div pageslide ps-open="designPanelOpen" ps-side="left" ps-custom-top="300px" ps-custom-height="800px" ps-class="wvr-pageslide">
+            <h2 style="text-align: center;">Space Design Panel</h2>
+            <div style="padding:20px" id="space-design-panel">
+              <div class="row">
+                <h3>Facilities:</h3>
+                <hr/>
+                <div data-type="Facility" class="box" data-ng-repeat="item in designerResources.facilities" data-drag="true" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" data-ng-model="designerResources.facilities" jqyoui-draggable="{index: {{$index}}, placeholder: 'keep', animate: true}">{{item.type}}</div>
+              </div>
+              <br/>
+              <hr/>
+              <div class="row" data-drop="true" data-ng-model="trash" data-jqyoui-options="{accept: '[data-type|=&quot;Facility&quot;]'}" jqyoui-droppable="{multiple:true}">
+                <h3>Trash:</h3>
+                <p><span class="alert-info">Drop stuff here as trash.</span></p>
+                <ul>
+                  <li data-type="Facility" data-ng-repeat="item in trash track by $index" data-drag="true" data-jqyoui-options="{revert: 'invalid'}" data-ng-model="trash" jqyoui-draggable="{index: {{$index}}, animate: true}">trash - {{item.name || item}}</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div data-ng-show="userSearchDisplay">
+          <div pageslide ps-open="userSearchDisplay" ps-side="right" ps-custom-top="300px" ps-custom-height="200px" ps-class="wvr-pageslide">
+            <form class="well form-search">
+              <input type="text" data-ng-model="keywords" class="input-medium search-query" placeholder="Name or Email ...">&nbsp;
+              <button type="submit" class="btn-info" data-ng-click="searchUser()">Search</button>
+            </form>
+            <ul>
+              <li data-ng-repeat="resultUser in resultUserList">
+                <a data-ng-dblclick="assignOwner(space, facilityToAssign, resultUser)">{{resultUser.name + ' - ' + resultUser.email}}</a>
+              </li>
+            </ul>
+            <span>&nbsp;&nbsp;&nbsp;<button data-ng-click="hideUserSearch()" class="btn-info">Close</button></span>
+          </div>
+        </div>
+
+        <div data-ng-show="showScreen">
+          <br>
+          <button class="btn btn-info" ng-click="toggleScreen()">Screen Toggle</button>
+          <div id="screenArea" pageslide ps-open="screenOpen" ps-side="top" ps-size="600px" ps-custom-top="6px" ps-class="wvr-pageslide" ps-container="container">
+            <button id="screenActionButton" class="btn btn-info" ng-click="screenAction()" disabled="disabled"></button>
+            <div style="padding:20px" id="screenDisplay">
+            </div>
+          </div>
+        </div>
 
         <div id="container" class="clearfix masonry">
 
-          <div class="box photo col2 masonry-brick">
-            <a href="/wvr/assets/img/lily.jpeg" title="Lily"><img src="/wvr/assets/img/lily.jpeg" alt="Lily"></a>
+          <div id="ownerPresenceBox" class="box photo col2 masonry-brick" data-space-type="seat">
+            <p><span data-ng-show="space.owner">{{space.owner.name}}</span></p>
+            <p id="{{space.owner._id}}">
+              <span><a id="{{space.owner.name + '-' + space.owner._id}}" href="/wvr/assets/img/lily.jpeg" title="Lily"><img src="/wvr/assets/img/lily.jpeg" alt="Lily"></a></span>
+            </p>
+            <p data-ng-show="space.owner" ><span id="{{'seat-' + space.owner._id}}">{{'Seat - Space Owner - ' + space.owner.name}}</span></p>
           </div>
 
+          <div data-type="Facility" data-ng-repeat="facility in space.facilities track by $index" class="box photo col2 masonry-brick" data-space-type="seat" data-drag="true" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" data-ng-model="space.facilities" jqyoui-draggable="{index: {{$index}}, animate: true}">
+            <p><span id="{{'seat-owner-' + facility._id}}">{{facility.owner.name || facility.owner}}</span>&nbsp;<button data-ng-show="isSpaceOwner" data-ng-click="showUserSearch(facility)">Assign Seat Owner</button></p>
+            <p id="{{facility._id}}"></p>
+            <p><span id="{{'seat-' + facility._id}}">{{facility.name}}</span></p>
+          </div>
+
+        </div>
+
+        <div data-ng-show="designPanelOpen" data-ng-model="newFacilities" data-drop="true" data-jqyoui-options="{accept: '[data-type|=&quot;Facility&quot;]'}" jqyoui-droppable="{multiple:true, onDrop: 'onFacilityDropped', containment: 'position'}">
+          <p><span class="alert-info">Drop new facilities here! :)</span></p>
+          <div class="box photo col2 masonry-brick" data-type="Facility" data-ng-repeat="facility in newFacilities track by $index" data-ng-model="newFacilities" data-drag="true" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" jqyoui-draggable="{index: {{$index}}, animate: true}">
+            <p><span id="{{'seat-' + facilityDroppedTime}}">{{facility.type}}</span></p>
+          </div>
         </div>
 
       </div>
@@ -51,8 +110,12 @@
       <script type="text/javascript" src="/wvr/assets/js/mit/lib/socket.io.js"></script>
       <script type="text/javascript" src="/wvr/assets/js/mit/lib/RTCMultiConnection.js"></script>
 
-      <script type="text/javascript" src="/wvr/assets/js/mit/mit.js"></script>
     </div>
+
+    <div class="row">
+      <button class="btn-info" data-ng-show="isSpaceOwner && spaceChanged" data-ng-click="updateSpace()">Update the Space</button>
+    </div>
+
   </div>
 
 </div>

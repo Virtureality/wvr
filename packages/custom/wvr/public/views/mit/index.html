@@ -1,12 +1,15 @@
+<div id="mitArea" data-ng-controller="MitListController">
+
 <div class="row">
     <div class="col-lg-7">
 	    <h4>What's going on ... </h4>
 	</div>
 	<div class="col-lg-4">
 		<div class="input-group">
-			<input id="new-name" type="text" class="form-control" placeholder="type here new meeting please ..."/>
+			<input ng-model="mitName" id="new-name" type="text" class="form-control" placeholder="Type to filter or create ..."/>
 			<span class="input-group-btn">
-				<button id="setup-new-meeting" class="btn btn-info">Create</button>
+				<!--<button id="setup-new-meeting" class="btn btn-info">Create</button>-->
+			    <a ui-sref="mit({mname: mitName})" class="btn btn-info" target="_blank">Create</a>
 			</span>
 		</div>
 	</div>
@@ -19,7 +22,18 @@
         <hr/>
     </div>
 </div>
-<div class="row" id="meetingsContainer"></div>
+<div class="row" id="meetingsContainer">
+	<div ng-repeat="mit in objToArray(mits) | filter: mitName" class="box photo col2 masonry-brick">
+		<p><span>Address: </span><span><a ui-sref="mit({mname: mit.sessionid})" target="_blank">{{mit.sessionid}}</a></span></p>
+		<p><span>Owner: </span><span>{{mit.userid}}</span></p>
+	</div>
+</div>
+
+</div>
+
+<script>
+	var mitList =['aaa'];
+</script>
 
 <script type="text/javascript" src="/wvr/assets/js/mit/masonry.js"></script>
 
@@ -27,4 +41,5 @@
 <script type="text/javascript" src="/wvr/assets/js/mit/lib/socket.io.js"></script>
 <script type="text/javascript" src="/wvr/assets/js/mit/lib/RTCMultiConnection.js"></script>
 
+<script type="text/javascript" src="/wvr/assets/js/mit/signaling.js"></script>
 <script type="text/javascript" src="/wvr/assets/js/mit/home.js"></script>

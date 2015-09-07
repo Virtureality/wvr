@@ -38,7 +38,6 @@
 *****************************************************************************************************************************
 [![Build Status](https://travis-ci.org/linnovate/mean.svg?branch=master)](https://travis-ci.org/linnovate/mean)
 [![Dependencies Status](https://david-dm.org/linnovate/mean.svg)](https://david-dm.org/linnovate/mean)
-[![Built with Grunt](https://cdn.gruntjs.com/builtwith.png)](http://gruntjs.com/)
 [![Gitter](https://badges.gitter.im/JoinChat.svg)](https://gitter.im/linnovate/mean?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 # [![MEAN Logo](http://mean.io/system/assets/img/logos/meanlogo.png)](http://mean.io/) MEAN Stack
@@ -50,6 +49,7 @@ MEAN is a framework for an easy starting point with [MongoDB](http://www.mongodb
 * *Node.js* - <a href="http://nodejs.org/download/">Download</a> and Install Node.js, nodeschool has free <a href=" http://nodeschool.io/#workshoppers">node tutorials</a> to get you started.
 * *MongoDB* - <a href="http://www.mongodb.org/downloads">Download</a> and Install mongodb - <a href="http://docs.mongodb.org/manual">Checkout their manual</a> if you're just starting.
 
+If you're using ubuntu, this is the preferred repository to use...
 
 ```bash
 $ curl -sL https://deb.nodesource.com/setup | sudo bash -
@@ -62,15 +62,17 @@ $ sudo apt-get install nodejs
 ### Windows
 * *Node.js* - <a href="http://nodejs.org/download/">Download</a> and Install Node.js, nodeschool has free <a href=" http://nodeschool.io/#workshoppers">node tutorials</a> to get you started.
 * *MongoDB* - Follow the great tutorial from the mongodb site - <a href="http://docs.mongodb.org/manual/tutorial/install-mongodb-on-windows">"Install Mongodb On Windows"</a>
-* * *Git* - Get git using a package manager or <a href="http://git-scm.com/downloads">download</a> it.
+* *Git* - The easiest way to install git and then run the rest of the commands through the *git bash* application (via command prompt) is by downloading and installing <a href="http://git-scm.com/download/win">Git for Windows</a>
 
 ### OSX
+* *Node.js* -  <a href="http://nodejs.org/download/">Download</a> and Install Node.js or use the packages within brew or macports.
+* *MongoDB* - Follow the tutorial here - <a href="http://docs.mongodb.org/manual/tutorial/install-mongodb-on-os-x/">Install mongodb on OSX</a>
+* *git* - Get git <a href="http://git-scm.com/download/mac">from here</a>.
 
 ## Prerequisite packages
 
 * Mean currently works with either grunt or gulp..
 ```
-$ npm install -g grunt-cli
 $ npm install -g gulp
 // and bower
 $ npm install -g bower 
@@ -89,15 +91,13 @@ $ cd <myApp> && npm install
 ```
 
 ### Invoke node with a task manager
-Mean supports both grunt and gulp 
-Run one of the task managers to start the server:
+Mean supports the gulp task runner for various services which are applied on the code.
+To start your application run - 
 ```bash
-$ grunt
-or 
 $ gulp
 ```
 
-Alternatively, when not using `grunt` (and for production environments) you can run:
+Alternatively, when not using `gulp` (and for production environments) you can run:
 ```bash
 $ node server
 ```
@@ -107,7 +107,7 @@ http://localhost:3000
 ```
 
 ### Troubleshooting
-During installation depending on your os and prerequiste versions you may encounter some issues.
+During installation depending on your os and prerequisite versions you may encounter some issues.
 
 Most issues can be solved by one of the following tips, but if you are unable to find a solution feel free to contact us via the repository issue tracker or the links provided below.
 
@@ -153,6 +153,15 @@ Some of Mean.io dependencies uses [node-gyp](https://github.com/TooTallNate/node
 ```bash
 $ npm update -g
 ```
+
+#### Git "not found" on Windows
+If you get this error when trying to `mean init`:
+
+```text
+Prerequisite not installed: git
+```
+
+And you definitely have Git for Windows installed, then it's not included in your path. Find the folder containing git.exe (likely `C:\Program Files (x86)\Git\cmd`) and add it to your PATH.
 
 ## Technologies
 
@@ -247,7 +256,7 @@ Everything in mean.io is a package and when extending mean with custom functiona
 
 The mean.io package system allows developers to create modular code that provides useful tools that other mean developers can use. The packages, when published, are plug-and-play and are used in a way very similar to traditional npm packages.
 
-The mean.io package system integrates all the packages into the mean project as if the code was part of mean itself and provides the developers with all the necceesary tools required to integrate their package into the host project.
+The mean.io package system integrates all the packages into the mean project as if the code was part of mean itself and provides the developers with all the necessary tools required to integrate their package into the host project.
 
 There are two types of packages:
 
@@ -265,7 +274,7 @@ The "system" package creates the basic pages as well as defines the layout of th
 #### Users
 The "users" package creates the database model of the user, provides validation as well as various login and registration features.
 #### Access
-The "access" package managers permissions and middleware. It controls the various authentication methods and is dependent on the users package
+The "access" package manages permissions and middleware. It controls the various authentication methods and is dependent on the users package
 #### Theme
 The "theme" package adds some basic CSS and other assets such as images and backgrounds
 #### Articles
@@ -294,19 +303,19 @@ All of the Server side code resides in the `/server` directory.
 All of the Client side code resides in the `/public` directory.
 
     public            
-    --- assets        # Javascript/Css/Images (not aggregated)
-    --- controllers   # Angular Controllers
+    --- assets        # JavaScript/CSS/Images (not aggregated)
+    --- controllers   # Angular controllers
     --- config        # Contains routing files
-    --- services      # Angular Services (also directive and filter folders)
+    --- services      # Angular services (also directive and filter folders)
     --- views         # Angular views
 
-All javascript within public is automatically aggregated with the exception of files in assets which can be manually added using the `aggregateAsset()` function
+All JavaScript within `public` is automatically aggregated with the exception of files in `public/assets`, which can be manually added using the `aggregateAsset()` function.
 
-Files within public of the package can be accessed externally `/[package-name]/path-to-file-relative-to-public` for example to access tokens angular controller tokens/controllers/tokens.js
+Files within the `public` directory of the package can be accessed externally at `/[package-name]/path-to-file-relative-to-public`. For example, to access the `Tokens` Angular controller, `tokens/controllers/tokens.js`.
 
 ###Registering a Package
 
-In order for a Package to work it needs to be registered. By doing this you make package system aware that you are ready and that other packages are able to depend on you. The packages are registered from within `app.js` 
+In order for a Package to work it needs to be registered. By doing this you make the package system aware that you are ready and that other packages are able to depend on you. The packages are registered from within `app.js`.
 
 When registering you are required to declare all your dependencies in order for the package system to make them available to your package.
 
@@ -336,7 +345,7 @@ MEAN has 3 pre registered dependencies:
 
 Dependency injection allows you to declare what dependencies you require and rely on the package system to resolve all dependencies for you. Any package registered is automatically made available to anyone who would like to depend on them.
 
-Looking again at the registration example we can see that `MyPackage` depends on the `Tokens` and can make use of it full functionality including overriding it.
+Looking again at the registration example we can see that `MyPackage` depends on the `Tokens` package and can make use of its full functionality, including overriding it.
  
 ```javascript
 // Example of registering the tokens package
@@ -406,7 +415,7 @@ MyPackage.aggregateAsset('js','first.js',{global:true,  weight: -4, group: 'head
 > <script type="text/javascript" src="/modules/aggregated.js?group=header"></script>
 
 ###Settings Object
-The settings object is a persistance object that is stored in the packages collection and allows for saving persistant information per package such as configuration options or admin settings for the package.
+The settings object is a persistence object that is stored in the packages collection and allows for saving persistent information per package such as configuration options or admin settings for the package.
 
   Receives two arguments the first being the settings object the second is a callback function
   
@@ -468,7 +477,7 @@ $stateProvider
 
 Packages are able to hook into an existing menu system and add links to various menus integrated within Mean.
 
-Each link specifies its `title`, `template`, `menu` and `role` that is allowed to see the link. If the menu specified does not exist a new menu will be created. The menu object is made accessible within the client by means of a *menu angular service* that queries the menu controller for information about links.
+Each link specifies its `title`, `template`, `menu` and `role` that is allowed to see the link. If the menu specified does not exist, a new menu will be created. The menu object is made accessible within the client by means of a *menu angular service* that queries the menu controller for information about links.
 
 Below is an example how to add a link to the main menu from `app.js`
 
@@ -619,6 +628,40 @@ $ npm test
 ```
 > NOTE: Running Node.js applications in the __production__ environment enables caching, which is disabled by default in all other environments.
 
+### Logging
+
+As from mean-0.4.4 control over the logging format has been delgated to the env configuration files.
+The formats and implementation are done using the morgan node module and it's [predefined format](https://github.com/expressjs/morgan#predefined-formats)
+Within each configuration file (config/env/development.js) for instance you state the format in the 'logging' object.
+```
+'use strict';
+
+module.exports = {
+  db: 'mongodb://' + (process.env.DB_PORT_27017_TCP_ADDR || 'localhost') + '/mean-dev',
+  debug: true,
+  logging: {
+    format: 'tiny'
+  },
+```
+
+The default for the development environment uses [tiny format](https://github.com/expressjs/morgan#tiny)
+```
+GET /system/views/index.html 304 2.379 ms - -
+GET /admin/menu/main 304 8.687 ms - -
+GET /system/assets/img/logos/meanlogo.png 304 2.803 ms - -
+GET /system/assets/img/backgrounds/footer-bg.png 304 4.481 ms - -
+GET /system/assets/img/ninja/footer-ninja.png 304 3.309 ms - -
+GET /system/assets/img/logos/linnovate.png 304 3.001 ms - -
+```
+
+The production uses the widely used [combined format](https://github.com/expressjs/morgan#combined).
+```
+:1 - - [22/Mar/2015:13:13:42 +0000] "GET /modules/aggregated.js HTTP/1.1" 200 - "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.101 Safari/537.36"
+::1 - - [22/Mar/2015:13:13:42 +0000] "GET /modules/aggregated.js?group=header HTTP/1.1" 200 0 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.101 Safari/537.36"
+::1 - - [22/Mar/2015:13:13:42 +0000] "GET / HTTP/1.1" 200 - "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.101 Safari/537.36"
+::1 - - [22/Mar/2015:13:13:42 +0000] "GET /modules/aggregated.css HTTP/1.1" 200 - "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.101 Safari/537.36"
+```
+
 ## Staying up to date
 After initializing a project, you'll see that the root directory of your project is already a git repository. MEAN uses git to download and update its own code. To handle its own operations, MEAN creates a remote called `upstream`. This way you can use git as you would in any other project. 
 
@@ -688,3 +731,4 @@ $ heroku config:set NODE_ENV=production
 
 ## License
 We believe that mean should be free and easy to integrate within your existing projects so we chose [The MIT License](http://opensource.org/licenses/MIT)
+

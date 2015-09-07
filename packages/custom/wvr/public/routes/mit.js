@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('wvr.space')
+angular.module('wvr.mit')
     .config([
       '$stateProvider',
       function($stateProvider) {

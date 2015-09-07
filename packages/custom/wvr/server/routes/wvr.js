@@ -6,26 +6,9 @@ var mean = require('meanio');
 // The Package is past automatically as first parameter
 module.exports = function(Wvr, app, auth, database) {
 
-	app.route('/wvr/api/*')
+	app.route('/api/wvr/*')
 		.get(function(req, res, next) {
 			res.json({message: 'Welcome to our REST API! :)'});
 		});
-
-  // Home route
-  app.route('/wvr/*')
-    .get(function(req, res, next) {
-    	res.header('workerID' , JSON.stringify(mean.options.workerid) );
-    	res.render('home', {
-    		package: 'wvr'
-    	}, function(err, html) {
-    		//Rendering a view from the Package server/views
-    		res.send(html);
-    	});
-    });
-  
-  //app.route('/*')
-  //.get(function(req, res, next) {
-	//  res.redirect('/');
-  //});
 
 };

@@ -15,10 +15,16 @@ Wvr.register(function(system, app, auth, database) {
 
   //We enable routing. By default the Package Object is passed to the routes
   Wvr.routes(app, auth, database);
-  
-  //Wvr.aggregateAsset('css', 'wvr.css');
+
+  Wvr.aggregateAsset('css', 'fancybox/jquery.fancybox.css');
+  Wvr.aggregateAsset('css', 'style.css');
+  Wvr.aggregateAsset('css', 'flexslider.css');
+  Wvr.aggregateAsset('css', 'default.css');
+
+  Wvr.aggregateAsset('css', 'wvr.css');
   Wvr.aggregateAsset('css', 'masonry.css');
-  Wvr.angularDependencies(['wvr.space']);
+  Wvr.aggregateAsset('js', 'angular-pageslide-directive.min.js');
+  Wvr.angularDependencies(['wvr.space', 'wvr.mit']);
 
   /**
     //Uncomment to use. Requires meanio@0.3.7 or above

@@ -59,12 +59,14 @@ bower_components
 # --------------------
 # App Files
 # --------------------
+data/
 test/coverage/
 modules/public/
 modules/views/
 /public/build/
 # /packages/custom/
 /packages/contrib/
+/packages/**/**/public/assets/lib
 
 # --------------------
 # vim Files

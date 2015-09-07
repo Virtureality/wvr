@@ -1,24 +1,30 @@
 $(function(){
 
-	var SIGNALING_SERVER = window.signalingServer || 'http://localhost:8888/';
-	//var SIGNALING_SERVER = window.signalingServer || '127.0.0.1:8888/';
-	//var SIGNALING_SERVER = window.signalingServer || 'http://192.168.0.109:8888/';
 	var defaultChannel = 'wvrmit';
 
 	var wvrmitConnection;
 
 	var detectingRoom = false;
 	var roomDetected = false;
+	var joinDisabled = false;
 
 	var actionArea = $('#action-area');
 	var actionButton = $('#action-button');
 	var container = $('#container');
 
+	var locationHref ;
+	var mname;
+	var scope;
+
 	setTimeout(startWatching, 1000);
 
 	function startWatching() {
 
-		var mname = $('#mname').attr('value') || 'Anonymous';
+		scope = angular.element($("#mitArea")).scope();
+		//var mname = $('#mname').attr('value') || 'Anonymous';
+		//var mname = $('#mname').attr('value') || locationHref.substr(locationHref.lastIndexOf('/') + 1, locationHref.length);
+		locationHref = location.href;
+		mname = locationHref.substr(locationHref.lastIndexOf('/') + 1, locationHref.length);
 
 		setButton(actionButton, 'Watching ...', true);
 
@@ -28,71 +34,11 @@ $(function(){
 
 		wvrmitConnection.userid = userID;
 
-		wvrmitConnection.openSignalingChannel = function (config) {
-
-			var channel = config.channel || this.channel;
-			var sender = Math.round(Math.random() * 999999999) + 999999999;
-
-			io.connect(SIGNALING_SERVER).emit('new-channel', {
-				channel: channel,
-				sender: sender
-			});
-
-			var socket = io.connect(SIGNALING_SERVER + channel);
-			socket.channel = channel;
-
-			socket.on('connect', function () {
-				if (config.callback) config.callback(socket);
-			});
-
-			socket.send = function (message) {
-				socket.emit('message', {
-					sender: sender,
-					data: message
-				});
-			};
-
-			socket.on('message', config.onmessage);
-		};
-		/*wvrmitConnection.openSignalingChannel = function (config) {
-			config.channel = config.channel || this.channel;
-
-			var socket = new Firebase('https://chat.firebaseIO.com/' + config.channel);
-			socket.channel = config.channel;
-
-			socket.on('child_added', function (data) {
-				config.onmessage(data.val());
-			});
-
-			socket.send = function(data) {
-				this.push(data);
-			};
-
-			config.onopen && setTimeout(config.onopen, 1);
-			socket.onDisconnect().remove();
-			/!*var connectedRef = new Firebase("https://chat.firebaseIO.com/.info/connected");
-			connectedRef.on("value", function(snap) {
-				if (snap.val() === true) {
-					//alert("connected");
-					console.log('Connected to Firebase.');
-					setTimeout(checkForSetup, 3000);
-				} else {
-					//alert("not connected");
-					console.log('Disconnected from Firebase.');
-				}
-			});*!/
-			socket.child('.info/connected').on('value', function(connectedSnap) {
-				if (connectedSnap.val() === true) {
-					/!* we're connected! *!/
-					console.log('Connected to Firebase.');
-					setTimeout(checkForSetup, 3000);
-				} else {
-					/!* we're disconnected! *!/
-					console.log('Disconnected from Firebase.');
-				}
-			});
-			return socket;
-		};*/
+		if(window.openSignalingChannel) {
+			wvrmitConnection.openSignalingChannel = window.openSignalingChannel;
+		} else if(window.customSignaling && window.customSignaling === 'firebase' && window.signalingServer) {
+			wvrmitConnection.firebase = window.signalingServer;
+		}
 
 		wvrmitConnection.onstatechange = function(state) {
 			// state.userid == 'target-userid' || 'browser'
@@ -115,7 +61,7 @@ $(function(){
 			// request-accepted
 			// request-rejected
 
-			console.log('wvrmitConnection status changed: ' + state.name);
+			//console.log('wvrmitConnection status changed: ' + state.name);
 
 			if(state.name == 'room-not-available') {
 				setButton(actionButton, state.reason, true);
@@ -123,17 +69,27 @@ $(function(){
 			}
 
 			if(state.name == 'room-available') {
-				enableRequestToJoin();
+				if(!joinDisabled) {
+					enableRequestToJoin();
+				}
 			}
 
 			if(state.name == 'request-accepted') {
 				alert(state.reason);
 				setButton(actionButton, 'Conference Ongoing...', true);
+				if(scope.showSpace) {
+					scope.showSpace();
+					initSeats();
+				}
 			}
 
 			if(state.name == 'request-rejected') {
 				alert(state.reason);
-				enableRequestToJoin();
+
+				joinDisabled = false;
+				if(!joinDisabled) {
+					enableRequestToJoin(true);
+				}
 			}
 
 			if(state.name == 'failed---has reason') {
@@ -156,16 +112,47 @@ $(function(){
 			// e.isAudio ---- if it is an Audio stream
 			// e.isScreen --- if it is screen-sharing stream
 
-			if(event.isVideo && (event.type == 'local' || event.userid != this.userid)) {
-				var video = $(event.mediaElement).attr('id', event.streamid).attr('controls', true);
-				addVideo(video, container);
+			if(event.isVideo) {
+
+				var userPresenceBox = $('<div/>').attr('class', 'box photo col2 masonry-brick').attr('data-space-type', 'freespace');
+				//var userName = event.userid;
+				var userTxt = event.userid;
+				var index = userTxt.lastIndexOf('-');
+				var userName;
+				var userID;
+				if(index !== -1) {
+					userName = userTxt.substr(0, index);
+					userID = userTxt.substr(index + 1, userTxt.length);
+				} else {
+					userName = userTxt;
+					userID = userTxt;
+				}
+				var video = $(event.mediaElement).attr('id', 'video-' + userID).attr('controls', true).attr('height', '100%').attr('width', '100%');
+
+				if(isSpaceOwner(event)) {
+					if(scope.showSpace) {
+						scope.showSpace();
+						initSeats();
+					}
+				}
+				var videoSpan = $('<span/>');
+				var userSpan = $('<span/>').text(userName);
+				var newPElement;
+				video.appendTo(videoSpan);
+				newPElement = $('<p/>');
+				videoSpan.appendTo(newPElement);
+				userSpan.appendTo(newPElement);
+				newPElement.appendTo(userPresenceBox);
+				userPresenceBox.appendTo(container);
+
+				container.masonry('appended', userPresenceBox);
 			}
+
 		};
 
 		wvrmitConnection.onstreamended = function (e) {
-			//var video = document.getElementById(stream.id);
-			var video = document.getElementById(e.streamid);
-			if (video) video.parentNode.parentNode.removeChild(video.parentNode);
+			var video = document.getElementById('video-' + e.userid);
+			if (video) video.parentNode.parentNode.parentNode.parentNode.removeChild(video.parentNode.parentNode.parentNode);
 		};
 
 		//wvrmitConnection.transmitRoomOnce = true;
@@ -183,10 +170,10 @@ $(function(){
 
 			if (session.sessionid == mname) {
 				roomDetected = true;
-				setButton(actionButton, 'Joining ...', true);
 
-				//wvrmitConnection.join(mname);
-				wvrmitConnection.join(session);
+				if(!joinDisabled) {
+					enableRequestToJoin();
+				}
 			}
 
 			detectingRoom = false;
@@ -200,7 +187,6 @@ $(function(){
 		sendMsgButton.on('click', function() {
 			var msgBody = $('#message-text').val() || '';
 			if (msgBody && msgBody !== '') {
-				//console.log('Sending message: ' + msgBody);
 				wvrmitConnection.send(msgBody);
 				messageArea.append($('<div>').append('Me: ' + msgBody));
 			} else{
@@ -223,14 +209,26 @@ $(function(){
 			// e.extra
 
 			//console.log('onmessage: ' + e);
+			var userName = e.userid;
+			if(userName.lastIndexOf('-') !== -1) {
+				userName = userName.substr(0, userName.lastIndexOf('-'));
+			}
 
-			messageArea.append($('<div>').append(e.userid + ': ' + e.data));
+			messageArea.append($('<div>').append(userName + ': ' + e.data));
 		}
+
+		wvrmitConnection.onCustomMessage = function(msg) {
+			if(msg.msgType == 'SeatTaken') {
+				takeSeat(msg.seatID, msg.takerID);
+			}
+		};
 
 		//wvrmitConnection.fakeDataChannels = true;
 
 		wvrmitConnection.connect();
 		//wvrmitConnection.connect(mname);
+
+		enableShare(mname);
 
 		setTimeout(checkForSetup, 3000);
 
@@ -238,13 +236,15 @@ $(function(){
 
 	function getUserID() {
 
-		var loginUser = window.user;
+		//var loginUser = window.user;
+		var loginUser = scope.loginUser;
 
 		if (loginUser && loginUser._id && loginUser._id !== '') {
-			return loginUser.username + '-' + loginUser._id;
+			//return loginUser.username + '-' + loginUser._id;
+			return loginUser.name + '-' + loginUser._id;
 		}
 
-		return Math.round(Math.random() * 999999999) + 999999999;
+		return (Math.round(Math.random() * 999999999) + 999999999).toString();
 	}
 
 	function checkForSetup() {
@@ -257,15 +257,18 @@ $(function(){
 
 	function setup() {
 
-		setButton(actionButton, 'Setup', false);
+		setButton(actionButton, 'Activate', false);
 
 		actionButton.bind('click', doSetup);
 
 		function doSetup() {
 
+			actionButton.unbind('click', doSetup);
+
 			setButton(actionButton, 'Setting up ...', true);
 
-			var mname = $('#mname').attr('value') || 'Anonymous';
+			//var mname = $('#mname').attr('value') || 'Anonymous';
+			//var mname = $('#mname').attr('value') || locationHref.substr(locationHref.lastIndexOf('/') + 1, locationHref.length);
 
 			wvrmitConnection.isInitiator = true;
 			wvrmitConnection.onRequest = function(request) {
@@ -286,38 +289,38 @@ $(function(){
 			wvrmitConnection.maxParticipantsAllowed = 256;
 			wvrmitConnection.open(mname);
 
-			enableShare(mname);
-
 			setButton(actionButton, 'Conference Ongoing...', true);
-
-
-			actionButton.unbind('click', doSetup);
 
 		}
 
 	}
 
-	function enableRequestToJoin() {
+	function enableRequestToJoin(retry) {
 
-		wvrmitConnection.dontCaptureUserMedia = true;
+		if(retry) {
+			wvrmitConnection.dontCaptureUserMedia = true;
+		}
 
-		setButton(actionButton, 'Request to Join', false);
+		setButton(actionButton, 'Request to Access', false);
 
 		actionButton.bind('click', requestToJoinHandler);
 
 		function requestToJoinHandler() {
-			var mname = $('#mname').attr('value') || 'Anonymous';
 
-			setButton(actionButton, 'Requesting to join ...', true);
-			wvrmitConnection.join(mname);
-
+			joinDisabled = true;
 			actionButton.unbind('click', requestToJoinHandler);
+
+			//var mname = $('#mname').attr('value') || 'Anonymous';
+			//var mname = $('#mname').attr('value') || locationHref.substr(locationHref.lastIndexOf('/') + 1, locationHref.length);
+
+			wvrmitConnection.join(mname);
+			setButton(actionButton, 'Requesting to join ...', true);
 
 		}
 	}
 
 	function enableShare(mname){
-		var shareLink = $('<a/>').attr('class', 'pull-left').attr('target', '_blank').attr('href', location.href).text('Share Meeting: ' + mname);
+		var shareLink = $('<a/>').attr('class', 'pull-left').attr('target', '_blank').attr('href', location.href).text('Share: ' + mname);
 		shareLink.appendTo(actionArea);
 	}
 
@@ -341,5 +344,104 @@ $(function(){
 
 		container.masonry('appended', videoBox);
 	}
+
+	function initSeats() {
+
+		scope.$apply(function(){
+			var space = scope.space;
+			var seats;
+			var seat;
+			var seatElement;
+
+			if(space) {
+				if(space.facilities) {
+					seats = space.facilities;
+				}
+				if(space.owner && space.owner._id) {
+
+					seatElement = $('#' + space.owner._id);
+					if(seatElement.length == 1) {
+						var seatTakeElement = $('<button/>').attr('class', 'btn btn-success badge').text('Take the Seat');
+						seatTakeElement.bind('click', takeSeatHandler);
+						seatElement.children().remove();
+						seatTakeElement.appendTo(seatElement);
+					}
+				}
+			}
+
+			for(var i = 0; i < seats.length; i++) {
+				seat = seats[i];
+
+				seatElement = $('#' + seat._id);
+				if(seatElement.length == 1) {
+					var seatTakeElement = $('<button/>').attr('class', 'btn btn-success badge').text('Take the Seat');
+					seatTakeElement.bind('click', takeSeatHandler);
+					seatTakeElement.appendTo(seatElement);
+				}
+			}
+		});
+
+		container.masonry();
+	};
+
+	function takeSeatHandler() {
+
+		var seatTakeElement = $(this);
+		var desSeatElement = seatTakeElement.parent();
+		var desSeatID = desSeatElement.attr('id');
+		var userTxt = getUserID();
+		var index = userTxt.lastIndexOf('-');
+		var userID;
+		if(index !== -1) {
+			userID = userTxt.substr(index + 1, userTxt.length);
+		} else {
+			userID = userTxt;
+		}
+
+		takeSeat(desSeatID, userID);
+
+		wvrmitConnection.sendCustomMessage({msgType: 'SeatTaken', seatID: desSeatID, takerID: userID});
+	}
+
+	function takeSeat(seatID, takerID) {
+
+		if(seatID && takerID) {
+			var desSeatElement = $('#' + seatID);
+			var userVideoElement = $('#' + 'video-' + takerID);
+			var userPElement = userVideoElement.parent().parent();
+			var userDivElement = userPElement.parent();
+			var spaceType = userDivElement.attr('data-space-type');
+
+			if(desSeatElement.length == 1 && userVideoElement.length == 1) {
+
+				desSeatElement.children().remove();
+				userPElement.children().appendTo(desSeatElement);
+
+				if(spaceType && spaceType == 'seat') {
+					var seatTakeElement = $('<button/>').attr('class', 'btn btn-success badge').text('Take the Seat');
+					seatTakeElement.bind('click', takeSeatHandler);
+					userPElement.children().remove();
+					seatTakeElement.appendTo(userPElement);
+				} else if(spaceType == 'freespace' && userDivElement) {
+					userDivElement.remove();
+				}
+
+				container.masonry();
+			}
+		}
+	};
+
+	function isSpaceOwner(event) {
+		var loginUser = scope.loginUser;
+		var space = scope.space;
+
+		if(space && space.owner && loginUser) {
+			if((event.type == 'local' && scope.loginUser._id == scope.space.owner._id) || (event.type == 'remote' && event.userid == scope.space.owner.name + '-' + scope.space.owner._id)) {
+				return true;
+			}
+		}
+
+		return false;
+	};
 
 });

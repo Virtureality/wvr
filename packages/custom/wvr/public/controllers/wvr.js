@@ -10,10 +10,17 @@ angular.module('mean.wvr').controller('WvrController', ['$scope', 'Global', 'Wvr
   }
 ]);
 
-angular.module('mean.wvr').controller('WvrHeaderController', ['$scope', '$rootScope', 'Global', 'Menus',
-  function($scope, $rootScope, Global, Menus) {
-    $scope.global = Global;
-    $scope.menus = {};
+angular.module('mean.wvr').controller('WvrHeaderController', ['$scope', '$rootScope', 'Menus', 'MeanUser', '$state', '$cookies', '$location',
+  function($scope, $rootScope, Menus, MeanUser, $state, $cookies, $location) {
+
+    var vm = this;
+
+    vm.menus = {};
+    vm.hdrvars = {
+      authenticated: MeanUser.loggedin,
+      user: MeanUser.user,
+      isAdmin: MeanUser.isAdmin
+    };
 
     // Default hard coded menu items for main menu
     var defaultMainMenu = [];
@@ -25,7 +32,7 @@ angular.module('mean.wvr').controller('WvrHeaderController', ['$scope', '$rootSc
         name: name,
         defaultMenu: defaultMenu
       }, function(menu) {
-        $scope.menus[name] = menu;
+        vm.menus[name] = menu;
       });
     }
 
@@ -37,13 +44,36 @@ angular.module('mean.wvr').controller('WvrHeaderController', ['$scope', '$rootSc
     $scope.isCollapsed = false;
 
     $rootScope.$on('loggedin', function() {
-
       queryMenu('wvr', defaultMainMenu);
 
-      $scope.global = {
-        authenticated: !! $rootScope.user,
-        user: $rootScope.user
+      vm.hdrvars = {
+        authenticated: MeanUser.loggedin,
+        user: MeanUser.user,
+        isAdmin: MeanUser.isAdmin
       };
+    });
+
+    vm.logout = function(){
+      MeanUser.logout();
+    };
+
+    $rootScope.$on('logout', function() {
+      vm.hdrvars = {
+        authenticated: false,
+        user: {},
+        isAdmin: false
+      };
+      queryMenu('wvr', defaultMainMenu);
+      $location.path($cookies.redirect || '/');
+    });
+
+    $scope.$on('$locationChangeSuccess',function(evt, absNewUrl, absOldUrl) {
+
+      if(absNewUrl.indexOf('/login') !== -1) {
+        var pathIndex = $location.absUrl().indexOf($location.path());
+        $cookies.redirect = absOldUrl.substr(pathIndex, absOldUrl.length);
+      }
+
     });
 
   }

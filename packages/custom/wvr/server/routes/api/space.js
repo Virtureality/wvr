@@ -9,11 +9,6 @@ function assembleSpace(space, req) {
 	if(req.body) {
 		var spaceObj = req.body;
 
-		//console.log('spaceObj:' + JSON.stringify(spaceObj));
-		/*for(var prop in spaceObj) {
-			console.log('spaceObj.' + prop + ': ' + spaceObj[prop]);
-		}*/
-
 		if(spaceObj.uuid && spaceObj.uuid != '') {
 			space.uuid = spaceObj.uuid;
 		}
@@ -77,39 +72,16 @@ module.exports = function(Wvr, app, auth, database) {
 				if(err) {
 					res.send(err);
 				} else {
-					//res.json({message: 'Space Created!'});
 					res.json({"message": 'Space Created!', "space": space});
 				}
 			});
-			/*SpaceModel.create(req.body, function(err, result) {
-				if(err) {
-					res.send(err);
-				} else {
-					res.json({"message": 'Space Created!', "space": result});
-				}
-			});*/
 
 		});
 
 	/**/
 	router.route('/spaces/:spaceId')
 		.get(function(req, res, next) {
-			/*SpaceModel.findById(req.params.spaceId, function(err, space) {
-				if(err) {
-					res.send(err);
-				} else {
-					res.json(space);
-				}
-			});*/
-			/*SpaceModel.findOne({ uuid: req.params.spaceId }, function(err, space) {
-				if(err) {
-					res.send(err);
-				} else {
-					res.json(space);
-				}
-			});*/
 			SpaceModel
-				//.findOne({ uuid: req.params.spaceId }, '-__v', function(err, space) {
 				.findOne({ uuid: req.params.spaceId }, function(err, space) {
 					if(err) {
 						res.send(err);
@@ -117,38 +89,19 @@ module.exports = function(Wvr, app, auth, database) {
 						res.json(space);
 					}
 				})
-				/* select() below has no effect, why[not supported in the version]?*/
-				//.select('-__v -type')
-				//.select({ type: 0 })
-				//.select('uuid name owner')
-			    //.populate('owner');
-			    .populate('owner', 'email name');
+				.populate('owner', '_id email name')
+				.populate('facilities.owner', '_id email name');
 		})
 		.put(function(req, res, next) {
-			//SpaceModel.findById(req.params.spaceId, function(err, space) {
-			SpaceModel.findOne({ uuid: req.params.spaceId }, function(err, space) {
-				if(err) {
-					res.send(err);
-				} else {
-					space = assembleSpace(space, req);
-
-					space.save(function(err) {
-						if(err) {
-							res.send(err);
-						} else {
-							//res.json({message: 'Space Updated!'});
-							res.json({"message": 'Space Updated!', "space": space});
-						}
-					});
-				}
-			});
-			/*SpaceModel.update({ uuid: req.params.spaceId }, req.body, function(err, result) {
+			SpaceModel.findOneAndUpdate({ uuid: req.params.spaceId }, req.body, function(err, result) {
 				if(err) {
 					res.send(err);
 				} else {
 					res.json({"message": 'Space Updated!', "space": result});
 				}
-			});*/
+			})
+			.populate('owner', '_id email name')
+			.populate('facilities.owner', '_id email name');
 		})
 		.delete(function(req, res, next) {
 			SpaceModel.remove({
@@ -161,7 +114,7 @@ module.exports = function(Wvr, app, auth, database) {
 				}
 			});
 		});
-	 
-	app.use('/wvr/api/space', router);
+
+	app.use('/api/wvr/space', router);
 
 };
