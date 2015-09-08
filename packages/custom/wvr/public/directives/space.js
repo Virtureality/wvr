@@ -65,22 +65,14 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                             wvrmitConnection.connect(mname);
                         }
 
-                        if(state.name == 'room-available') {
-                            //console.log('room-available');
-                            /*if(!joinDisabled) {
-                                enableRequestToJoin();
-                            }*/
-                        }
-
                         if(state.name == 'connected-with-initiator') {
-                            //alert(state.reason);
-                            setButton(actionButton, 'Conference Ongoing...', true);
+                            setButton(actionButton, 'You Are In :)', true);
 
                             displaySpace();
                         }
 
                         if(state.name == 'request-rejected') {
-                            alert(state.reason);
+                            setButton(actionButton, state.reason, true);
 
                             joinDisabled = false;
                             if(!joinDisabled) {
@@ -89,7 +81,7 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                         }
 
                         if(state.name == 'failed---has reason') {
-                            alert(state.reason);
+                            setButton(actionButton, state.reason, true);
                         }
                     };
 
@@ -267,7 +259,7 @@ angular.module('wvr.space').directive('wvrSpace', function() {
 
                 function setup() {
 
-                    setButton(actionButton, 'Activate', false);
+                    setButton(actionButton, 'Unlock', false);
 
                     actionButton.unbind();
                     actionButton.bind('click', doSetup);
@@ -280,7 +272,7 @@ angular.module('wvr.space').directive('wvrSpace', function() {
 
                         wvrmitConnection.isInitiator = true;
                         wvrmitConnection.onRequest = function(request) {
-                            var acceptDecision = confirm(request.userid + ' is requesting to join, would you like to accept?');
+                            var acceptDecision = confirm(request.userid + ' is requesting to join, would you accept?');
 
                             wvrmitConnection.dontCaptureUserMedia = true;
                             if(acceptDecision) {
@@ -299,7 +291,7 @@ angular.module('wvr.space').directive('wvrSpace', function() {
 
                         displaySpace();
 
-                        setButton(actionButton, 'Conference Ongoing...', true);
+                        setButton(actionButton, 'You Are In :)', true);
 
                     }
 
@@ -311,7 +303,7 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                         wvrmitConnection.dontCaptureUserMedia = true;
                     }
 
-                    setButton(actionButton, 'Request to Access', false);
+                    setButton(actionButton, 'Knock', false);
 
                     actionButton.unbind();
                     actionButton.bind('click', requestToJoinHandler);
@@ -322,7 +314,7 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                         actionButton.unbind('click', requestToJoinHandler);
 
                         wvrmitConnection.join(mname);
-                        setButton(actionButton, 'Requesting to Access ...', true);
+                        setButton(actionButton, 'Requesting to Enter ...', true);
 
                     }
                 }
