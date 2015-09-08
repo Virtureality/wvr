@@ -259,6 +259,7 @@ $(function(){
 
 		setButton(actionButton, 'Activate', false);
 
+		actionButton.unbind();
 		actionButton.bind('click', doSetup);
 
 		function doSetup() {
@@ -303,6 +304,7 @@ $(function(){
 
 		setButton(actionButton, 'Request to Access', false);
 
+		actionButton.unbind();
 		actionButton.bind('click', requestToJoinHandler);
 
 		function requestToJoinHandler() {

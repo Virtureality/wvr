@@ -66,9 +66,10 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                         }
 
                         if(state.name == 'room-available') {
-                            if(!joinDisabled) {
+                            //console.log('room-available');
+                            /*if(!joinDisabled) {
                                 enableRequestToJoin();
-                            }
+                            }*/
                         }
 
                         if(state.name == 'connected-with-initiator') {
@@ -258,7 +259,7 @@ angular.module('wvr.space').directive('wvrSpace', function() {
 
                 function checkForSetup() {
 
-                    if (scope.ableToOpenDefaultRoom && !detectingRoom &&!roomDetected) {
+                    if (scope.ableToOpenDefaultRoom && !detectingRoom && !roomDetected) {
                         setup();
                     }
 
@@ -268,6 +269,7 @@ angular.module('wvr.space').directive('wvrSpace', function() {
 
                     setButton(actionButton, 'Activate', false);
 
+                    actionButton.unbind();
                     actionButton.bind('click', doSetup);
 
                     function doSetup() {
@@ -311,6 +313,7 @@ angular.module('wvr.space').directive('wvrSpace', function() {
 
                     setButton(actionButton, 'Request to Access', false);
 
+                    actionButton.unbind();
                     actionButton.bind('click', requestToJoinHandler);
 
                     function requestToJoinHandler() {
