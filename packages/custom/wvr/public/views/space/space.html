@@ -1,6 +1,6 @@
 <div data-ng-controller="SpaceDetailController" data-wvr-signaling data-wvr-space>
 
-  <div id="space" data-ng-model="space">
+  <div id="space" data-ng-model="space" class="container">
     <div class="row">
       <p class="alert alert-info"><span>Welcome, {{loginUser.name||"Guest"}}! :)</span>&nbsp;|&nbsp;<span data-ng-show="space.owner" >This is <a class="text-primary" href="mailto:{{space.owner.email}}">{{space.owner.name}}</a>'s space.</span><span data-ng-show="!space.owner"> This is a free space.&nbsp;<a data-ng-show="!loginUser._id" href="/auth/login" target="_blank" class="btn btn-success badge">Login to Own</a><button data-ng-show="loginUser._id" data-ng-click="ownSpace(space)" class="btn btn-success badge">Own</button></span></p>
 
@@ -97,9 +97,9 @@
 
         <div class="input-group">
           <input id="message-text" class="form-control" type="text" placeholder="type message here"/>
-				<span class="input-group-btn">
-				  <button id="send-msg-btn" class="btn btn-info" disabled="true">Waiting for setup ...</button>
-				</span>
+          <span class="input-group-btn">
+            <button id="send-msg-btn" class="btn btn-info" disabled="true">Waiting for setup ...</button>
+          </span>
         </div>
         <hr />
         <div id="message-area"></div>

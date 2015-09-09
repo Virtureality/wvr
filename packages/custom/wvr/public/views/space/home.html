@@ -5,27 +5,23 @@
         <div class="input-group">
 		</span>
 
-          <input ng-model="uuid" id="go-name" type="text" class="textIptLg" placeholder="Type name to go ..."/>
+          <input ng-model="uuid" id="go-name" type="text" class="textIptLg" placeholder="Type to filter or go ..."/>
           <span class="input-group-btn" style="padding-right:5px">
-             <!-- <button id="go-btn" class="btn btn-info">Go!</button>-->
             <!--<input type="submit" id="go-btn" class="sticky-play btnIptLgBL" value="Go">-->
-            <a ui-sref="space({spaceId: uuid})" class="sticky-play btnIptLgBL" target="_blank">Go!</a>
+            <!--<a ui-sref="space({spaceId: uuid})" class="sticky-play btnIptLgBL" target="_blank">Go!</a>-->
+            <a ui-sref="space({spaceId: uuid})" class="btn btn-info" target="_blank">Go!</a>
           </span>
-          <span class="input-group-btn">
-             <!-- <button id="go-btn" class="btn btn-info">Go!</button>-->
+          <!--<span class="input-group-btn">
             <input type="submit" id="create-btn" class="sticky-play btnIptLgOR" value="Create">
-            <div class="member-role groupCard--joinBtnOR ">
+            <div class="member-role groupCard&#45;&#45;joinBtnOR ">
               <i class="font-icon-plus">
               </i>
             </div>
-          </span>
+          </span>-->
         </div>
         <div class="col-lg-6"></div>
       </div>
     </div>
-    <!--<div class="row">
-      <hr/>
-    </div>-->
     <div class="row">
       <ul classs="tileGrid">
         <li ng-repeat="space in spaces | filter: uuid"  class="col-md-4 tileGrid-tile">
@@ -33,9 +29,12 @@
              target="_blank">
             <div class="groupCard--gradient"></div>
             <div class="nametag-photo-name groupCard--title">
-              <h4 class="padding-none inline-block loading" itemprop="name">
+              <h3 class="padding-none inline-block loading" itemprop="name">
                 {{space.uuid}}
-              </h4>
+              </h3>
+              <h5 class="padding-none inline-block loading" itemprop="name">
+                Owner: &nbsp;{{space.owner.name || 'N/A'}}
+              </h5>
               <p class="small ellipsize">
                 Join Us Now
               </p>
@@ -45,54 +44,8 @@
               </div>
             </div>
           </a>
-          <!--
-                      <div class="box-bottom-trans">
-                        <a href="#!/spaces/{{space.uuid}}" target="_blank">Join us++++++</a>
-                      </div>-->
-          <!--|
-          <span>{{space.owner}}</span>
-          |
-          <span>{{space.type}}</span>-->
         </li>
       </ul>
     </div>
-    <!--<section id="spacesContainer">
-      <div class="container">
-        <div class="row">
-          <div class="col-lg-12">
-            <div class="row">
-              <div ng-repeat="space in spaces | filter: textFilter" class="col-lg-3">
-                <div class="box" style="background-image: url(/wvr/assets/img/bigbg.jpg);">
-                  <div class="groupCard&#45;&#45;gradient">
-                  </div>
-                  <div class="box-gray-trans aligncenter">
-                    <p>{{space.uuid}}<p>
-                    &lt;!&ndash;<div class="icon">
-                      <i class="fa fa-desktop fa-3x"></i>
-                    </div>&ndash;&gt;
-                    <p>
-                      Coming Soon....
-                    </p>
-
-                  </div>
-                  <div class="box-bottom-trans">
-                    <a href="#!/spaces/{{space.uuid}}" target="_blank">Join us++++++</a>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        &lt;!&ndash; divider &ndash;&gt;
-        <div class="row">
-          <div class="col-lg-12">
-            <div class="solidline">
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>-->
-
-
   </div>
 </div>
