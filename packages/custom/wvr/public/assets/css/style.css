@@ -2094,7 +2094,7 @@ input {
 	font-weight: bold;/*
 	background: #F36 repeat scroll 0% 0% ;
 	border: 1px solid #F36;*/
-	color: #fcfcfc;
+	/*color: #fcfcfc;*/
 	border-radius: 3px;
 	transition: all 0.5s ease 0s;
 	text-transform: none;
