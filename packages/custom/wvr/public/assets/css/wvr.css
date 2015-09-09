@@ -407,3 +407,47 @@ body.reset-tokenId {
     width: 100%;
 }
 /* End - User Management */
+
+/* Begin - 3D */
+.wvr-3d-wrapper {
+    perspective: 1000px;
+    margin: 4em auto;
+    width: 37em;
+}
+
+.wvr-3d-wrapper:hover .wvr-3d-inner {
+    transform: rotate(0)
+
+}
+
+.wvr-3d-inner {
+    transition: .3s;
+    transform: rotateY(40deg);
+}
+
+.wvr-3d-inner figure {
+    box-shadow: -6px 6px 2px -3px  rgba(100,100,100,.1);
+    width: 11em;
+    padding: 1em;
+    display: inline-block;
+    margin-right: 1em;
+    background: rgba(250,200,200,0.1);
+    border: 1px solid rgba(250,200,200,.5);
+}
+
+.wvr-3d-inner figcaption {
+    text-align: center;
+    margin: .5em 0;
+    font-family: 'Source Sans Pro', sans-serif;
+    font-weight: bold;
+    color: darken(tomato, 15%);
+}
+
+.wvr-3d-inner img {
+    display: block;
+    height: auto;
+    max-width: 100%;
+    margin: 0 auto;
+    -webkit-filter: sepia(75%);
+}
+/* End - 3D */
