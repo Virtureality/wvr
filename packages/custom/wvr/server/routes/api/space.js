@@ -42,8 +42,10 @@ function assembleSpace(space, req) {
 // The Package is past automatically as first parameter
 module.exports = function(Wvr, app, auth, database) {
 
-	 var express = require('express');
-	 var router = express.Router();
+	var express = require('express');
+	var router = express.Router();
+
+	var paginate = require('node-paginate-anything');
 
 	 // middleware specific to this router
 	 /*router.use(function timeLog(req, res, next) {
@@ -53,12 +55,22 @@ module.exports = function(Wvr, app, auth, database) {
 
 	router.route('/spaces')
 		.get(function(req, res, next) {
-			SpaceModel
+			var query = SpaceModel
 				.find(function(err, spaces) {
 					if(err) {
 						res.send(err);
 					} else {
-						res.json(spaces);
+						var queryParameters = paginate(req, res, spaces.length, 1000);
+
+						query.limit(queryParameters.limit);
+						query.skip(queryParameters.skip);
+
+						query.exec(function(err, spaces) {
+							if(err) {
+								res.send(err);
+							} else {
+								res.json(spaces);
+							}});
 					}
 				})
 				.populate('owner', 'email name');

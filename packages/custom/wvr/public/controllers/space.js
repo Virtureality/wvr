@@ -4,7 +4,7 @@
 angular.module('wvr.space')
     .controller('SpaceListController', ['$scope', 'Space',
       function($scope, Space) {
-        $scope.spaces = Space.query();
+        //$scope.spaces = Space.query();
       }])
     .controller('SpaceDetailController', ['$location', '$scope', '$rootScope', 'MeanUser', '$stateParams', 'Space', '$http',
       function($location, $scope, $rootScope, MeanUser, $stateParams, Space, $http){

@@ -17,8 +17,8 @@
   "dependencies": {
     "assetmanager": "latest",
     "async": "latest",
-    "bower": "latest",
     "body-parser": "latest",
+    "bower": "latest",
     "compression": "latest",
     "connect-flash": "latest",
     "connect-modrewrite": "latest",
@@ -34,6 +34,7 @@
     "mongoose": "latest",
     "morgan": "latest",
     "ms": "latest",
+    "node-paginate-anything": "0.0.5",
     "nodemailer": "latest",
     "npm": "^2.1.0",
     "passport-facebook": "latest",
