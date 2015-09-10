@@ -24,7 +24,7 @@
     </div>
     <div class="row">
       <ul classs="tileGrid">
-        <li ng-repeat="space in spaces | filter: uuid"  class="col-md-4 tileGrid-tile">
+        <li dir-paginate="space in spaces | itemsPerPage: 9 | filter: uuid"  class="col-md-4 tileGrid-tile">
           <a class="groupCard--photo loading nametag-photo" ui-sref="space({spaceId: space.uuid})" style="background-image: url(/wvr/assets/img/seabkg.jpg)"
              target="_blank">
             <div class="groupCard--gradient"></div>
@@ -46,6 +46,11 @@
           </a>
         </li>
       </ul>
+    </div>
+    <div class="row">
+      <div class="col-lg-offset-5">
+        <dir-pagination-controls></dir-pagination-controls>
+      </div>
     </div>
   </div>
 </div>
