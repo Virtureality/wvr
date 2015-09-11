@@ -55,8 +55,18 @@ module.exports = function(Wvr, app, auth, database) {
 
 	router.route('/spaces')
 		.get(function(req, res, next) {
-			var query = SpaceModel
-				.find(function(err, spaces) {
+			var q = req.query.q;
+			var query;
+
+			if(q && q != '') {
+				query = SpaceModel.find({ $text : { $search : q } });
+			} else {
+				query = SpaceModel.find();
+			}
+
+			query.populate('owner', 'email name');
+
+			query.exec(function(err, spaces) {
 					if(err) {
 						res.send(err);
 					} else {
@@ -72,8 +82,7 @@ module.exports = function(Wvr, app, auth, database) {
 								res.json(spaces);
 							}});
 					}
-				})
-				.populate('owner', 'email name');
+				});
 		})
 		.post(function(req, res, next) {
 			var space = new SpaceModel();

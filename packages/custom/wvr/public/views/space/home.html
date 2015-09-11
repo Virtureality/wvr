@@ -5,26 +5,17 @@
         <div class="input-group">
 		</span>
 
-          <input ng-model="uuid" id="go-name" type="text" class="textIptLg" placeholder="Type to filter or go ..."/>
+          <input ng-model="q" type="text" class="textIptLg" placeholder="Discover, Explore, Find ..."/>
           <span class="input-group-btn" style="padding-right:5px">
-            <!--<input type="submit" id="go-btn" class="sticky-play btnIptLgBL" value="Go">-->
-            <!--<a ui-sref="space({spaceId: uuid})" class="sticky-play btnIptLgBL" target="_blank">Go!</a>-->
-            <a ui-sref="space({spaceId: uuid})" class="btn btn-info" target="_blank">Go!</a>
+            <button data-ng-click="search()" class="btn btn-info">Go!</button>
           </span>
-          <!--<span class="input-group-btn">
-            <input type="submit" id="create-btn" class="sticky-play btnIptLgOR" value="Create">
-            <div class="member-role groupCard&#45;&#45;joinBtnOR ">
-              <i class="font-icon-plus">
-              </i>
-            </div>
-          </span>-->
         </div>
         <div class="col-lg-6"></div>
       </div>
     </div>
     <div class="row">
       <ul classs="tileGrid">
-        <li ng-repeat="space in spaces | filter: uuid"  class="col-md-4 tileGrid-tile">
+        <li ng-repeat="space in spaces | filter: q"  class="col-md-4 tileGrid-tile">
           <a class="groupCard--photo loading nametag-photo" ui-sref="space({spaceId: space.uuid})" style="background-image: url(/wvr/assets/img/seabkg.jpg)"
              target="_blank">
             <div class="groupCard--gradient"></div>
@@ -51,9 +42,10 @@
       <div class="col-lg-offset-5">
         <bgf-pagination
                 collection="spaces"
-                url="'/api/wvr/space/spaces'"
+                url="url"
+                url-params="urlParams"
                 per-page="9"
-                per-page-presets="[3, 6, 9]"
+                per-page-presets="[9, 18, 36]"
                 auto-presets="false">
         </bgf-pagination>
       </div>

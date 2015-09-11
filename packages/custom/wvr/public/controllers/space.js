@@ -5,6 +5,12 @@ angular.module('wvr.space')
     .controller('SpaceListController', ['$scope', 'Space',
       function($scope, Space) {
         //$scope.spaces = Space.query();
+        $scope.url = '/api/wvr/space/spaces';
+        $scope.search = function() {
+          $scope.urlParams = {
+            q: $scope.q
+          };
+        };
       }])
     .controller('SpaceDetailController', ['$location', '$scope', '$rootScope', 'MeanUser', '$stateParams', 'Space', '$http',
       function($location, $scope, $rootScope, MeanUser, $stateParams, Space, $http){

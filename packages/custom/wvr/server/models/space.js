@@ -37,7 +37,8 @@ var SpaceSchema = new Schema({
     facilities: [FacilitySchema],
     spaces: [{type: Schema.Types.ObjectId, ref: 'SpaceSchema'}],
     extra: {}
-}, { strict: true });
+}, { strict: true })
+    .index({uuid: 'text', name: 'text', owner: 'text'});
 
 /**/
 SpaceSchema.pre('save', function(next){
