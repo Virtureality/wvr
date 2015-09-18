@@ -4359,6 +4359,11 @@
       "from": "https://registry.npmjs.org/ms/-/ms-0.7.1.tgz",
       "resolved": "https://registry.npmjs.org/ms/-/ms-0.7.1.tgz"
     },
+    "node-paginate-anything": {
+      "version": "0.0.5",
+      "from": "node-paginate-anything@",
+      "resolved": "https://registry.npmjs.org/node-paginate-anything/-/node-paginate-anything-0.0.5.tgz"
+    },
     "nodemailer": {
       "version": "1.3.4",
       "from": "https://registry.npmjs.org/nodemailer/-/nodemailer-1.3.4.tgz",
