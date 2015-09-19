@@ -2,8 +2,8 @@
 
 module.exports = {
   aggregate: true,
-  //db: process.env.MONGODB_URI || 'mongodb://wvr:wvr11$@ds031751.mongolab.com:31751/wvr',
-  db: process.env.MONGODB_URI || 'mongodb://wvr:wvr11$@proximus.modulusmongo.net:27017/Igu9zyzo',
+  db: process.env.MONGODB_URI || 'mongodb://wvr:wvr11$@ds031751.mongolab.com:31751/wvr',
+  //db: process.env.MONGODB_URI || 'mongodb://wvr:wvr11$@proximus.modulusmongo.net:27017/Igu9zyzo',
   /**
    * Database options that will be passed directly to mongoose.connect
    * Below are some examples.
