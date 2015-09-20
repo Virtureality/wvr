@@ -13,6 +13,7 @@
     "angular-bootstrap": "latest",
     "angular-ui-router": "#master",
     "web-bootstrap": "./node_modules/meanio/resources/web-bootstrap.js",
+    "angular-ui-select": "latest",
     "jquery-masonry": "~3.2.2",
     "masonry": "~3.2.2",
     "imagesloaded": "~3.1.8",
