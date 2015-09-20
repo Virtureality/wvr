@@ -11,8 +11,7 @@
     "url": "wvr"
   },
   "engines": {
-    "node": "0.10.x",
-    "npm": "latest"
+    "node": "0.10.x"
   },
   "dependencies": {
     "assetmanager": "latest",
