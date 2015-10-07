@@ -6,7 +6,7 @@ $(function(){
   
     $container.imagesLoaded( function(){
       $container.masonry({
-        itemSelector : '.box'
+        itemSelector : '.box-masonry'
       });
     });
   

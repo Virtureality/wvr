@@ -101,36 +101,7 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                         // e.isScreen --- if it is screen-sharing stream
 
                         if(e.isVideo) {
-
-                            var userPresenceBox = $('<div/>').attr('class', 'box photo col2 masonry-brick').attr('data-space-type', 'freespace');
-                            var userTxt = e.userid;
-                            var index = userTxt.lastIndexOf('-');
-                            var userName;
-                            var streamUserID;
-                            if(index !== -1) {
-                                userName = userTxt.substr(0, index);
-                                streamUserID = userTxt.substr(index + 1, userTxt.length);
-                            } else {
-                                userName = userTxt;
-                                streamUserID = userTxt;
-                            }
-                            var video = $(e.mediaElement).attr('id', 'video-' + streamUserID).attr('controls', true).attr('height', '100%').attr('width', '100%');
-
-                            /*if(e.type === 'local' && (!scope.space.owner || scope.loginUser._id === scope.space.owner._id)) {
-                                displaySpace();
-                            }*/
-
-                            var videoSpan = $('<span/>');
-                            var userSpan = $('<span/>').text(userName);
-                            var newPElement;
-                            video.appendTo(videoSpan);
-                            newPElement = $('<p/>');
-                            videoSpan.appendTo(newPElement);
-                            userSpan.appendTo(newPElement);
-                            newPElement.appendTo(userPresenceBox);
-                            userPresenceBox.appendTo(container);
-
-                            container.masonry('appended', userPresenceBox);
+                            addUser(e);
                         }
 
                     };
@@ -334,15 +305,34 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                     }
                 }
 
-                function addVideo(video, container) {
+                function addUser(e) {
+                    var userPresenceBox = $('<div/>').attr('class', 'box-masonry photo col2 masonry-brick').attr('data-space-type', 'freespace');
+                    var userTxt = e.userid;
+                    var index = userTxt.lastIndexOf('-');
+                    var userName;
+                    var streamUserID;
+                    if(index !== -1) {
+                        userName = userTxt.substr(0, index);
+                        streamUserID = userTxt.substr(index + 1, userTxt.length);
+                    } else {
+                        userName = userTxt;
+                        streamUserID = userTxt;
+                    }
+                    var video = $(e.mediaElement).attr('id', 'video-' + streamUserID).attr('controls', true).attr('height', '180px').attr('width', '230px');
 
-                    video.attr('height', '100%').attr('width', '100%');
+                    var videoSpan = $('<span/>');
+                    var userSpan = $('<span/>').text(userName);
+                    var newPElement;
+                    video.appendTo(videoSpan);
+                    newPElement = $('<p/>');
+                    videoSpan.appendTo(newPElement);
+                    var userPElement = $('<p/>');
+                    userPElement.appendTo(newPElement);
+                    userSpan.appendTo(userPElement);
+                    newPElement.appendTo(userPresenceBox);
+                    userPresenceBox.appendTo(container);
 
-                    var videoBox = $('<div/>').attr('class', 'box photo col2 masonry-brick');
-                    video.appendTo(videoBox);
-                    videoBox.appendTo(container);
-
-                    container.masonry('appended', videoBox);
+                    container.masonry('appended', userPresenceBox);
                 }
 
                 function displaySpace() {

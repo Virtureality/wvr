@@ -23,7 +23,7 @@
     </div>
 </div>
 <div class="row" id="meetingsContainer">
-	<div ng-repeat="mit in objToArray(mits) | filter: mitName" class="box photo col2 masonry-brick">
+	<div ng-repeat="mit in objToArray(mits) | filter: mitName" class="box-masonry photo col2 masonry-brick">
 		<p><span>Address: </span><span><a ui-sref="mit({mname: mit.sessionid})" target="_blank">{{mit.sessionid}}</a></span></p>
 		<p><span>Owner: </span><span>{{mit.userid}}</span></p>
 	</div>

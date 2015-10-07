@@ -114,7 +114,7 @@ $(function(){
 
 			if(event.isVideo) {
 
-				var userPresenceBox = $('<div/>').attr('class', 'box photo col2 masonry-brick').attr('data-space-type', 'freespace');
+				var userPresenceBox = $('<div/>').attr('class', 'box-masonry photo col2 masonry-brick').attr('data-space-type', 'freespace');
 				//var userName = event.userid;
 				var userTxt = event.userid;
 				var index = userTxt.lastIndexOf('-');
@@ -340,7 +340,7 @@ $(function(){
 
 		video.attr('height', '100%').attr('width', '100%');
 
-		var videoBox = $('<div/>').attr('class', 'box photo col2 masonry-brick');
+		var videoBox = $('<div/>').attr('class', 'box-masonry photo col2 masonry-brick');
 		video.appendTo(videoBox);
 		videoBox.appendTo(container);
 

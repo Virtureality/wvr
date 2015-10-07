@@ -22,7 +22,6 @@ Wvr.register(function(system, app, auth, database) {
   Wvr.aggregateAsset('css', 'default.css');
 
   Wvr.aggregateAsset('css', 'wvr.css');
-  Wvr.aggregateAsset('css', 'masonry.css');
   Wvr.aggregateAsset('js', 'angular-pageslide-directive.min.js');
   Wvr.angularDependencies(['bgf.paginateAnything', 'wvr.space', 'wvr.mit']);
 

@@ -26,7 +26,7 @@
               <div class="row">
                 <h3>Facilities:</h3>
                 <hr/>
-                <div data-type="Facility" class="box" data-ng-repeat="item in designerResources.facilities" data-drag="true" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" data-ng-model="designerResources.facilities" jqyoui-draggable="{index: {{$index}}, placeholder: 'keep', animate: true}">{{item.type}}</div>
+                <div data-type="Facility" class="box-masonry" data-ng-repeat="item in designerResources.facilities" data-drag="true" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" data-ng-model="designerResources.facilities" jqyoui-draggable="{index: {{$index}}, placeholder: 'keep', animate: true}">{{item.type}}</div>
               </div>
               <br/>
               <hr/>
@@ -68,7 +68,7 @@
 
         <div id="container" class="clearfix masonry">
 
-          <div id="ownerPresenceBox" class="box photo col2 masonry-brick" data-space-type="seat">
+          <div id="ownerPresenceBox" class="box-masonry photo col2 masonry-brick" data-space-type="seat">
             <p><span data-ng-show="space.owner">{{space.owner.name}}</span></p>
             <p id="{{space.owner._id}}">
               <span><a id="{{space.owner.name + '-' + space.owner._id}}" href="/wvr/assets/img/lily.jpeg" title="Lily"><img src="/wvr/assets/img/lily.jpeg" alt="Lily"></a></span>
@@ -76,7 +76,7 @@
             <p data-ng-show="space.owner" ><span id="{{'seat-' + space.owner._id}}">{{'Seat - Space Owner - ' + space.owner.name}}</span></p>
           </div>
 
-          <div data-type="Facility" data-ng-repeat="facility in space.facilities track by $index" class="box photo col2 masonry-brick" data-space-type="seat" data-drag="true" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" data-ng-model="space.facilities" jqyoui-draggable="{index: {{$index}}, animate: true}">
+          <div data-type="Facility" data-ng-repeat="facility in space.facilities track by $index" class="box-masonry photo col2 masonry-brick" data-space-type="seat" data-drag="true" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" data-ng-model="space.facilities" jqyoui-draggable="{index: {{$index}}, animate: true}">
             <p><span id="{{'seat-owner-' + facility._id}}">{{facility.owner.name || facility.owner}}</span>&nbsp;<button data-ng-show="isSpaceOwner" data-ng-click="showUserSearch(facility)">Assign Seat Owner</button></p>
             <p id="{{facility._id}}"></p>
             <p><span id="{{'seat-' + facility._id}}">{{facility.name}}</span></p>
@@ -86,7 +86,7 @@
 
         <div data-ng-show="designPanelOpen" data-ng-model="newFacilities" data-drop="true" data-jqyoui-options="{accept: '[data-type|=&quot;Facility&quot;]'}" jqyoui-droppable="{multiple:true, onDrop: 'onFacilityDropped', containment: 'position'}">
           <p><span class="alert-info">Drop new facilities here! :)</span></p>
-          <div class="box photo col2 masonry-brick" data-type="Facility" data-ng-repeat="facility in newFacilities track by $index" data-ng-model="newFacilities" data-drag="true" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" jqyoui-draggable="{index: {{$index}}, animate: true}">
+          <div class="box-masonry photo col2 masonry-brick" data-type="Facility" data-ng-repeat="facility in newFacilities track by $index" data-ng-model="newFacilities" data-drag="true" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" jqyoui-draggable="{index: {{$index}}, animate: true}">
             <p><span id="{{'seat-' + facilityDroppedTime}}">{{facility.type}}</span></p>
           </div>
         </div>
