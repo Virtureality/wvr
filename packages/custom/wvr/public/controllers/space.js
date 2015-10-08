@@ -107,6 +107,7 @@ angular.module('wvr.space')
                   $scope.operationInfo = 'Sorry! The space has been owned.';
                   $scope.alertStyle = 'alert-warning';
                 }
+
               };
 
               $scope.showSpace = function() {

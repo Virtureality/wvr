@@ -329,6 +329,11 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                     var userPElement = $('<p/>');
                     userPElement.appendTo(newPElement);
                     userSpan.appendTo(userPElement);
+                    if(e.userid !== userID) {
+                        $('<button/>').attr('class', 'btn btn-info').attr('style', 'margin-left: 6px;').text('A').appendTo(userPElement);
+                        $('<button/>').attr('class', 'btn btn-info').attr('style', 'margin-left: 6px;').text('T').appendTo(userPElement);
+                        $('<button/>').attr('class', 'btn btn-info').attr('style', 'margin-left: 6px;').text('V').appendTo(userPElement);
+                    }
                     newPElement.appendTo(userPresenceBox);
                     userPresenceBox.appendTo(container);
 

@@ -56,33 +56,70 @@ module.exports = function(Wvr, app, auth, database) {
 	router.route('/spaces')
 		.get(function(req, res, next) {
 			var q = req.query.q;
-			var query;
+			var initialQuery, finalQuery;
 
 			if(q && q != '') {
-				query = SpaceModel.find({ $text : { $search : q } });
+				initialQuery = SpaceModel.find({ $text : { $search : q } });
 			} else {
-				query = SpaceModel.find();
+				initialQuery = SpaceModel.find();
 			}
 
-			query.populate('owner', 'email name');
+			initialQuery.exec(function(err, spaces) {
+				if(err) {
+					res.send(err);
+				} else {
+					if(spaces.length > 0) {
+						if(q && q != '') {
+							finalQuery = SpaceModel.find({ $text : { $search : q } });
+						} else {
+							finalQuery = SpaceModel.find();
+						}
 
-			query.exec(function(err, spaces) {
-					if(err) {
-						res.send(err);
+						doFinalQuery(finalQuery);
 					} else {
-						var queryParameters = paginate(req, res, spaces.length, 1000);
+						var newSpace = new SpaceModel();
 
-						query.limit(queryParameters.limit);
-						query.skip(queryParameters.skip);
+						newSpace.uuid = q;
+						newSpace.name = q;
 
-						query.exec(function(err, spaces) {
+						newSpace.save(function(err) {
 							if(err) {
 								res.send(err);
 							} else {
-								res.json(spaces);
-							}});
+								finalQuery = SpaceModel.find(newSpace);
+								doFinalQuery(finalQuery);
+							}
+						});
 					}
-				});
+				}
+			});
+
+			function doFinalQuery(finalQuery) {
+				if(finalQuery) {
+					finalQuery.populate('owner', 'email name');
+
+					finalQuery.exec(function(err, finalSpaces) {
+						if(err) {
+							res.send(err);
+						} else {
+							if(finalSpaces.length > 0) {
+								var queryParameters = paginate(req, res, finalSpaces.length, 1000);
+
+								finalQuery.limit(queryParameters.limit);
+								finalQuery.skip(queryParameters.skip);
+
+								finalQuery.exec(function(err, spaces) {
+									if(err) {
+										res.send(err);
+									} else {
+										res.json(spaces);
+									}
+								});
+							}
+						}
+					});
+				}
+			}
 		})
 		.post(function(req, res, next) {
 			var space = new SpaceModel();
@@ -93,7 +130,15 @@ module.exports = function(Wvr, app, auth, database) {
 				if(err) {
 					res.send(err);
 				} else {
-					res.json({"message": 'Space Created!', "space": space});
+					SpaceModel
+						.findById(space, function(err, space) {
+							if(err) {
+								res.send(err);
+							} else {
+								res.json({"message": 'Space Created!', "space": space});
+							}
+						})
+						.populate('owner', '_id email name');
 				}
 			});
 
@@ -114,15 +159,27 @@ module.exports = function(Wvr, app, auth, database) {
 				.populate('facilities.owner', '_id email name');
 		})
 		.put(function(req, res, next) {
-			SpaceModel.findOneAndUpdate({ uuid: req.params.spaceId }, req.body, function(err, result) {
+			var query;
+
+			query = SpaceModel.findOneAndUpdate({ uuid: req.params.spaceId }, req.body);
+
+			query.exec(function(err, result) {
 				if(err) {
 					res.send(err);
 				} else {
-					res.json({"message": 'Space Updated!', "space": result});
+					SpaceModel
+						.findById(result, function(err, space) {
+							if(err) {
+								res.send(err);
+							} else {
+								res.json({"message": 'Space Updated!', "space": space});
+							}
+						})
+						.populate('owner', '_id email name')
+						.populate('facilities.owner', '_id email name');
 				}
-			})
-			.populate('owner', '_id email name')
-			.populate('facilities.owner', '_id email name');
+			});
+
 		})
 		.delete(function(req, res, next) {
 			SpaceModel.remove({
