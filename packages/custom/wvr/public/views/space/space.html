@@ -96,13 +96,17 @@
       <div class="col-lg-3">
 
         <div class="input-group">
-          <input id="message-text" class="form-control" type="text" placeholder="type message here"/>
+          <input id="message-text" class="form-control" type="text" placeholder="Instant Messaging ..."/>
           <span class="input-group-btn">
             <button id="send-msg-btn" class="btn btn-info" disabled="true">Waiting for setup ...</button>
           </span>
         </div>
         <hr />
-        <div id="message-area"></div>
+        <div id="message-area">
+          <p>
+            <span>To:&nbsp;</span><span data-ng-show="!(imers.size > 0)">All</span><span data-ng-repeat="imer in imerList">{{imer}}&nbsp;</span>
+          </p>
+        </div>
 
       </div>
 

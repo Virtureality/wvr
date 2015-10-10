@@ -242,6 +242,8 @@ angular.module('wvr.space')
 
               }
 
+              $scope.imers = new Set();
+
               $scope.$emit('spaceReached');
             },
             function(reason) {

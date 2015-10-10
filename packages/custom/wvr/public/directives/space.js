@@ -19,9 +19,13 @@ angular.module('wvr.space').directive('wvrSpace', function() {
 
                 var mname = scope.space.uuid;
 
-                var userID = getUserID();
+                var userID = scope.currentUserID || getUserID();
 
                 var seatTakenMsgInterval;
+
+                var messageArea = $('#message-area');
+
+                var sendMsgButton = $('#send-msg-btn');
 
                 startWatching();
 
@@ -128,6 +132,11 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                                 userVideoPElement.append(seatTakeElement);
                             }
                         }
+
+                        scope.$apply(function() {
+                            scope.imers.delete(e.userid);
+                            scope.imerList = Array.from(scope.imers);
+                        });
                     };
 
                     //wvrmitConnection.transmitRoomOnce = true;
@@ -153,14 +162,23 @@ angular.module('wvr.space').directive('wvrSpace', function() {
 
                     };
 
-                    var messageArea = $('#message-area');
-
-                    var sendMsgButton = $('#send-msg-btn');
-
                     sendMsgButton.on('click', function() {
                         var msgBody = $('#message-text').val() || '';
                         if (msgBody && msgBody !== '') {
-                            wvrmitConnection.send(msgBody);
+                            var targets = scope.imers;
+
+                            if (targets.size > 0) {
+                                /*console.log('Broadcasting to wvrmitConnection.peers: ' + Object.keys(wvrmitConnection.peers));
+                                targets.forEach(function(value1, value2, set) {
+                                    console.log('Sending message: ' + msgBody + ' to: ' + value1);
+                                    wvrmitConnection.peers[value1].sendCustomMessage({msgType: 'IM', sender: wvrmitConnection.userid, message: msgBody});
+                                });*/
+                                targets.forEach(function(value1, value2, set) {
+                                    wvrmitConnection.sendCustomMessage({msgType: 'IM', sender: wvrmitConnection.userid, receiver: value1, message: msgBody});
+                                });
+                            } else {
+                                wvrmitConnection.send(msgBody);
+                            }
                             messageArea.append($('<div>').append('Me: ' + msgBody));
                         } else{
                             alert('Please input message content correctly!');
@@ -170,6 +188,18 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                     wvrmitConnection.onopen = function(e) {
                         // e.userid
                         // e.extra
+
+                        /*if(!wvrmitConnection.peers[e.userid].onCustomMessageUpdated) {
+                            console.log('Setting onCustomMessage handler between me[' + wvrmitConnection.userid + '] and ' + e.userid);
+                            wvrmitConnection.peers[e.userid].onCustomMessageUpdated = true;
+                            wvrmitConnection.peers[e.userid].onCustomMessage = function(msg) {
+                                console.log('I[' + wvrmitConnection.userid + '] received message from ' + this.userid);
+                                if(msg.msgType == 'IM') {
+                                    messageArea.append($('<div>').append(msg.sender + ': ' + msg.message));
+                                }
+                            };
+                            console.log('After setting, wvrmitConnection.peers: ' + Object.keys(wvrmitConnection.peers));
+                        }*/
 
                         setButton(sendMsgButton, 'Send', false);
 
@@ -195,6 +225,8 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                     wvrmitConnection.onCustomMessage = function(msg) {
                         if(msg.msgType == 'SeatTaken') {
                             takeSeat(msg.seatID, msg.takerID);
+                        } else if(msg.msgType == 'IM' && msg.receiver == wvrmitConnection.userid) {
+                            messageArea.append($('<div>').append(msg.sender + ': ' + msg.message));
                         }
                     };
 
@@ -318,7 +350,7 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                         userName = userTxt;
                         streamUserID = userTxt;
                     }
-                    var video = $(e.mediaElement).attr('id', 'video-' + streamUserID).attr('controls', true).attr('height', '180px').attr('width', '230px');
+                    var video = $(e.mediaElement).attr('id', 'video-' + streamUserID).attr('controls', true).attr('autoplay', true).attr('height', '180px').attr('width', '230px');
 
                     var videoSpan = $('<span/>');
                     var userSpan = $('<span/>').text(userName);
@@ -330,14 +362,55 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                     userPElement.appendTo(newPElement);
                     userSpan.appendTo(userPElement);
                     if(e.userid !== userID) {
-                        $('<button/>').attr('class', 'btn btn-info').attr('style', 'margin-left: 6px;').text('A').appendTo(userPElement);
-                        $('<button/>').attr('class', 'btn btn-info').attr('style', 'margin-left: 6px;').text('T').appendTo(userPElement);
-                        $('<button/>').attr('class', 'btn btn-info').attr('style', 'margin-left: 6px;').text('V').appendTo(userPElement);
+                        var imSwitch = $('<button/>').attr('id', e.userid + '-im').attr('class', 'btn btn-info').attr('style', 'margin-left: 6px;').attr('title', 'Click to Add for Messaging').text('IM Off').appendTo(userPElement);
+
+                        imSwitch.bind('click', {targetIMer: e.userid}, function(event) {
+                            var imSwitchBtn = $(this);
+                            var status = imSwitchBtn.text();
+                            /*var imer = imSwitchBtn.attr('id');
+
+                            var index = imer.indexOf('-im');
+                            if(index !== -1) {
+                                imer = imer.substr(0, index);
+                            }*/
+                            var imer = event.data.targetIMer;
+
+                            if(status === 'IM Off') {
+                                scope.$apply(function() {
+                                    scope.imers.add(imer);
+                                    scope.imerList = Array.from(scope.imers);
+                                });
+                                imSwitchBtn.attr('title', 'Click to Remove from Messaging').text('IM On');
+                            } else if('IM On') {
+                                scope.$apply(function() {
+                                    scope.imers.delete(imer);
+                                    scope.imerList = Array.from(scope.imers);
+                                });
+                                imSwitchBtn.attr('title', 'Click to Add for Messaging').text('IM Off');
+                            }
+                        });
                     }
                     newPElement.appendTo(userPresenceBox);
                     userPresenceBox.appendTo(container);
 
                     container.masonry('appended', userPresenceBox);
+
+                    var videoDOMObj = video.get(0);
+
+                    setTimeout(playVideo, 1000);
+
+                    /*if(e.type === 'remote') {
+                        setTimeout(pauseVideo, 3000);
+                    }*/
+                    setTimeout(pauseVideo, 3000);
+
+                    function playVideo() {
+                        videoDOMObj.play();
+                    }
+
+                    function pauseVideo() {
+                        videoDOMObj.pause();
+                    }
                 }
 
                 function displaySpace() {
