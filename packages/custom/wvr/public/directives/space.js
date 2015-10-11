@@ -399,10 +399,17 @@ angular.module('wvr.space').directive('wvrSpace', function() {
 
                     setTimeout(playVideo, 1000);
 
-                    /*if(e.type === 'remote') {
-                        setTimeout(pauseVideo, 3000);
-                    }*/
-                    setTimeout(pauseVideo, 3000);
+
+                    setTimeout(function() {
+                        wvrmitConnection.peers[e.userid].takeSnapshot(function(snapshot) {
+                            videoDOMObj.poster = snapshot;
+                        });
+                    }, 3000);
+
+                    if(e.type === 'remote') {
+                        setTimeout(pauseVideo, 6000);
+                    }
+                    //setTimeout(pauseVideo, 6000);
 
                     function playVideo() {
                         videoDOMObj.play();
@@ -410,6 +417,9 @@ angular.module('wvr.space').directive('wvrSpace', function() {
 
                     function pauseVideo() {
                         videoDOMObj.pause();
+                        /*setTimeout(function() {
+                            videoDOMObj.poster = 'http://localhost:3000/wvr/assets/img/lily.jpeg';
+                        }, 1000);*/
                     }
                 }
 
