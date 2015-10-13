@@ -27,6 +27,9 @@ angular.module('wvr.space').directive('wvrSpace', function() {
 
                 var sendMsgButton = $('#send-msg-btn');
 
+                var isEnablingRequestToJoin = false;
+                var rejoin = false;
+
                 startWatching();
 
                 function startWatching() {
@@ -34,6 +37,8 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                     setButton(actionButton, 'Watching ...', true);
 
                     wvrmitConnection = new RTCMultiConnection(defaultChannel);
+                    scope.webrtcRoom = mname;
+                    scope.webrtcConnection = wvrmitConnection;
 
                     wvrmitConnection.userid = userID;
 
@@ -64,9 +69,16 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                         // request-accepted
                         // request-rejected
 
+                        if(state.name == 'detecting-room-presence') {
+                            setButton(actionButton, state.reason, true);
+                        }
+
+                        if(state.name == 'room-available') {
+                            setButton(actionButton, state.reason + ' Accessing ...', true);
+                        }
+
                         if(state.name == 'room-not-available') {
                             setButton(actionButton, state.reason, true);
-                            wvrmitConnection.connect(mname);
                         }
 
                         if(state.name == 'connected-with-initiator') {
@@ -140,7 +152,7 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                     };
 
                     //wvrmitConnection.transmitRoomOnce = true;
-                    wvrmitConnection.onNewSession = function (session) {
+                    /*wvrmitConnection.onNewSession = function (session) {
 
                         // session.userid
                         // session.sessionid
@@ -159,6 +171,27 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                         }
 
                         detectingRoom = false;
+
+                    };*/
+                    wvrmitConnection.onNewSession = function (session) {
+
+                        // session.userid
+                        // session.sessionid
+                        // session.extra
+                        // session.session i.e. {audio,video,screen,data}
+
+                        setButton(actionButton, 'Checking ...', true);
+
+                        if (session.sessionid == mname) {
+                            roomDetected = true;
+
+                            if(!wvrmitConnection.isInitiator && !isEnablingRequestToJoin && rejoin) {
+                                wvrmitConnection.dontCaptureUserMedia = true;
+                                wvrmitConnection.join(mname);
+                            } else if(!joinDisabled) {
+                                enableRequestToJoin();
+                            }
+                        }
 
                     };
 
@@ -223,10 +256,23 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                     };
 
                     wvrmitConnection.onCustomMessage = function(msg) {
+
                         if(msg.msgType == 'SeatTaken') {
                             takeSeat(msg.seatID, msg.takerID);
                         } else if(msg.msgType == 'IM' && msg.receiver == wvrmitConnection.userid) {
                             messageArea.append($('<div>').append(msg.sender + ': ' + msg.message));
+                        } else if(msg.msgType === 'roomInitiatorUpdate' && msg.roomId === mname) {
+                            if(msg.broadcaster === wvrmitConnection.userid) {
+                                if(!wvrmitConnection.isInitiator) {
+                                    initiateRoom(mname);
+                                }
+                            } else if(wvrmitConnection.sessionDescriptions) {
+                                var initiatorSession = wvrmitConnection.sessionDescriptions[mname];
+                                if(initiatorSession) {
+                                    delete wvrmitConnection.sessionDescriptions[mname];
+                                    rejoin = true;
+                                }
+                            }
                         }
                     };
 
@@ -236,8 +282,39 @@ angular.module('wvr.space').directive('wvrSpace', function() {
 
                     enableShare(mname);
 
-                    setTimeout(checkForSetup, 3000);
+                    //setTimeout(checkForSetup, 3000);
 
+                }
+
+                function initiateRoom(roomId) {
+                    setButton(actionButton, 'Setting up ...', true);
+
+                    if(rejoin) {
+                        wvrmitConnection.dontCaptureUserMedia = true;
+                    }
+
+                    wvrmitConnection.isInitiator = true;
+                    wvrmitConnection.onRequest = function(request) {
+                        var acceptDecision = confirm(request.userid + ' is requesting to join, would you accept?');
+
+                        wvrmitConnection.dontCaptureUserMedia = true;
+                        if(acceptDecision) {
+                            wvrmitConnection.accept(request);
+                        } else {
+                            wvrmitConnection.reject(request);
+                        }
+                    };
+                    wvrmitConnection.session = {
+                        audio: true,
+                        video: true,
+                        data:  true
+                    };
+                    wvrmitConnection.maxParticipantsAllowed = 256;
+                    wvrmitConnection.open(roomId);
+
+                    displaySpace();
+
+                    setButton(actionButton, 'You Are In :)', true);
                 }
 
                 function getUserID() {
@@ -302,6 +379,8 @@ angular.module('wvr.space').directive('wvrSpace', function() {
 
                 function enableRequestToJoin(retry) {
 
+                    isEnablingRequestToJoin = true;
+
                     if(retry) {
                         wvrmitConnection.dontCaptureUserMedia = true;
                     }
@@ -312,12 +391,13 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                     actionButton.bind('click', requestToJoinHandler);
 
                     function requestToJoinHandler() {
-
                         joinDisabled = true;
                         actionButton.unbind('click', requestToJoinHandler);
 
                         wvrmitConnection.join(mname);
                         setButton(actionButton, 'Requesting to Enter ...', true);
+
+                        isEnablingRequestToJoin = false;
 
                     }
                 }

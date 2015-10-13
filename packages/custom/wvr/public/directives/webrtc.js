@@ -10,6 +10,7 @@ angular.module('mean.wvr').directive('wvrSignaling', [
         var SIGNALING_SERVER = window.signalingServer || 'http://localhost:8888/';
         var sender = getUserID();
         scope.currentUserID = sender;
+        var roomEntered = false;
 
         function getUserID() {
           var result = (Math.round(Math.random() * 999999999) + 999999999).toString();
@@ -38,6 +39,11 @@ angular.module('mean.wvr').directive('wvrSignaling', [
 
               socket.on('connect', function () {
                 if (config.callback) config.callback(socket);
+
+                if(socket.channel != 'wvrmit-screen' && !roomEntered) {
+                  roomEntered = true;
+                  socket.emit('room-entered', {room: scope.webrtcRoom || 'default', userid: sender});
+                }
               });
 
               socket.send = function (message) {
@@ -48,6 +54,22 @@ angular.module('mean.wvr').directive('wvrSignaling', [
               };
 
               socket.on('message', config.onmessage);
+              /*socket.on('message', onmessage);
+
+              function onmessage(responseMsg) {
+                if(responseMsg.sessionid && responseMsg.userid && (responseMsg.userid === sender)) {
+                  scope.webrtcConnection.open({sessionid: responseMsg.sessionid, dontTransmit: true});
+                }
+
+                config.onmessage(responseMsg);
+              }*/
+
+              /*window.addEventListener('beforeunload', leaveHandler);
+
+              function leaveHandler() {
+                //console.log('Disconnected your sockets, peers, streams and everything except RTCMultiConnection object.');
+                socket.emit('disconnect', {socketId: socket.id});
+              }*/
 
             };
           }
