@@ -2,17 +2,20 @@
 
   <div id="space" data-ng-model="space" class="container">
     <div class="row">
-      <p class="alert alert-info"><span>Welcome, {{loginUser.name||"Guest"}}! :)</span>&nbsp;|&nbsp;<span data-ng-show="space.owner" >This is <a class="text-primary" href="mailto:{{space.owner.email}}">{{space.owner.name}}</a>'s space.</span><span data-ng-show="!space.owner"> This is a free space.&nbsp;<a data-ng-show="!loginUser._id" href="/auth/login" class="btn btn-success badge">Login to Own</a><button data-ng-show="loginUser._id" data-ng-click="ownSpace(space)" class="btn btn-success badge">Own</button></span></p>
-
+      <div class="col-lg-6">
+        <p class="alert alert-info">
+          <label style="font-size: 36px;">{{space.uuid}}</label>&nbsp;
+        </p>
+      </div>
+      <div class="col-lg-6">
+        <span data-ng-show="!space.owner">
+            <a data-ng-show="!loginUser._id" href="/auth/login" class="btn btn-success badge">Own</a>
+            <button data-ng-show="loginUser._id" data-ng-click="ownSpace(space)" class="btn btn-success badge">Own</button>
+          </span>
+        <span><button id="action-button" class="btn btn-success badge">Welcome</button></span>
+      </div>
       <p data-ng-show="operationInfo" class="{{alertStyle}}">{{operationInfo}}</p>
-
-      <hr/>
     </div>
-
-    <div class="row" id="action-area">
-      &nbsp;<button id="action-button" class="btn btn-success badge">Welcome</button>&nbsp;
-    </div>
-    <hr/>
 
     <div data-ng-show="space.visible" class="row">
 
@@ -98,7 +101,7 @@
         <div class="input-group">
           <input id="message-text" class="form-control" type="text" placeholder="Instant Messaging ..."/>
           <span class="input-group-btn">
-            <button id="send-msg-btn" class="btn btn-info" disabled="true">Waiting for setup ...</button>
+            <button id="send-msg-btn" class="btn btn-info" disabled="true">Waiting ...</button>
           </span>
         </div>
         <hr />

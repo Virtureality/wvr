@@ -20,6 +20,7 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                 var mname = scope.space.uuid;
 
                 var userID = scope.currentUserID || getUserID();
+                scope.currentUserID = userID;
 
                 var seatTakenMsgInterval;
 
@@ -34,7 +35,7 @@ angular.module('wvr.space').directive('wvrSpace', function() {
 
                 function startWatching() {
 
-                    setButton(actionButton, 'Watching ...', true);
+                    setButton(actionButton, 'Marching ...', true);
 
                     wvrmitConnection = new RTCMultiConnection(defaultChannel);
                     scope.webrtcRoom = mname;
@@ -280,7 +281,7 @@ angular.module('wvr.space').directive('wvrSpace', function() {
 
                     wvrmitConnection.connect();
 
-                    enableShare(mname);
+                    //enableShare(mname);
 
                     //setTimeout(checkForSetup, 3000);
 
@@ -318,6 +319,7 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                 }
 
                 function getUserID() {
+
                     var result = (Math.round(Math.random() * 999999999) + 999999999).toString();
 
                     var loginUser = scope.loginUser;

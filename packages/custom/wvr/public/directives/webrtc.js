@@ -8,11 +8,10 @@ angular.module('mean.wvr').directive('wvrSignaling', [
       link: function postLink(scope, elm, attrs) {
         var customSignaling = window.customSignaling;
         var SIGNALING_SERVER = window.signalingServer || 'http://localhost:8888/';
-        var sender = getUserID();
-        scope.currentUserID = sender;
         var roomEntered = false;
 
         function getUserID() {
+
           var result = (Math.round(Math.random() * 999999999) + 999999999).toString();
 
           var loginUser = scope.loginUser;
@@ -27,11 +26,12 @@ angular.module('mean.wvr').directive('wvrSignaling', [
         if(customSignaling) {
           if(customSignaling === 'socketio') {
             window.openSignalingChannel = function (config) {///socketio for signaling
+              scope.currentUserID = scope.currentUserID || getUserID();
               var channel = config.channel || this.channel;
 
               io.connect(SIGNALING_SERVER).emit('new-channel', {
                 channel: channel,
-                sender: sender
+                sender: scope.currentUserID
               });
 
               var socket = io.connect(SIGNALING_SERVER + channel);
@@ -42,13 +42,13 @@ angular.module('mean.wvr').directive('wvrSignaling', [
 
                 if(socket.channel != 'wvrmit-screen' && !roomEntered) {
                   roomEntered = true;
-                  socket.emit('room-entered', {room: scope.webrtcRoom || 'default', userid: sender});
+                  socket.emit('room-entered', {room: scope.webrtcRoom || 'default', userid: scope.currentUserID});
                 }
               });
 
               socket.send = function (message) {
                 socket.emit('message', {
-                  sender: sender,
+                  sender: scope.currentUserID,
                   data: message
                 });
               };
@@ -57,7 +57,7 @@ angular.module('mean.wvr').directive('wvrSignaling', [
               /*socket.on('message', onmessage);
 
               function onmessage(responseMsg) {
-                if(responseMsg.sessionid && responseMsg.userid && (responseMsg.userid === sender)) {
+                if(responseMsg.sessionid && responseMsg.userid && (responseMsg.userid === scope.currentUserID)) {
                   scope.webrtcConnection.open({sessionid: responseMsg.sessionid, dontTransmit: true});
                 }
 
