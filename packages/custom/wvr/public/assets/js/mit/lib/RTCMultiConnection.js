@@ -3848,12 +3848,27 @@
         // if a user leaves
 
         function clearSession() {
-            if (connection.isInitiator && connection.socket) {
+            //console.log('Leaving ... To clear connection: ');
+            /*for (var prop in connection) {
+                console.log(prop + ': ' + connection[prop]);
+            }*/
+            //console.log('session: ' + JSON.stringify(connection.channel) + '/' + JSON.stringify(connection.sessionid));
+            //console.log('connection.isInitiator: ' + JSON.stringify(connection.isInitiator));
+            //console.log('connection.socket.send: ' + connection.socket.send);
+            /*for (var prop in connection.socket) {
+                if(prop == 'send') {
+                    console.log(prop + ': ' + connection.socket[prop]);
+                }
+            }*/
+            //console.log('connection.autoCloseEntireSession: ' + JSON.stringify(connection.autoCloseEntireSession));
+            //console.log('connection.peers: ' + JSON.stringify(connection.peers));
+
+            /*if (connection.isInitiator && connection.socket) {
                 connection.socket.send({
                     sessionClosed: true,
                     session: connection.sessionDescription
                 });
-            }
+            }*/
 
             var alertMessage = {
                 left: true,
@@ -3868,20 +3883,31 @@
                     alertMessage.closeEntireSession = true;
                 } else {
                     var firstPeer;
-                    for (var peer in connection.peers) {
-                        if (peer !== connection.userid) {
+                    /*for (var peer in connection.peers) {
+                        console.log('peer: ' + JSON.stringify(connection.peers[peer].userid));
+                        if (peer !== connection.userid && connection.peers[peer].userid) {
                             firstPeer = connection.peers[peer];
                             continue;
                         }
-                    }
+                    }*/
                     if (firstPeer && firstPeer.socket) {
                         // shift initiation control to another user
+                        //console.log('shifting initiation control to peer: ' + JSON.stringify(firstPeer.userid));
+
                         firstPeer.socket.send2({
                             isPlayRoleOfInitiator: true,
                             messageFor: firstPeer.userid,
                             userid: connection.userid,
+                            sessionid: connection.sessionid,
                             extra: connection.extra,
                             participants: participants
+                        });
+                    }
+
+                    if (connection.isInitiator && connection.socket) {
+                        connection.socket.send({
+                            sessionClosed: true,
+                            session: connection.sessionDescription
                         });
                     }
                 }
@@ -3899,6 +3925,9 @@
             });
 
             webAudioMediaStreamSources = [];
+
+            console.log('Session cleared. Thanks for visiting, hope to see you next time! :)');
+            //alert('Thanks for visiting! Hope to see you next time. :)');
         }
 
         // www.RTCMultiConnection.org/docs/remove/
@@ -4002,6 +4031,26 @@
         };
 
         signalingHandler.leaveHandler = function(e) {
+            console.log('signalingHandler.leaveHandler is called. keyCode: ' + e.keyCode);
+
+            /*var confirmed = confirm('Are you sure to leave?');
+
+            if(confirmed) {
+
+                if (!connection.leaveOnPageUnload) {
+                    return;
+                }
+
+                if (isNull(e.keyCode)) {
+                    return clearSession();
+                }
+
+                if (e.keyCode === 116) {
+                    clearSession();
+                }
+            }*/
+            console.log('About to leaving ...');
+
             if (!connection.leaveOnPageUnload) {
                 return;
             }
@@ -4044,7 +4093,12 @@
         // to share participation requests; room descriptions; and other stuff.
         connection.socket = connection.openSignalingChannel({
             onmessage: function(response) {
-                if (peerNegotiationHandler[response.channel]) {
+                //console.log('on message: ' + JSON.stringify(response));
+                /*console.log('peerNegotiationHandler[response.channel]:' + peerNegotiationHandler[response.channel]);
+                console.log('(response.userid === connection.userid):' + (response.userid === connection.userid));
+                console.log('isSignalingHandlerDeleted:' + isSignalingHandlerDeleted);*/
+
+                if (!response.isPlayRoleOfInitiator && peerNegotiationHandler[response.channel]) {
                     return peerNegotiationHandler[response.channel](response);
                 }
 
@@ -4205,7 +4259,9 @@
                 }
 
                 // keeping session active even if initiator leaves
-                if (response.isPlayRoleOfInitiator && response.messageFor === connection.userid) {
+                /*if (response.isPlayRoleOfInitiator && response.messageFor === connection.userid) {
+                    console.log('Play role of initiator ...');
+
                     if (response.extra) {
                         // clone extra-data from initial moderator
                         connection.extra = merge(connection.extra, response.extra);
@@ -4220,6 +4276,38 @@
                     }
 
                     setTimeout(connection.playRoleOfInitiator, 2000);
+                }*/
+                if (response.isPlayRoleOfInitiator) {
+                    if(response.messageFor === connection.userid) {
+                        //console.log('Play role of initiator ...');
+
+                        if (response.extra) {
+                            // clone extra-data from initial moderator
+                            connection.extra = merge(connection.extra, response.extra);
+                        }
+                        if (response.participants) {
+                            participants = response.participants;
+
+                            // make sure that if 2nd initiator leaves; control is shifted to 3rd person.
+                            if (participants[connection.userid]) {
+                                delete participants[connection.userid];
+                            }
+                        }
+
+                        setTimeout(connection.playRoleOfInitiator, 2000);
+                    } else {
+                        //console.log('React to the initiator change ...');
+                        signalingHandler.broadcasterid = response.messageFor;
+                        var sessionid = response.sessionid || connection.sessionid;
+                        if(sessionid) {
+                            if (connection.sessionDescriptions[sessionid]) {
+                                connection.numberOfSessions--;
+                                delete connection.sessionDescriptions[sessionid];
+                            }
+
+                            connection.isAcceptNewSession = true;
+                        }
+                    }
                 }
 
                 if (response.sessionClosed) {
@@ -4320,6 +4408,8 @@
 
         // open new session
         this.initSession = function(args) {
+            //console.log('initSession(). args: ' + JSON.stringify(args));
+
             signalingHandler.isOwnerLeaving = false;
 
             setDirections();
@@ -4340,6 +4430,12 @@
                     setTimeout(transmit, connection.interval || 3000);
                 }
             }
+
+            /*console.log('connection.socket: ' + connection.socket);
+            console.log('getLength(participants): ' + getLength(participants));
+            console.log('connection.maxParticipantsAllowed: ' + JSON.stringify(connection.maxParticipantsAllowed));
+            console.log('!signalingHandler.isOwnerLeaving: ' + !signalingHandler.isOwnerLeaving);
+            console.log('connection.sessionDescription: ' + JSON.stringify(connection.sessionDescription));*/
 
             // todo: test and fix next line.
             if (!args.dontTransmit /* || connection.transmitRoomOnce */ ) {

@@ -23,9 +23,27 @@ angular.module('mean.wvr').directive('wvrSignaling', [
           return result;
         }
 
+        function loadScript(src, onload) {
+          var script = document.createElement('script');
+          script.src = src;
+          script.onload = function() {
+            log('loaded resource:', src);
+            if (onload) {
+              onload();
+            }
+          };
+          document.documentElement.appendChild(script);
+        }
+
         if(customSignaling) {
           if(customSignaling === 'socketio') {
             window.openSignalingChannel = function (config) {///socketio for signaling
+              /*if(!io) {
+                loadScript(ioURL || 'http://localhost:8888/socketio.js', function() {
+                  console.log('io loaded.');
+                });
+              }*/
+
               scope.currentUserID = scope.currentUserID || getUserID();
               var channel = config.channel || this.channel;
 
@@ -42,11 +60,16 @@ angular.module('mean.wvr').directive('wvrSignaling', [
 
                 if(socket.channel != 'wvrmit-screen' && !roomEntered) {
                   roomEntered = true;
-                  socket.emit('room-entered', {room: scope.webrtcRoom || 'default', userid: scope.currentUserID});
+                  socket.emit('room-reached', {
+                    room: scope.webrtcRoom || 'default',
+                    userid: scope.currentUserID
+                  });
                 }
               });
 
               socket.send = function (message) {
+                console.log('Emitting message: ' + JSON.stringify({sender: scope.currentUserID, data: message}));
+
                 socket.emit('message', {
                   sender: scope.currentUserID,
                   data: message

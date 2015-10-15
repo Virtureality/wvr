@@ -29,7 +29,6 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                 var sendMsgButton = $('#send-msg-btn');
 
                 var isEnablingRequestToJoin = false;
-                var rejoin = false;
 
                 startWatching();
 
@@ -42,6 +41,7 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                     scope.webrtcConnection = wvrmitConnection;
 
                     wvrmitConnection.userid = userID;
+                    wvrmitConnection.autoCloseEntireSession = false;
 
                     if(window.openSignalingChannel) {
                         wvrmitConnection.openSignalingChannel = window.openSignalingChannel;
@@ -74,9 +74,9 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                             setButton(actionButton, state.reason, true);
                         }
 
-                        if(state.name == 'room-available') {
+                        /*if(state.name == 'room-available') {
                             setButton(actionButton, state.reason + ' Accessing ...', true);
-                        }
+                        }*/
 
                         if(state.name == 'room-not-available') {
                             setButton(actionButton, state.reason, true);
@@ -186,9 +186,10 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                         if (session.sessionid == mname) {
                             roomDetected = true;
 
-                            if(!wvrmitConnection.isInitiator && !isEnablingRequestToJoin && rejoin) {
+                            if(!wvrmitConnection.isInitiator && !isEnablingRequestToJoin && wvrmitConnection.sessionid) {
                                 wvrmitConnection.dontCaptureUserMedia = true;
-                                wvrmitConnection.join(mname);
+                                //wvrmitConnection.join(mname);
+                                wvrmitConnection.join(session);
                             } else if(!joinDisabled) {
                                 enableRequestToJoin();
                             }
@@ -262,19 +263,12 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                             takeSeat(msg.seatID, msg.takerID);
                         } else if(msg.msgType == 'IM' && msg.receiver == wvrmitConnection.userid) {
                             messageArea.append($('<div>').append(msg.sender + ': ' + msg.message));
-                        } else if(msg.msgType === 'roomInitiatorUpdate' && msg.roomId === mname) {
-                            if(msg.broadcaster === wvrmitConnection.userid) {
-                                if(!wvrmitConnection.isInitiator) {
-                                    initiateRoom(mname);
-                                }
-                            } else if(wvrmitConnection.sessionDescriptions) {
-                                var initiatorSession = wvrmitConnection.sessionDescriptions[mname];
-                                if(initiatorSession) {
-                                    delete wvrmitConnection.sessionDescriptions[mname];
-                                    rejoin = true;
-                                }
+                        } else if(msg.msgType === 'initiateRoom' && msg.roomId === mname && msg.initiator === wvrmitConnection.userid) {
+                            if(!wvrmitConnection.isInitiator) {
+                                initiateRoom(mname);
                             }
                         }
+
                     };
 
                     //wvrmitConnection.fakeDataChannels = true;
@@ -290,9 +284,9 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                 function initiateRoom(roomId) {
                     setButton(actionButton, 'Setting up ...', true);
 
-                    if(rejoin) {
+                    /*if(rejoin) {
                         wvrmitConnection.dontCaptureUserMedia = true;
-                    }
+                    }*/
 
                     wvrmitConnection.isInitiator = true;
                     wvrmitConnection.onRequest = function(request) {
@@ -482,11 +476,11 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                     setTimeout(playVideo, 1000);
 
 
-                    setTimeout(function() {
+                    /*setTimeout(function() {
                         wvrmitConnection.peers[e.userid].takeSnapshot(function(snapshot) {
                             videoDOMObj.poster = snapshot;
                         });
-                    }, 3000);
+                    }, 3000);*/
 
                     if(e.type === 'remote') {
                         setTimeout(pauseVideo, 6000);
