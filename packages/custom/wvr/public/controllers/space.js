@@ -44,9 +44,25 @@ angular.module('wvr.space')
         Space.get({spaceId: $stateParams.spaceId}).$promise.then(
             function(space) {
               // Success!
-              if(space && (!space.uuid || space.uuid === "")) {
+
+              if(space && (!space.uuid || space.uuid === "")) {//Not Explored Yet i.e. No record in the system.
                 space = {"uuid": $stateParams.spaceId, "name": $stateParams.spaceId};
+
+                Space.save(space, function(result) {
+                  if(result && result.space) {
+                    space = result.space;
+                    $scope.operationInfo = 'Congratulations! You just discovered a new space!';
+                    $scope.alertStyle = 'alert-success';
+                  } else {
+                    $scope.operationInfo = 'Oops, failed to discover the space! But you could still use the temporary space.';
+                    $scope.alertStyle = 'alert-danger';
+                  }
+                }, function(error) {
+                  $scope.operationInfo = 'Oops, failed to discover the space! But you could still use the temporary space.';
+                  $scope.alertStyle = 'alert-danger';
+                });
               }
+
               $scope.space = space;
 
               $scope.ableToOpenDefaultRoom = !space.owner || space.owner._id == $scope.loginUser._id;
@@ -66,14 +82,16 @@ angular.module('wvr.space')
                             Space.save(spaceToOwn, function(result) {
                               if(result && result.space) {
                                 $scope.space = result.space;
-                                $scope.operationInfo = 'Congratulations! ' + result.message + ' You are the space owner now! :)';
+                                $scope.operationInfo = 'Congratulations! You are the space owner now!';
                                 $scope.alertStyle = 'alert-success';
+
+                                $window.refresh();
                               } else {
-                                $scope.operationInfo = 'Failed to own the space! Reason: ' + result.message;
+                                $scope.operationInfo = 'Sorry, failed to own the space at the moment! You could try again later on.';
                                 $scope.alertStyle = 'alert-danger';
                               }
                             }, function(error) {
-                              $scope.operationInfo = 'Failed to own the space! Reason: ' + error;
+                              $scope.operationInfo = 'Sorry, failed to own the space at the moment! You could try again later on.';
                               $scope.alertStyle = 'alert-danger';
                             });
                           } else {//Space found, so to update the owner
@@ -81,14 +99,16 @@ angular.module('wvr.space')
                             space.$update({spaceId: space.uuid}, function(result) {
                               if(result && result.space) {
                                 $scope.space = result.space;
-                                $scope.operationInfo = 'Congratulations! ' + result.message + ' You are the space owner now! :)';
+                                $scope.operationInfo = 'Congratulations! You are the space owner now! ';
                                 $scope.alertStyle = 'alert-success';
+
+                                $window.refresh();
                               } else {
-                                $scope.operationInfo = 'Failed to own the space! Reason: ' + result.message;
+                                $scope.operationInfo = 'Sorry, failed to own the space at the moment! You could try again later on.';
                                 $scope.alertStyle = 'alert-danger';
                               }
                             }, function(error) {
-                              $scope.operationInfo = 'Failed to own the space! Reason: ' + error;
+                              $scope.operationInfo = 'Sorry, failed to own the space at the moment! You could try again later on.';
                               $scope.alertStyle = 'alert-danger';
                             });
                           }
@@ -99,7 +119,9 @@ angular.module('wvr.space')
                         }
                     );
                   } else {
-                    alert('You would be redirected to login. Please come back to own after. :)');
+                    //alert('You would be redirected to login. Please come back to own after. :)');
+                    $scope.operationInfo = 'You would be redirected to login. Please come back to own after. ';
+                    $scope.alertStyle = 'alert-info';
                     $location.path('/auth/login');
                     $location.replace();
                   }
@@ -134,7 +156,7 @@ angular.module('wvr.space')
                     Space.get({spaceId: spaceForFacility.uuid}).$promise.then(
                         function(space) {
                           if(space && (!space.uuid || space.uuid === "")) {//Space not found
-                            $scope.operationInfo = 'Failed to assign the facility! Reason: ' + result.message;
+                            $scope.operationInfo = 'Sorry, failed to assign facility owner! You could try again later on.';
                             $scope.alertStyle = 'alert-danger';
                           } else {//Space found, so to update the facility owner
                             var facilities = space.facilities;
@@ -151,18 +173,18 @@ angular.module('wvr.space')
                                 if(result && result.space) {
                                   $scope.userSearchDisplay = false;
                                   $('#seat-owner-' + targetFacility._id).text(resultUser.name || resultUser.email || resultUser._id);
-                                  $scope.operationInfo = 'Congratulations! ' + result.message + ' Facility assigned as you wish! :)';
+                                  $scope.operationInfo = 'Congratulations! Facility assigned as you wish! ';
                                   $scope.alertStyle = 'alert-success';
                                 } else {
-                                  $scope.operationInfo = 'Failed to assign the facility! Reason: ' + result.message;
+                                  $scope.operationInfo = 'Sorry, failed to assign facility owner! You could try again later on.';
                                   $scope.alertStyle = 'alert-danger';
                                 }
                               }, function(error) {
-                                $scope.operationInfo = 'Failed to assign the facility! Reason: ' + error;
+                                $scope.operationInfo = 'Sorry, failed to assign facility owner! You could try again later on.';
                                 $scope.alertStyle = 'alert-danger';
                               });
                             } else {
-                              $scope.operationInfo = 'Failed to assign the facility! Reason: Unknown.';
+                              $scope.operationInfo = 'Sorry, failed to assign facility owner! You could try again later on.';
                               $scope.alertStyle = 'alert-danger';
                             }
                           }
@@ -222,14 +244,14 @@ angular.module('wvr.space')
                             $scope.trash = [];
                             $scope.newFacilities = [];
                             $scope.spaceChanged = false;
-                            $scope.operationInfo = 'Congratulations! ' + result.message;
+                            $scope.operationInfo = 'Congratulations! Space updated as you wish. ';
                             $scope.alertStyle = 'alert-success';
                           } else {
-                            $scope.operationInfo = 'Failed to update the space! Reason: ' + result.message;
+                            $scope.operationInfo = 'Sorry, failed to update the space! You could try again later on.';
                             $scope.alertStyle = 'alert-danger';
                           }
                         }, function(error) {
-                          $scope.operationInfo = 'Failed to update the space! Reason: ' + error;
+                          $scope.operationInfo = 'Sorry, failed to update the space! You could try again later on.';
                           $scope.alertStyle = 'alert-danger';
                         });
                       },

@@ -71,7 +71,7 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                         // request-rejected
 
                         if(state.name == 'detecting-room-presence') {
-                            setButton(actionButton, state.reason, true);
+                            setButton(actionButton, state.reason, true, true);
                         }
 
                         /*if(state.name == 'room-available') {
@@ -83,7 +83,7 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                         }
 
                         if(state.name == 'connected-with-initiator') {
-                            setButton(actionButton, 'You Are In :)', true);
+                            setButton(actionButton, 'You Are In', true, true);
 
                             displaySpace();
                         }
@@ -181,7 +181,7 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                         // session.extra
                         // session.session i.e. {audio,video,screen,data}
 
-                        setButton(actionButton, 'Checking ...', true);
+                        setButton(actionButton, 'Checking ...', true, true);
 
                         if (session.sessionid == mname) {
                             roomDetected = true;
@@ -282,7 +282,7 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                 }
 
                 function initiateRoom(roomId) {
-                    setButton(actionButton, 'Setting up ...', true);
+                    setButton(actionButton, 'Setting up ...', true, true);
 
                     /*if(rejoin) {
                         wvrmitConnection.dontCaptureUserMedia = true;
@@ -309,7 +309,7 @@ angular.module('wvr.space').directive('wvrSpace', function() {
 
                     displaySpace();
 
-                    setButton(actionButton, 'You Are In :)', true);
+                    setButton(actionButton, 'You Are In', true, true);
                 }
 
                 function getUserID() {
@@ -344,7 +344,7 @@ angular.module('wvr.space').directive('wvrSpace', function() {
 
                         actionButton.unbind('click', doSetup);
 
-                        setButton(actionButton, 'Setting up ...', true);
+                        setButton(actionButton, 'Setting up ...', true, true);
 
                         wvrmitConnection.isInitiator = true;
                         wvrmitConnection.onRequest = function(request) {
@@ -367,7 +367,7 @@ angular.module('wvr.space').directive('wvrSpace', function() {
 
                         displaySpace();
 
-                        setButton(actionButton, 'You Are In :)', true);
+                        setButton(actionButton, 'You Are In', true, true);
 
                     }
 
@@ -403,13 +403,18 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                     shareLink.appendTo(actionArea);
                 }
 
-                function setButton(button, text, disable) {
+                function setButton(button, text, disable, hide) {
                     if(button) {
                         if(text && text !== '') {
                             button.text(text);
                         }
 
                         button.attr('disabled', disable);
+                        if(hide){
+                            button.attr('style', 'display:none');
+                        } else{
+                            button.attr('style', 'display:');
+                        }
                     }
                 }
 

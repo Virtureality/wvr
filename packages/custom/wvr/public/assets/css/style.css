@@ -2145,6 +2145,32 @@ input {
 .btnIptLgOR:hover {
 	background: none repeat scroll 0% 0% rgba(196, 66, 38, 0.79);
 }
+
+.btnIptSmOR {
+	background: rgb(228, 110, 59) repeat scroll 0% 0% ;
+	border: 1px solid rgb(228, 116, 54);
+	padding: 5px 22px 5px 10px;
+	cursor: pointer;
+	text-transform: uppercase;
+}
+
+.btnIptSmOR:hover {
+	background: none repeat scroll 0% 0% rgba(196, 66, 38, 0.79);
+}
+
+
+.btnIptSmBL {
+	background: #5d93b3 repeat scroll 0% 0% ;
+	border: 1px solid #5d93b3;
+	padding: 5px 22px 5px 10px;
+	cursor: pointer;
+	text-transform: uppercase;
+	color: #fff;
+}
+.btnIptSmBL:hover {
+	background: none repeat scroll 0% 0% #446a7d;
+}
+
 .textIptLg {
 	width: 98%;
 	background: none repeat scroll 0% 0% #FFF;
@@ -2154,6 +2180,15 @@ input {
 	height: 37px;
 	padding: 10px 25px 11px;
 }
+
+.textLgWL {
+	background: none repeat scroll 0% 0% #FFF;
+	color: #8A959E;
+	height: 37px;
+	padding: 10px 25px 11px;
+	font_size: 28px;
+}
+
 .member-role {
 	position: absolute;
 }

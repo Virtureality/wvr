@@ -1,20 +1,24 @@
 <div data-ng-controller="SpaceDetailController" data-wvr-signaling data-wvr-space>
 
   <div id="space" data-ng-model="space" class="container">
-    <div class="row">
-      <div class="col-lg-6">
-        <p class="alert alert-info">
-          <label style="font-size: 36px;">{{space.uuid}}</label>&nbsp;
-        </p>
-      </div>
-      <div class="col-lg-6">
+    <div class="row stdbkg">
+      <span class="col-lg-12">
+        <span >
+          <label class="textLgWL" style="font-size: 20px;">{{space.uuid}}</label>&nbsp;
+        </span>
         <span data-ng-show="!space.owner">
-            <a data-ng-show="!loginUser._id" href="/auth/login" class="btn btn-success badge">Own</a>
-            <button data-ng-show="loginUser._id" data-ng-click="ownSpace(space)" class="btn btn-success badge">Own</button>
-          </span>
-        <span><button id="action-button" class="btn btn-success badge">Welcome</button></span>
+            <a data-ng-show="!loginUser._id" href="/auth/login" class="btn btnIptSmOR badge">Own</a>
+            <button data-ng-show="loginUser._id" data-ng-click="ownSpace(space)" class="btn btnIptSmOR badge">Own</button>
+        </span>
+        <span><button id="action-button" class="btn btnIptSmOR badge">Welcome</button></span>
+
+        <span><button class="btn btnIptSmBL" ng-click="toggleScreen()">Screen Toggle</button></span>
       </div>
-      <p data-ng-show="operationInfo" class="{{alertStyle}}">{{operationInfo}}</p>
+    </div>
+    <div class="row">
+      <div class="col-lg-9">
+        <p data-ng-show="operationInfo" class="{{alertStyle}}">{{operationInfo}}</p>
+      </div>
     </div>
 
     <div data-ng-show="space.visible" class="row">
@@ -61,7 +65,7 @@
 
         <div data-ng-show="showScreen">
           <br>
-          <button class="btn btn-info" ng-click="toggleScreen()">Screen Toggle</button>
+          <!--<button class="btn btnIptSmBL" ng-click="toggleScreen()">Screen Toggle</button>-->
           <div id="screenArea" pageslide ps-open="screenOpen" ps-side="top" ps-size="600px" ps-custom-top="6px" ps-class="wvr-pageslide" ps-container="container">
             <button id="screenActionButton" class="btn btn-info" ng-click="screenAction()" disabled="disabled"></button>
             <div style="padding:20px" id="screenDisplay">
@@ -88,7 +92,7 @@
         </div>
 
         <div data-ng-show="designPanelOpen" data-ng-model="newFacilities" data-drop="true" data-jqyoui-options="{accept: '[data-type|=&quot;Facility&quot;]'}" jqyoui-droppable="{multiple:true, onDrop: 'onFacilityDropped', containment: 'position'}">
-          <p><span class="alert-info">Drop new facilities here! :)</span></p>
+          <p><span class="alert-info">Drop new facilities here!</span></p>
           <div class="box-masonry photo col2 masonry-brick" data-type="Facility" data-ng-repeat="facility in newFacilities track by $index" data-ng-model="newFacilities" data-drag="true" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" jqyoui-draggable="{index: {{$index}}, animate: true}">
             <p><span id="{{'seat-' + facilityDroppedTime}}">{{facility.type}}</span></p>
           </div>
