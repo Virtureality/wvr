@@ -2141,6 +2141,7 @@ input {
 	padding: 10px 22px 11px 10px;
 	cursor: pointer;
 	text-transform: uppercase;
+	color: #fff;
 }
 .btnIptLgOR:hover {
 	background: none repeat scroll 0% 0% rgba(196, 66, 38, 0.79);
