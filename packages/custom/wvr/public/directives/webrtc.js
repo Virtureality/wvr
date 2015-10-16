@@ -68,7 +68,7 @@ angular.module('mean.wvr').directive('wvrSignaling', [
               });
 
               socket.send = function (message) {
-                console.log('Emitting message: ' + JSON.stringify({sender: scope.currentUserID, data: message}));
+                //console.log('Emitting message: ' + JSON.stringify({sender: scope.currentUserID, data: message}));
 
                 socket.emit('message', {
                   sender: scope.currentUserID,

@@ -3883,13 +3883,13 @@
                     alertMessage.closeEntireSession = true;
                 } else {
                     var firstPeer;
-                    /*for (var peer in connection.peers) {
-                        console.log('peer: ' + JSON.stringify(connection.peers[peer].userid));
+                    for (var peer in connection.peers) {
+                        //console.log('peer: ' + JSON.stringify(connection.peers[peer].userid));
                         if (peer !== connection.userid && connection.peers[peer].userid) {
                             firstPeer = connection.peers[peer];
                             continue;
                         }
-                    }*/
+                    }
                     if (firstPeer && firstPeer.socket) {
                         // shift initiation control to another user
                         //console.log('shifting initiation control to peer: ' + JSON.stringify(firstPeer.userid));
@@ -3926,7 +3926,7 @@
 
             webAudioMediaStreamSources = [];
 
-            console.log('Session cleared. Thanks for visiting, hope to see you next time! :)');
+            //console.log('Session cleared. Thanks for visiting, hope to see you next time! :)');
             //alert('Thanks for visiting! Hope to see you next time. :)');
         }
 
@@ -4031,7 +4031,7 @@
         };
 
         signalingHandler.leaveHandler = function(e) {
-            console.log('signalingHandler.leaveHandler is called. keyCode: ' + e.keyCode);
+            //console.log('signalingHandler.leaveHandler is called. keyCode: ' + e.keyCode);
 
             /*var confirmed = confirm('Are you sure to leave?');
 
@@ -4049,7 +4049,7 @@
                     clearSession();
                 }
             }*/
-            console.log('About to leaving ...');
+            //console.log('About to leaving ...');
 
             if (!connection.leaveOnPageUnload) {
                 return;
