@@ -30,6 +30,10 @@ angular.module('wvr.space').directive('wvrSpace', function() {
 
                 var isEnablingRequestToJoin = false;
 
+                var selfStreamID;
+
+                var roomFixed = false;
+
                 startWatching();
 
                 function startWatching() {
@@ -41,6 +45,36 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                     scope.webrtcConnection = wvrmitConnection;
 
                     wvrmitConnection.userid = userID;
+
+                    setTimeout(checkForReset, 60000);
+
+                    function checkForReset() {
+                        var styleString = actionButton.attr('style');
+                        if(!styleString || styleString.indexOf('display:none') === -1) {
+                            setButton(actionButton, 'Fix', false);
+
+                            actionButton.unbind();
+                            actionButton.bind('click', fixRTCRoom);
+
+                            function fixRTCRoom() {
+                                actionButton.unbind();
+
+                                wvrmitConnection.send({
+                                    msgType: 'fixRTCRoom',
+                                    roomId: mname
+                                });
+
+                                setButton(actionButton, 'Fixing...', true);
+
+                                setTimeout(function() {
+                                    if(!roomFixed) {
+                                        setButton(actionButton, 'Failed to Fix', true);
+                                    }
+                                }, 60000);
+                            }
+                        }
+                    }
+
                     wvrmitConnection.autoCloseEntireSession = false;
 
                     if(window.openSignalingChannel) {
@@ -117,6 +151,20 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                         // e.isAudio ---- if it is an Audio stream
                         // e.isScreen --- if it is screen-sharing stream
 
+                        /*console.log('onstream: ');
+                        console.log('e.streamid: ' + e.streamid);
+                        console.log('e.session: ' + e.session);
+                        console.log('e.blobURL: ' + e.blobURL);
+                        console.log('e.type: ' + e.type);
+                        console.log('e.userid: ' + e.userid);
+                        console.log('e.isVideo: ' + e.isVideo);
+                        console.log('e.isAudio: ' + e.isAudio);
+                        console.log('e.isScreen: ' + e.isScreen);*/
+
+                        if(e.type === 'local' && e.streamid) {
+                            selfStreamID = e.streamid;
+                        }
+
                         if(e.isVideo) {
                             addUser(e);
                         }
@@ -124,6 +172,17 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                     };
 
                     wvrmitConnection.onstreamended = function (e) {
+
+                        /*console.log('onstreamended: ');
+                        console.log('e.streamid: ' + e.streamid);
+                        console.log('e.session: ' + e.session);
+                        console.log('e.blobURL: ' + e.blobURL);
+                        console.log('e.type: ' + e.type);
+                        console.log('e.userid: ' + e.userid);
+                        console.log('e.isVideo: ' + e.isVideo);
+                        console.log('e.isAudio: ' + e.isAudio);
+                        console.log('e.isScreen: ' + e.isScreen);*/
+
                         var userTxt = e.userid;
                         var streamUserID = userTxt;
                         var index = userTxt.lastIndexOf('-');
@@ -131,7 +190,10 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                             streamUserID = userTxt.substr(index + 1, userTxt.length);
                         }
 
-                        var userVideo = $('#video-' + streamUserID);
+                        //var userVideo = $('#video-' + streamUserID);
+                        //wvrmitConnection.removeStream(e.streamid);
+                        //wvrmitConnection.remove(e.userid);
+                        var userVideo = $('#' + e.streamid);
                         if(userVideo) {
                             var userVideoBox = userVideo.parent().parent().parent();
                             var userVideoBoxType = userVideoBox.attr('data-space-type');
@@ -175,6 +237,7 @@ angular.module('wvr.space').directive('wvrSpace', function() {
 
                     };*/
                     wvrmitConnection.onNewSession = function (session) {
+                        console.log('wvrmitConnection.onNewSession: ' + JSON.stringify(session));
 
                         // session.userid
                         // session.sessionid
@@ -183,7 +246,7 @@ angular.module('wvr.space').directive('wvrSpace', function() {
 
                         setButton(actionButton, 'Checking ...', true, true);
 
-                        if (session.sessionid == mname) {
+                        /*if (session.sessionid == mname) {
                             roomDetected = true;
 
                             if(!wvrmitConnection.isInitiator && !isEnablingRequestToJoin && wvrmitConnection.sessionid) {
@@ -193,6 +256,17 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                             } else if(!joinDisabled) {
                                 enableRequestToJoin();
                             }
+                        }*/
+                        //console.log('wvrmitConnection.sessionid: ' + wvrmitConnection.sessionid);
+
+                        if (session.sessionid == mname) {
+
+                            if(!wvrmitConnection.isInitiator && wvrmitConnection.sessionid) {
+                                console.log('Don not capture');
+                                wvrmitConnection.dontCaptureUserMedia = true;
+                            }
+
+                            wvrmitConnection.join(session);
                         }
 
                     };
@@ -267,6 +341,10 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                             if(!wvrmitConnection.isInitiator) {
                                 initiateRoom(mname);
                             }
+                        } else if(msg.msgType === 'rtcRoomFixed' && msg.roomId === mname && msg.requester === wvrmitConnection.userid) {
+                            roomFixed = true;
+                            setButton(actionButton, 'Fixed', true, true);
+                            startWatching();
                         }
 
                     };
@@ -289,7 +367,7 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                     }*/
 
                     wvrmitConnection.isInitiator = true;
-                    wvrmitConnection.onRequest = function(request) {
+                    /*wvrmitConnection.onRequest = function(request) {
                         var acceptDecision = confirm(request.userid + ' is requesting to join, would you accept?');
 
                         wvrmitConnection.dontCaptureUserMedia = true;
@@ -298,7 +376,7 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                         } else {
                             wvrmitConnection.reject(request);
                         }
-                    };
+                    };*/
                     wvrmitConnection.session = {
                         audio: true,
                         video: true,
@@ -431,7 +509,8 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                         userName = userTxt;
                         streamUserID = userTxt;
                     }
-                    var video = $(e.mediaElement).attr('id', 'video-' + streamUserID).attr('controls', true).attr('autoplay', true).attr('height', '180px').attr('width', '230px');
+                    //var video = $(e.mediaElement).attr('id', 'video-' + streamUserID).attr('controls', true).attr('autoplay', true).attr('height', '180px').attr('width', '230px');
+                    var video = $(e.mediaElement).attr('controls', true).attr('autoplay', true).attr('height', '180px').attr('width', '230px');
 
                     var videoSpan = $('<span/>');
                     var userSpan = $('<span/>').text(userName);
@@ -699,13 +778,15 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                     var desSeatElement = seatTakeElement.parent();
                     var desSeatID = desSeatElement.attr('id');
 
-                    var seatTakerID = userID;
+                    /*var seatTakerID = userID;
                     var index = userID.lastIndexOf('-');
                     if(index !== -1) {
                         seatTakerID = userID.substr(index + 1, userID.length);
                     }
 
-                    takeSeat(desSeatID, seatTakerID);
+                    takeSeat(desSeatID, seatTakerID);*/
+
+                    takeSeat(desSeatID);
 
                     if(seatTakenMsgInterval) {
                         clearInterval(seatTakenMsgInterval);
@@ -717,9 +798,12 @@ angular.module('wvr.space').directive('wvrSpace', function() {
 
                 function takeSeat(seatID, takerID) {
 
+                    takerID = takerID || selfStreamID;
+
                     if(seatID && takerID) {
                         var desSeatElement = $('#' + seatID);
-                        var userVideoElement = $('#' + 'video-' + takerID);
+                        //var userVideoElement = $('#' + 'video-' + takerID);
+                        var userVideoElement = $('#' + takerID);
                         var userPElement = userVideoElement.parent().parent();
                         var userDivElement = userPElement.parent();
                         var spaceType = userDivElement.attr('data-space-type');

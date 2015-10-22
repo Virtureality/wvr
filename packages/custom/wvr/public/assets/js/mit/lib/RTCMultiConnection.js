@@ -313,6 +313,9 @@
         // www.RTCMultiConnection.org/docs/captureUserMedia/
 
         function captureUserMedia(callback, _session, dontCheckChromExtension) {
+            console.log('In capturing usermedia ...');
+
+            console.log(connection.dontCaptureUserMedia);
             // capture user's media resources
             var session = _session || connection.session;
 
@@ -507,6 +510,7 @@
             }
 
             function _captureUserMedia(forcedConstraints, forcedCallback, isRemoveVideoTracks, dontPreventSSLAutoAllowed) {
+                console.log('_captureUserMedia');
                 connection.onstatechange({
                     userid: 'browser',
                     extra: {},
@@ -2515,6 +2519,10 @@
         }
 
         function onNewSession(session) {
+            console.log('onNewSession: ' + JSON.stringify(session));
+            console.log('connection.skipOnNewSession: ' + connection.skipOnNewSession);
+            console.log(connection.sessionid);
+
             if (connection.skipOnNewSession) {
                 return;
             }
@@ -2707,6 +2715,11 @@
                     }
                 },
                 onaddstream: function(stream, session) {
+
+                    console.log('onaddstream: ');
+                    console.log('stream: ' + JSON.stringify(stream));
+                    console.log('session: ' + JSON.stringify(session));
+
                     session = session || _config.renegotiate || connection.session;
 
                     // if it is Firefox; then return.
@@ -2770,6 +2783,7 @@
                         return mediaElement.addEventListener('play', eventListener, false);
                     }
 
+                    console.log('mediaElement: ' + JSON.stringify(mediaElement));
                     waitUntilRemoteStreamStartsFlowing({
                         mediaElement: mediaElement,
                         session: session,
@@ -2917,8 +2931,16 @@
             };
 
             function waitUntilRemoteStreamStartsFlowing(args) {
+                console.log('waitUntilRemoteStreamStartsFlowing with args: ' + JSON.stringify(args));
+                console.log('args.mediaElement: ' + JSON.stringify(args.mediaElement));
+                //console.log('args.mediaElement.readyState: ' + JSON.stringify(args.mediaElement.readyState));
+                console.log('window.HTMLMediaElement.HAVE_CURRENT_DATA: ' + JSON.stringify(window.HTMLMediaElement.HAVE_CURRENT_DATA));
+                //console.log('args.mediaElement.paused: ' + JSON.stringify(args.mediaElement.paused));
+                //console.log('args.mediaElement.currentTime <= 0: ' + JSON.stringify(args.mediaElement.currentTime <= 0));
+
                 // chrome for android may have some features missing
                 if (isMobileDevice || isPluginRTC || (!isNull(connection.waitUntilRemoteStreamStartsFlowing) && connection.waitUntilRemoteStreamStartsFlowing === false)) {
+                    console.log('waitUntilRemoteStreamStartsFlowing returned to afterRemoteStreamStartedFlowing(args) - chrome for android.');
                     return afterRemoteStreamStartedFlowing(args);
                 }
 
@@ -2929,10 +2951,12 @@
                 args.numberOfTimes++;
 
                 if (!(args.mediaElement.readyState <= window.HTMLMediaElement.HAVE_CURRENT_DATA || args.mediaElement.paused || args.mediaElement.currentTime <= 0)) {
+                    console.log('waitUntilRemoteStreamStartsFlowing returned to afterRemoteStreamStartedFlowing(args).');
                     return afterRemoteStreamStartedFlowing(args);
                 }
 
                 if (args.numberOfTimes >= 60) { // wait 60 seconds while video is delivered!
+                    console.log('waitUntilRemoteStreamStartsFlowing returned to send streaming failure notification.');
                     return socket.send2({
                         failedToReceiveRemoteVideo: true,
                         streamid: args.stream.streamid
@@ -3073,6 +3097,7 @@
             }
 
             function updateSocket() {
+                console.log('updateSocket()...');
                 // todo: need to check following {if-block} MUST not affect "redial" process
                 if (socket.userid === _config.userid) {
                     return;
@@ -3520,6 +3545,8 @@
                 }
 
                 if (response.left) {
+                    console.log('Processing on left: ' + JSON.stringify(response));
+                    console.log('Participants: ' + JSON.stringify(participants));
                     // firefox is unable to stop remote streams
                     // firefox doesn't auto stop streams when peer.close() is called.
                     if (isFirefox) {
@@ -3542,7 +3569,13 @@
                     }
 
                     if (participants[response.userid]) {
+                        console.log('Deleting participants[' + response.userid + '] on left...');
                         delete participants[response.userid];
+
+                        /*if(signalingHandler.requestsFrom && signalingHandler.requestsFrom[response.userid]) {
+                            console.log('Deleting signalingHandler.requestsFrom[' + response.userid + '] on left...');
+                            delete signalingHandler.requestsFrom[response.userid];
+                        }*/
                     }
 
                     if (response.closeEntireSession) {
@@ -3932,6 +3965,9 @@
 
         // www.RTCMultiConnection.org/docs/remove/
         connection.remove = function(userid) {
+
+            console.log('Removing user: ' + userid);
+
             if (signalingHandler.requestsFrom && signalingHandler.requestsFrom[userid]) {
                 delete signalingHandler.requestsFrom[userid];
             }
@@ -4055,12 +4091,10 @@
                 return;
             }
 
-            if (isNull(e.keyCode)) {
-                return clearSession();
-            }
-
-            if (e.keyCode === 116) {
+            if (isNull(e.keyCode) || e.keyCode === 116) {
                 clearSession();
+                connection.disconnect();
+                return;
             }
         };
 
@@ -4093,10 +4127,20 @@
         // to share participation requests; room descriptions; and other stuff.
         connection.socket = connection.openSignalingChannel({
             onmessage: function(response) {
-                //console.log('on message: ' + JSON.stringify(response));
-                /*console.log('peerNegotiationHandler[response.channel]:' + peerNegotiationHandler[response.channel]);
-                console.log('(response.userid === connection.userid):' + (response.userid === connection.userid));
+                console.log('on message: ' + JSON.stringify(response));
+                //console.log('peerNegotiationHandler[response.channel]:' + peerNegotiationHandler[response.channel]);
+                /*console.log('(response.userid === connection.userid):' + (response.userid === connection.userid));
                 console.log('isSignalingHandlerDeleted:' + isSignalingHandlerDeleted);*/
+
+                /*if (response.left && participants[response.userid]) {
+                    console.log('Deleting participants[' + response.userid + '] on left...');
+                    delete participants[response.userid];
+
+                    if(signalingHandler.requestsFrom && signalingHandler.requestsFrom[response.userid]) {
+                        console.log('Deleting signalingHandler.requestsFrom[' + response.userid + '] on left...');
+                        delete signalingHandler.requestsFrom[response.userid];
+                    }
+                }*/
 
                 if (!response.isPlayRoleOfInitiator && peerNegotiationHandler[response.channel]) {
                     return peerNegotiationHandler[response.channel](response);
@@ -4143,6 +4187,16 @@
                         connection.isAcceptNewSession = true;
                         return acceptRequest(response);
                     }
+
+                    /*if (connection.peers[response.userid] && !connection.peers[response.userid].peer) {
+                    //if (connection.peers[response.userid]) {
+                        delete participants[response.userid];
+                        delete connection.peers[response.userid];
+                        connection.isAcceptNewSession = true;
+                        return acceptRequest(response);
+                    } else {
+                        acceptRequest(response);
+                    }*/
 
                     if (!participants[response.userid]) {
                         acceptRequest(response);
@@ -4313,6 +4367,12 @@
                 if (response.sessionClosed) {
                     connection.onSessionClosed(response);
                 }
+
+                if (response.left && participants[response.userid]) {
+                    console.log('Removing left user: ' + response.userid);
+                    connection.remove(response.userid);
+                }
+
             },
             callback: function(socket) {
                 if (!socket) {
@@ -4444,6 +4504,7 @@
         };
 
         function joinSession(_config) {
+            console.log('joinSession(_config)...');
             if (signalingHandler.donotJoin && signalingHandler.donotJoin === _config.sessionid) {
                 return;
             }
@@ -4701,11 +4762,18 @@
         };
 
         function acceptRequest(response) {
+            console.log('Accepting participant request: ' + JSON.stringify(response));
+            console.log('signalingHandler.requestsFrom:' + JSON.stringify(signalingHandler.requestsFrom));
+
+            /*if (!signalingHandler.requestsFrom) {
+                signalingHandler.requestsFrom = {};
+            }*/
             if (!signalingHandler.requestsFrom) {
                 signalingHandler.requestsFrom = {};
             }
 
             if (signalingHandler.requestsFrom[response.userid]) {
+                console.log('Ignoring via return...');
                 return;
             }
 
