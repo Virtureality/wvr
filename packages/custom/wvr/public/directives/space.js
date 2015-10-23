@@ -237,7 +237,7 @@ angular.module('wvr.space').directive('wvrSpace', function() {
 
                     };*/
                     wvrmitConnection.onNewSession = function (session) {
-                        console.log('wvrmitConnection.onNewSession: ' + JSON.stringify(session));
+                        //console.log('wvrmitConnection.onNewSession: ' + JSON.stringify(session));
 
                         // session.userid
                         // session.sessionid
@@ -262,7 +262,7 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                         if (session.sessionid == mname) {
 
                             if(!wvrmitConnection.isInitiator && wvrmitConnection.sessionid) {
-                                console.log('Don not capture');
+                                //console.log('Don not capture');
                                 wvrmitConnection.dontCaptureUserMedia = true;
                             }
 
