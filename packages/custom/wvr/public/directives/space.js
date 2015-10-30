@@ -34,11 +34,13 @@ angular.module('wvr.space').directive('wvrSpace', function() {
 
                 var roomFixed = false;
 
-                startWatching();
+                var currentSessionToJoin;
 
-                function startWatching() {
+                activateRTCRoom();
 
-                    setButton(actionButton, 'Marching ...', true);
+                function activateRTCRoom() {
+
+                    setButton(actionButton, 'Activating RTC ...', true, true);
 
                     wvrmitConnection = new RTCMultiConnection(defaultChannel);
                     scope.webrtcRoom = mname;
@@ -120,6 +122,13 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                             setButton(actionButton, 'You Are In', true, true);
 
                             displaySpace();
+                        }
+
+                        if(state.name == 'request-accepted') {
+                            var useKeyBtn = $('#askForKeyActionBtn');
+                            if(useKeyBtn.size() === 1) {
+                                setButton(useKeyBtn, 'You Are In', true, true);
+                            }
                         }
 
                         if(state.name == 'request-rejected') {
@@ -246,27 +255,30 @@ angular.module('wvr.space').directive('wvrSpace', function() {
 
                         setButton(actionButton, 'Checking ...', true, true);
 
-                        /*if (session.sessionid == mname) {
-                            roomDetected = true;
-
-                            if(!wvrmitConnection.isInitiator && !isEnablingRequestToJoin && wvrmitConnection.sessionid) {
-                                wvrmitConnection.dontCaptureUserMedia = true;
-                                //wvrmitConnection.join(mname);
-                                wvrmitConnection.join(session);
-                            } else if(!joinDisabled) {
-                                enableRequestToJoin();
-                            }
-                        }*/
-                        //console.log('wvrmitConnection.sessionid: ' + wvrmitConnection.sessionid);
-
                         if (session.sessionid == mname) {
+
+                            //console.log('onNewSession: ' + JSON.stringify(session));
+
+                            currentSessionToJoin = session;
 
                             if(!wvrmitConnection.isInitiator && wvrmitConnection.sessionid) {
                                 //console.log('Don not capture');
                                 wvrmitConnection.dontCaptureUserMedia = true;
                             }
 
-                            wvrmitConnection.join(session);
+                            if(session.session.extra && session.session.extra.locked) {
+                                var askForKeyActionBtn = $('<button/>').attr('id', 'askForKeyActionBtn').attr('class', 'btn btnIptSmOR badge').text('Open');
+
+                                askForKeyActionBtn.bind('click', askForKey);
+
+                                askForKeyActionBtn.appendTo(actionArea);
+
+                                if(!isEnablingRequestToJoin && !joinDisabled) {
+                                    enableRequestToJoin();
+                                }
+                            } else {
+                                wvrmitConnection.join(session);
+                            }
                         }
 
                     };
@@ -333,18 +345,59 @@ angular.module('wvr.space').directive('wvrSpace', function() {
 
                     wvrmitConnection.onCustomMessage = function(msg) {
 
+                        //console.log('onCustomMessage: ' + JSON.stringify(msg));
+
                         if(msg.msgType == 'SeatTaken') {
                             takeSeat(msg.seatID, msg.takerID);
-                        } else if(msg.msgType == 'IM' && msg.receiver == wvrmitConnection.userid) {
+                        }
+
+                        if(msg.msgType == 'IM' && msg.receiver == wvrmitConnection.userid) {
                             messageArea.append($('<div>').append(msg.sender + ': ' + msg.message));
-                        } else if(msg.msgType === 'initiateRoom' && msg.roomId === mname && msg.initiator === wvrmitConnection.userid) {
+                        }
+
+                        if(msg.msgType === 'initiateRoom' && msg.roomId === mname && msg.initiator === wvrmitConnection.userid) {
                             if(!wvrmitConnection.isInitiator) {
-                                initiateRoom(mname);
+                                wvrmitConnection.isInitiator = true;
+
+                                if(scope.space.locker) {
+                                    var askForKeyActionBtn = $('<button/>').attr('id', 'askForKeyActionBtn').attr('class', 'btn btnIptSmOR badge').text('Open');
+
+                                    askForKeyActionBtn.bind('click', askForKey);
+
+                                    askForKeyActionBtn.appendTo(actionArea);
+                                } else {
+                                    initiateRoom(mname);
+                                }
+
+                                //initiateRoom(mname);
                             }
-                        } else if(msg.msgType === 'rtcRoomFixed' && msg.roomId === mname && msg.requester === wvrmitConnection.userid) {
+                        }
+
+                        if(msg.msgType === 'rtcRoomFixed' && msg.roomId === mname && msg.requester === wvrmitConnection.userid) {
                             roomFixed = true;
                             setButton(actionButton, 'Fixed', true, true);
-                            startWatching();
+                            activateRTCRoom();
+                        }
+
+                        if(msg.msgType === 'RoomStatusChange' && msg.roomId === mname) {
+                            if(scope.space.locker) {
+
+                                var lockBtn = $('#roomLocker');
+
+                                if(lockBtn.size() === 0) {
+                                    lockBtn = $('<button/>').attr('id', 'roomLocker').attr('class', 'btn btnIptSmOR badge');
+                                    lockBtn.bind('click', lockHandler);
+                                    lockBtn.appendTo(actionArea);
+                                }
+
+                                if(msg.status === 'locked') {
+                                    scope.space.locked = true;
+                                    lockBtn.text('UnLock');
+                                } else if(msg.status === 'unlocked') {
+                                    scope.space.locked = false;
+                                    lockBtn.text('Lock');
+                                }
+                            }
                         }
 
                     };
@@ -359,24 +412,52 @@ angular.module('wvr.space').directive('wvrSpace', function() {
 
                 }
 
+
+                function askForKey() {
+                    //Ask for key
+                    var key = prompt('Insert Your Key: ');
+                    processKey(key);
+                }
+
+                function processKey(key) {
+                    if(key === scope.space.locker) {
+                        if(wvrmitConnection.isInitiator) {
+                            initiateRoom(mname);
+                        } else {
+                            wvrmitConnection.join(currentSessionToJoin);
+                        }
+
+                        var askForKeyActionBtn = $('#askForKeyActionBtn');
+                        if(askForKeyActionBtn) {
+                            setButton(askForKeyActionBtn, 'Open', true, true);
+                        }
+                    } else if(key !== null){
+                        key = prompt('Wrong Key! Insert Correct Key: ');
+                        processKey(key);
+                    }
+                }
+
                 function initiateRoom(roomId) {
-                    setButton(actionButton, 'Setting up ...', true, true);
+                    //setButton(actionButton, 'Setting up ...', true, true);
 
                     /*if(rejoin) {
                         wvrmitConnection.dontCaptureUserMedia = true;
                     }*/
 
                     wvrmitConnection.isInitiator = true;
-                    /*wvrmitConnection.onRequest = function(request) {
-                        var acceptDecision = confirm(request.userid + ' is requesting to join, would you accept?');
 
-                        wvrmitConnection.dontCaptureUserMedia = true;
-                        if(acceptDecision) {
-                            wvrmitConnection.accept(request);
-                        } else {
-                            wvrmitConnection.reject(request);
-                        }
-                    };*/
+                    if(scope.space.locker && wvrmitConnection.session.extra && wvrmitConnection.session.extra.locked) {
+                        wvrmitConnection.onRequest = function(request) {
+                            var acceptDecision = confirm(request.userid + ' is knocking, would you respond?');
+
+                            wvrmitConnection.dontCaptureUserMedia = true;
+                            if(acceptDecision) {
+                                wvrmitConnection.accept(request);
+                            } else {
+                                wvrmitConnection.reject(request);
+                            }
+                        };
+                    }
                     wvrmitConnection.session = {
                         audio: true,
                         video: true,
@@ -583,6 +664,39 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                     }
                 }
 
+                function lockHandler() {
+                    var roomStatus;
+                    scope.space.locked = !scope.space.locked;
+
+                    if(scope.space.locked) {
+                        roomStatus = 'locked';
+                        $(this).text('Unlock');
+                    } else {
+                        roomStatus = 'unlocked';
+                        $(this).text('Lock');
+                    }
+
+                    if(wvrmitConnection.isInitiator) {
+                        wvrmitConnection.session.extra = {};
+                        wvrmitConnection.session.extra.locked = true;
+
+                        if(scope.space.locker) {
+                            wvrmitConnection.onRequest = function(request) {
+                                var acceptDecision = confirm(request.userid + ' is knocking, would you respond?');
+
+                                wvrmitConnection.dontCaptureUserMedia = true;
+                                if(acceptDecision) {
+                                    wvrmitConnection.accept(request);
+                                } else {
+                                    wvrmitConnection.reject(request);
+                                }
+                            };
+                        }
+                    }
+
+                    wvrmitConnection.sendCustomMessage({msgType: 'RoomStatusChange', roomId: mname, status: roomStatus});
+                }
+
                 function displaySpace() {
 
                     scope.$apply(function() {
@@ -594,6 +708,33 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                         var seatElement;
 
                         if(space) {
+
+                            if(!space.owner) {
+                                var ownActionBtn = $('<button/>').attr('class', 'btn btnIptSmOR badge').text('Own');
+
+                                ownActionBtn.bind('click', scope.ownSpace);
+
+                                ownActionBtn.appendTo(actionArea);
+                            }
+
+                            if(space.locker) {
+                                var lockBtnText;
+                                if(wvrmitConnection.isInitiator) {
+                                    space.locked = false;
+                                    lockBtnText = 'Lock';
+
+                                    var lockBtn = $('<button/>').attr('id', 'roomLocker').attr('class', 'btn btnIptSmOR badge').text(lockBtnText);
+                                    lockBtn.bind('click', lockHandler);
+                                    lockBtn.appendTo(actionArea);
+                                }
+                            } else if(scope.loginUser && scope.space.owner && (scope.loginUser._id === scope.space.owner._id)) {
+                                var addLockerActionBtn = $('<button/>').attr('class', 'btn btnIptSmOR badge').text('Add Locker');
+
+                                addLockerActionBtn.bind('click', scope.addLocker);
+
+                                addLockerActionBtn.appendTo(actionArea);
+                            }
+
                             if(space.owner && space.owner._id) {
 
                                 seatElement = $('#' + space.owner._id);
@@ -604,6 +745,7 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                                     seatTakeElement.appendTo(seatElement);
                                 }
                             }
+
                             if(space.facilities) {
                                 seats = space.facilities;
 
@@ -621,7 +763,6 @@ angular.module('wvr.space').directive('wvrSpace', function() {
 
                             enableScreen();
                         }
-
                     });
 
                     container.masonry();

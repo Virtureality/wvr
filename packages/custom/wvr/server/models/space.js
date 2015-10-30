@@ -36,6 +36,7 @@ var SpaceSchema = new Schema({
     type: {type: String},
     facilities: [FacilitySchema],
     spaces: [{type: Schema.Types.ObjectId, ref: 'SpaceSchema'}],
+    locker: {type: String},
     extra: {}
 }, { strict: true })
     .index({uuid: 'text', name: 'text', owner: 'text'});

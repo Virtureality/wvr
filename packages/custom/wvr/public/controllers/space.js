@@ -12,8 +12,8 @@ angular.module('wvr.space')
           };
         };
       }])
-    .controller('SpaceDetailController', ['$location', '$scope', '$rootScope', 'MeanUser', '$stateParams', 'Space', '$http',
-      function($location, $scope, $rootScope, MeanUser, $stateParams, Space, $http){
+    .controller('SpaceDetailController', ['$window', '$location', '$scope', '$rootScope', 'MeanUser', '$stateParams', 'Space', '$http',
+      function($window, $location, $scope, $rootScope, MeanUser, $stateParams, Space, $http){
         $scope.loginUser = MeanUser.user;
         $rootScope.$on('loggedin', function() {
           $scope.loginUser = MeanUser.user;
@@ -67,7 +67,54 @@ angular.module('wvr.space')
 
               $scope.ableToOpenDefaultRoom = !space.owner || space.owner._id == $scope.loginUser._id;
 
+              $scope.addLocker = function() {
+
+                var lockerKey = prompt('Input to create the key: ');
+
+                if(lockerKey !== null) {
+
+                  var spaceToLock = space;
+
+                  $scope.operationInfo = 'Processing...[Add Space Locker]';
+                  $scope.alertStyle = 'alert-info';
+
+                  if(!spaceToLock.locker) {
+                    var loginUser = $scope.loginUser;
+                    if(loginUser && loginUser._id) {
+                      spaceToLock.locker = lockerKey;
+                      spaceToLock.$update({spaceId: space.uuid}, function(result) {
+                        if(result && result.space) {
+                          $scope.space = result.space;
+                          $scope.operationInfo = 'Congratulations! You have added locker to the space! ';
+                          $scope.alertStyle = 'alert-success';
+
+                          $window.refresh();
+                        } else {
+                          $scope.operationInfo = 'Sorry, failed to lock the space at the moment! You could try again later on.';
+                          $scope.alertStyle = 'alert-danger';
+                        }
+                      }, function(error) {
+                        $scope.operationInfo = 'Sorry, failed to lock the space at the moment! You could try again later on.';
+                        $scope.alertStyle = 'alert-danger';
+                      });
+                    } else {
+                      //alert('You would be redirected to login. Please come back to own after. :)');
+                      $scope.operationInfo = 'You would be redirected to login. Please come back to finish operation then. ';
+                      $scope.alertStyle = 'alert-info';
+                      $location.path('/auth/login');
+                      $location.replace();
+                    }
+                  } else {
+                    $scope.operationInfo = 'The space has locker already, no need to add again!';
+                    $scope.alertStyle = 'alert-warning';
+                  }
+                }
+
+              };
+
               $scope.ownSpace = function(spaceToOwn) {
+
+                spaceToOwn = spaceToOwn || $scope.space;
 
                 $scope.operationInfo = 'Processing...[Own the Space]';
                 $scope.alertStyle = 'alert-info';
