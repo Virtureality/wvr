@@ -47,10 +47,52 @@ angular.module('mean.wvr').directive('wvrSignaling', [
               scope.currentUserID = scope.currentUserID || getUserID();
               var channel = config.channel || this.channel;
 
-              io.connect(SIGNALING_SERVER).emit('new-channel', {
+              /*io.connect(SIGNALING_SERVER).emit('new-channel', {
                 channel: channel,
                 sender: scope.currentUserID
+              });*/
+              /*var rootNSPSocket = io.connect(SIGNALING_SERVER);
+              rootNSPSocket.emit('presence', channel);
+              rootNSPSocket.on('presence', function(isChannelPresent) {
+                if(isChannelPresent) {
+                  connectToChannel();
+                } else {
+                  rootNSPSocket.emit('new-channel', {
+                    channel: channel,
+                    sender: scope.currentUserID
+                  });
+                  setTimeout(function() {
+                    rootNSPSocket.emit('presence', channel);
+                  }, 1000);
+                }
               });
+
+              function connectToChannel() {
+                var socket = io.connect(SIGNALING_SERVER + channel);
+                socket.channel = channel;
+
+                socket.on('connect', function () {
+                  if (config.callback) config.callback(socket);
+
+                  if(socket.channel != 'wvrmit-screen' && !roomEntered) {
+                    roomEntered = true;
+                    socket.emit('room-reached', {
+                      room: scope.webrtcRoom || 'default',
+                      userid: scope.currentUserID
+                    });
+                  }
+                });
+
+                socket.send = function (message) {
+
+                  socket.emit('message', {
+                    sender: scope.currentUserID,
+                    data: message
+                  });
+                };
+
+                socket.on('message', config.onmessage);
+              }*/
 
               var socket = io.connect(SIGNALING_SERVER + channel);
               socket.channel = channel;
@@ -68,7 +110,6 @@ angular.module('mean.wvr').directive('wvrSignaling', [
               });
 
               socket.send = function (message) {
-                //console.log('Emitting message: ' + JSON.stringify({sender: scope.currentUserID, data: message}));
 
                 socket.emit('message', {
                   sender: scope.currentUserID,

@@ -240,6 +240,7 @@
         };
 
         function joinSession(session, joinAs) {
+            console.log("i am in joinSession(session, joinAs) .......................")
             if (isString(session)) {
                 connection.skipOnNewSession = true;
             }
@@ -302,6 +303,8 @@
             if (session.oneway || isData(session)) {
                 signalingHandler.joinSession(session, extra);
             } else {
+                console.log('Capture user media and join the session .......');
+
                 captureUserMedia(function() {
                     signalingHandler.joinSession(session, extra);
                 });
@@ -1319,6 +1322,12 @@
             connection.streams.remove({
                 userid: e.userid
             });
+
+            /*console.log('Closing peer connection if needed...');
+            if(connection.peers[e.userid] && connection.peers[e.userid].peer && connection.peers[e.userid].peer.connection) {
+                console.log('Closing peer connection...');
+                connection.peers[e.userid].peer.connection.close();
+            }*/
         };
 
         var progressHelper = {};
@@ -2519,9 +2528,9 @@
         }
 
         function onNewSession(session) {
-            /*console.log('onNewSession: ' + JSON.stringify(session));
+            console.log('onNewSession: ' + JSON.stringify(session));
             console.log('connection.skipOnNewSession: ' + connection.skipOnNewSession);
-            console.log(connection.sessionid);*/
+            console.log(connection.sessionid);
 
             if (connection.skipOnNewSession) {
                 return;
@@ -2933,10 +2942,10 @@
             function waitUntilRemoteStreamStartsFlowing(args) {
                 //console.log('waitUntilRemoteStreamStartsFlowing with args: ' + JSON.stringify(args));
                 //console.log('args.mediaElement: ' + JSON.stringify(args.mediaElement));
-                //console.log('args.mediaElement.readyState: ' + JSON.stringify(args.mediaElement.readyState));
-                //console.log('window.HTMLMediaElement.HAVE_CURRENT_DATA: ' + JSON.stringify(window.HTMLMediaElement.HAVE_CURRENT_DATA));
-                //console.log('args.mediaElement.paused: ' + JSON.stringify(args.mediaElement.paused));
-                //console.log('args.mediaElement.currentTime <= 0: ' + JSON.stringify(args.mediaElement.currentTime <= 0));
+                console.log('args.mediaElement.readyState: ' + JSON.stringify(args.mediaElement.readyState));
+                console.log('window.HTMLMediaElement.HAVE_CURRENT_DATA: ' + JSON.stringify(window.HTMLMediaElement.HAVE_CURRENT_DATA));
+                console.log('args.mediaElement.paused: ' + JSON.stringify(args.mediaElement.paused));
+                console.log('args.mediaElement.currentTime <= 0: ' + JSON.stringify(args.mediaElement.currentTime <= 0));
 
                 // chrome for android may have some features missing
                 if (isMobileDevice || isPluginRTC || (!isNull(connection.waitUntilRemoteStreamStartsFlowing) && connection.waitUntilRemoteStreamStartsFlowing === false)) {
@@ -3422,6 +3431,8 @@
             updateSocketForLocalStreams(socket);
 
             function socketResponse(response) {
+                console.log('socketResponse: ' + JSON.stringify(response));
+
                 if (isSignalingHandlerDeleted) {
                     return;
                 }
@@ -3545,7 +3556,7 @@
                 }
 
                 if (response.left) {
-                    //console.log('Processing on left: ' + JSON.stringify(response));
+                    console.log('Processing on left: ' + JSON.stringify(response));
                     //console.log('Participants: ' + JSON.stringify(participants));
                     // firefox is unable to stop remote streams
                     // firefox doesn't auto stop streams when peer.close() is called.
@@ -3569,12 +3580,16 @@
                     }
 
                     if (participants[response.userid]) {
-                        //console.log('Deleting participants[' + response.userid + '] on left...');
+                        console.log('Deleting participants[' + response.userid + '] on left...');
                         delete participants[response.userid];
 
                         /*if(signalingHandler.requestsFrom && signalingHandler.requestsFrom[response.userid]) {
                             console.log('Deleting signalingHandler.requestsFrom[' + response.userid + '] on left...');
                             delete signalingHandler.requestsFrom[response.userid];
+                        }
+
+                        if(response.streamid && signalingHandler.streamids && signalingHandler.streamids[response.streamid]) {
+                            delete signalingHandler.streamids[response.streamid];
                         }*/
                     }
 
@@ -3865,6 +3880,7 @@
             }
 
             var newChannel = connection.token();
+            console.log("i am in onNewParticipants----------");
             handlePeersNegotiation({
                 channel: newChannel,
                 extra: response.userData ? response.userData.extra : response.extra,
@@ -3917,15 +3933,21 @@
                 } else {
                     var firstPeer;
                     for (var peer in connection.peers) {
-                        //console.log('peer: ' + JSON.stringify(connection.peers[peer].userid));
-                        if (peer !== connection.userid && connection.peers[peer].userid) {
+                        console.log('peer: ' + JSON.stringify(peer));
+                        console.log('connection.peers[peer].userid: ' + JSON.stringify(connection.peers[peer].userid));
+                        console.log('participants[peer]: ' + JSON.stringify(participants[peer]));
+                        /*if (peer !== connection.userid && connection.peers[peer].userid) {
+                            firstPeer = connection.peers[peer];
+                            continue;
+                        }*/
+                        if (peer !== connection.userid && connection.peers[peer].userid && participants[peer] && connection.peers[peer].userid == participants[peer]) {
                             firstPeer = connection.peers[peer];
                             continue;
                         }
                     }
                     if (firstPeer && firstPeer.socket) {
                         // shift initiation control to another user
-                        //console.log('shifting initiation control to peer: ' + JSON.stringify(firstPeer.userid));
+                        console.log('shifting initiation control to peer: ' + JSON.stringify(firstPeer.userid));
 
                         firstPeer.socket.send2({
                             isPlayRoleOfInitiator: true,
@@ -4127,7 +4149,7 @@
         // to share participation requests; room descriptions; and other stuff.
         connection.socket = connection.openSignalingChannel({
             onmessage: function(response) {
-                //console.log('on message: ' + JSON.stringify(response));
+                console.log('on message: ' + JSON.stringify(response));
                 //console.log('peerNegotiationHandler[response.channel]:' + peerNegotiationHandler[response.channel]);
                 /*console.log('(response.userid === connection.userid):' + (response.userid === connection.userid));
                 console.log('isSignalingHandlerDeleted:' + isSignalingHandlerDeleted);*/
@@ -4287,6 +4309,30 @@
                         });
                         log('participant asked for availability');
                     }
+                    /*if (response.presenceState === 'checking') {
+                        log('participant[' + response.userid + '] asked for availability');
+                        if(connection.peers && connection.peers[response.userid]) {
+                            log('participant[' + response.userid + '] exists, clearing for the new request.');
+                            var peerObj = connection.peers[response.userid];
+                            if(peerObj.peer && peerObj.peer.connection) {
+                                var streams = peerObj.peer.connection.getLocalStreams();
+                                streams.forEach(function(element, index, array) {
+                                    peerObj.peer.connection.removeStream(element);
+                                });
+                                streams = peerObj.peer.connection.getRemoteStreams();
+                                streams.forEach(function(element, index, array) {
+                                    peerObj.peer.connection.removeStream(element);
+                                });
+                                peerObj.peer.connection.close();
+                            }
+                            delete connection.peers[response.userid];
+                        }
+                        connection.socket.send({
+                            messageFor: response.userid,
+                            presenceState: 'available',
+                            _config: response._config
+                        });
+                    }*/
 
                     if (response.presenceState === 'available') {
                         signalingHandler.presenceState = 'available';
@@ -4365,12 +4411,37 @@
                 }
 
                 if (response.sessionClosed) {
+                    /*console.log('Closing session for user: ' + response.userid);
+
+                    // to make sure this user's all remote streams are removed.
+                    connection.streams.remove({
+                        remote: true,
+                        userid: response.userid
+                    });
+
+                    connection.remove(response.userid);
+
+                    if(connection.peers[response.userid] && connection.peers[response.userid].peer && connection.peers[response.userid].peer.connection) {
+                        connection.peers[response.userid].peer.connection.close();
+                    }
+*/
                     connection.onSessionClosed(response);
                 }
 
                 if (response.left && participants[response.userid]) {
-                    //console.log('Removing left user: ' + response.userid);
+                    console.log('Removing left user: ' + response.userid);
+
+                    // to make sure this user's all remote streams are removed.
+                    /*connection.streams.remove({
+                        remote: true,
+                        userid: response.userid
+                    });*/
+
                     connection.remove(response.userid);
+
+                    /*if(connection.peers[response.userid] && connection.peers[response.userid].peer && connection.peers[response.userid].peer.connection) {
+                        connection.peers[response.userid].peer.connection.close();
+                    }*/
                 }
 
             },
@@ -4527,6 +4598,8 @@
             connection.isAcceptNewSession = false;
 
             var channel = getRandomString();
+
+            console.log("i am in joinSession(_config)----------");
             handlePeersNegotiation({
                 channel: channel,
                 extra: _config.extra || {},
@@ -4574,6 +4647,8 @@
 
         // join existing session
         this.joinSession = function(_config) {
+            console.log('i am in this.joinSession ......');
+
             if (!connection.socket) {
                 return setTimeout(function() {
                     warn('Default-Socket is not yet initialized.');
@@ -4594,6 +4669,7 @@
             });
 
             function contactInitiator() {
+                console.log('i am in contactInitiator()------');
                 connection.socket.send({
                     messageFor: _config.userid,
                     presenceState: signalingHandler.presenceState,
@@ -4831,6 +4907,8 @@
             log('accepting request from', e.userid);
 
             participants[e.userid] = e.userid;
+
+            console.log("i am in _accept----------");
             handlePeersNegotiation({
                 isCreateOffer: true,
                 userid: e.userid,
@@ -5124,11 +5202,26 @@
 
         // http://goo.gl/WZ5nFl
         // Firefox don't yet support onended for any stream (remote/local)
-        if (isFirefox) {
+        /*if (isFirefox) {
             mediaElement.addEventListener('ended', function() {
                 stream.onended();
             }, false);
-        }
+        }*/
+
+        if (isFirefox) {
+            mediaElement.addEventListener('ended', function() {
+                /*if(mediaElement['mozSrcObject']) {
+                    mediaElement['mozSrcObject'].revokeObjectURL();
+                }*/
+                stream.onended();
+            }, false);
+        }/* else {
+            mediaElement.addEventListener('ended', function() {
+                if(mediaElement['src']) {
+                    mediaElement['src'].revokeObjectURL();
+                }
+            }, false);
+        }*/
 
         mediaElement.play();
 
@@ -6007,6 +6100,12 @@
                         iceGatheringState: self.connection.iceGatheringState,
                         signalingState: self.connection.signalingState
                     });
+
+                    /*if(self.connection.signalingState === 'closed') {
+                        console.log('Closing peer connection between: ' + JSON.stringify(self.connection.localDescription));
+                        console.log(' and: ' + JSON.stringify(self.connection.remoteDescription));
+                        self.connection.close();
+                    }*/
                 };
 
                 this.connection.oniceconnectionstatechange = function() {
