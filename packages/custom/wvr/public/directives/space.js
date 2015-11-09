@@ -719,14 +719,20 @@ angular.module('wvr.space').directive('wvrSpace', function() {
 
                             if(space.locker) {
                                 var lockBtnText;
-                                if(wvrmitConnection.isInitiator) {
+                                /*if(wvrmitConnection.isInitiator) {
                                     space.locked = false;
                                     lockBtnText = 'Lock';
 
                                     var lockBtn = $('<button/>').attr('id', 'roomLocker').attr('class', 'btn btnIptSmOR badge').text(lockBtnText);
                                     lockBtn.bind('click', lockHandler);
                                     lockBtn.appendTo(actionArea);
-                                }
+                                }*/
+                                space.locked = false;
+                                lockBtnText = 'Lock';
+
+                                var lockBtn = $('<button/>').attr('id', 'roomLocker').attr('class', 'btn btnIptSmOR badge').text(lockBtnText);
+                                lockBtn.bind('click', lockHandler);
+                                lockBtn.appendTo(actionArea);
                             } else if(scope.loginUser && scope.space.owner && (scope.loginUser._id === scope.space.owner._id)) {
                                 var addLockerActionBtn = $('<button/>').attr('class', 'btn btnIptSmOR badge').text('Add Locker');
 
