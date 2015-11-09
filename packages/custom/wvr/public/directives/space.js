@@ -1,4 +1,4 @@
-angular.module('wvr.space').directive('wvrSpace', function() {
+angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', function($timeout, $http) {
     return {
         priority: 10,
         link: function(scope, elm, attrs) {
@@ -416,25 +416,57 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                 function askForKey() {
                     //Ask for key
                     var key = prompt('Insert Your Key: ');
-                    processKey(key);
+                    if(key != null && key != '') {
+                        processKey(key);
+                    }
                 }
 
                 function processKey(key) {
-                    if(key === scope.space.locker) {
-                        if(wvrmitConnection.isInitiator) {
-                            initiateRoom(mname);
-                        } else {
-                            wvrmitConnection.join(currentSessionToJoin);
-                        }
+                    /*if(key === scope.space.locker) {
+                     if(wvrmitConnection.isInitiator) {
+                     initiateRoom(mname);
+                     } else {
+                     wvrmitConnection.join(currentSessionToJoin);
+                     }
 
-                        var askForKeyActionBtn = $('#askForKeyActionBtn');
-                        if(askForKeyActionBtn) {
-                            setButton(askForKeyActionBtn, 'Open', true, true);
-                        }
-                    } else if(key !== null){
-                        key = prompt('Wrong Key! Insert Correct Key: ');
-                        processKey(key);
-                    }
+                     var askForKeyActionBtn = $('#askForKeyActionBtn');
+                     if(askForKeyActionBtn) {
+                     setButton(askForKeyActionBtn, 'Open', true, true);
+                     }
+                     } else if(key !== null){
+                     key = prompt('Wrong Key! Insert Correct Key: ');
+                     processKey(key);
+                     }*/
+                    $http
+                        .post('/api/wvr/space/key', {
+                            spaceId: mname,
+                            key: key
+                        })
+                        .success(function(response) {
+                            if(response.pass) {
+                                if(wvrmitConnection.isInitiator) {
+                                    $timeout(function() {
+                                        initiateRoom(mname);
+                                    }, 1, false);
+                                } else {
+                                    wvrmitConnection.join(currentSessionToJoin);
+                                }
+
+                                var askForKeyActionBtn = $('#askForKeyActionBtn');
+                                if(askForKeyActionBtn) {
+                                    setButton(askForKeyActionBtn, 'Open', true, true);
+                                }
+                            } else {
+                                key = prompt('Wrong Key! Insert Correct Key: ');
+
+                                if(key != null && key != '') {
+                                    processKey(key);
+                                }
+                            }
+                        })
+                        .error(function(response) {
+                            alert('Oops! We got some trouble at the moment, please try again later. :-');
+                        });
                 }
 
                 function initiateRoom(roomId) {
@@ -981,4 +1013,4 @@ angular.module('wvr.space').directive('wvrSpace', function() {
             });
         }
     }
-});
+}]);

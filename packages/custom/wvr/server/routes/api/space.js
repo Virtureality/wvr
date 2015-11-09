@@ -193,6 +193,33 @@ module.exports = function(Wvr, app, auth, database) {
 			});
 		});
 
+	router.route('/key')
+		.post(function(req, res, next) {
+			/*console.log('space: ' + req.body.spaceId);
+			console.log('key: ' + req.body.key);*/
+			SpaceModel
+				.findOne({ uuid: req.body.spaceId }, function(err, space) {
+
+					var spaceResultAsString = JSON.stringify(space);
+					//console.log('Space for verifying the key: ' + spaceResultAsString);
+					var spaceResultAsJSON = JSON.parse(spaceResultAsString);
+					//console.log('spaceResultAsJSON.locker: ' + spaceResultAsJSON.locker);
+					//console.log('space.locker: ' + space.locker);
+					//console.log('spaceResultAsJSON.locker == req.body.key: ' + (spaceResultAsJSON.locker == req.body.key));
+					//console.log('spaceResultAsJSON.locker === req.body.key: ' + (spaceResultAsJSON.locker === req.body.key));
+
+					if(err) {
+						res.send(err);
+					} else {
+						var result = false;
+						if(spaceResultAsJSON.locker == req.body.key) {
+							result = true;
+						}
+						res.json({pass: result});
+					}
+				});
+		});
+
 	app.use('/api/wvr/space', router);
 
 };
