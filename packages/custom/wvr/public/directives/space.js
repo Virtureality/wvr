@@ -964,6 +964,7 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', function
                     }
 
                     takeSeat(desSeatID, seatTakerID);*/
+                    var seatTakerID = selfStreamID;
 
                     takeSeat(desSeatID);
 
