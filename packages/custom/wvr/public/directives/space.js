@@ -137,6 +137,7 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', function
                             joinDisabled = false;
                             if(!joinDisabled) {
                                 enableRequestToJoin(true);
+                                //enableRequestToJoin(wvrmitConnection.session, true);
                             }
                         }
 
@@ -262,11 +263,10 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', function
                             currentSessionToJoin = session;
 
                             if(!wvrmitConnection.isInitiator && wvrmitConnection.sessionid) {
-                                //console.log('Don not capture');
                                 wvrmitConnection.dontCaptureUserMedia = true;
                             }
 
-                            if(session.session.extra && session.session.extra.locked) {
+                            if(session.session.status && session.session.status.locked) {
                                 var askForKeyActionBtn = $('<button/>').attr('id', 'askForKeyActionBtn').attr('class', 'btn btnIptSmOR badge').text('Open');
 
                                 askForKeyActionBtn.bind('click', askForKey);
@@ -274,7 +274,8 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', function
                                 askForKeyActionBtn.appendTo(actionArea);
 
                                 if(!isEnablingRequestToJoin && !joinDisabled) {
-                                    enableRequestToJoin();
+                                    //enableRequestToJoin(session);
+                                    enableRequestToJoin(false, session);
                                 }
                             } else {
                                 wvrmitConnection.join(session);
@@ -478,17 +479,8 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', function
 
                     wvrmitConnection.isInitiator = true;
 
-                    if(scope.space.locker && wvrmitConnection.session.extra && wvrmitConnection.session.extra.locked) {
-                        wvrmitConnection.onRequest = function(request) {
-                            var acceptDecision = confirm(request.userid + ' is knocking, would you respond?');
-
-                            wvrmitConnection.dontCaptureUserMedia = true;
-                            if(acceptDecision) {
-                                wvrmitConnection.accept(request);
-                            } else {
-                                wvrmitConnection.reject(request);
-                            }
-                        };
+                    if(scope.space.locker && wvrmitConnection.session.status && wvrmitConnection.session.status.locked) {
+                        wvrmitConnection.onRequest = onRequestHandler;
                     }
                     wvrmitConnection.session = {
                         audio: true,
@@ -538,7 +530,7 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', function
                         setButton(actionButton, 'Setting up ...', true, true);
 
                         wvrmitConnection.isInitiator = true;
-                        wvrmitConnection.onRequest = function(request) {
+                        /*wvrmitConnection.onRequest = function(request) {
                             var acceptDecision = confirm(request.userid + ' is requesting to join, would you accept?');
 
                             wvrmitConnection.dontCaptureUserMedia = true;
@@ -547,7 +539,9 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', function
                             } else {
                                 wvrmitConnection.reject(request);
                             }
-                        };
+                        };*/
+                        wvrmitConnection.onRequest = onRequestHandler;
+
                         wvrmitConnection.session = {
                             audio: true,
                             video: true,
@@ -564,7 +558,7 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', function
 
                 }
 
-                function enableRequestToJoin(retry) {
+                function enableRequestToJoin(retry, session) {
 
                     isEnablingRequestToJoin = true;
 
@@ -581,7 +575,14 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', function
                         joinDisabled = true;
                         actionButton.unbind('click', requestToJoinHandler);
 
-                        wvrmitConnection.join(mname);
+                        //wvrmitConnection.join(mname);
+                        if(session) {
+                            wvrmitConnection.session.actionType = 'Knock';
+                            console.log('requestToJoinHandler session: ' + JSON.stringify(wvrmitConnection.session));
+                            wvrmitConnection.join(session);
+                        } else {
+                            wvrmitConnection.join(mname);
+                        }
                         setButton(actionButton, 'Requesting to Enter ...', true);
 
                         isEnablingRequestToJoin = false;
@@ -709,24 +710,31 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', function
                     }
 
                     if(wvrmitConnection.isInitiator) {
-                        wvrmitConnection.session.extra = {};
-                        wvrmitConnection.session.extra.locked = true;
+                        if(!wvrmitConnection.session.status) {
+                            wvrmitConnection.session.status = {};
+                        }
+                        wvrmitConnection.session.status.locked = true;
 
                         if(scope.space.locker) {
-                            wvrmitConnection.onRequest = function(request) {
-                                var acceptDecision = confirm(request.userid + ' is knocking, would you respond?');
-
-                                wvrmitConnection.dontCaptureUserMedia = true;
-                                if(acceptDecision) {
-                                    wvrmitConnection.accept(request);
-                                } else {
-                                    wvrmitConnection.reject(request);
-                                }
-                            };
+                            wvrmitConnection.onRequest = onRequestHandler;
                         }
                     }
 
                     wvrmitConnection.sendCustomMessage({msgType: 'RoomStatusChange', roomId: mname, status: roomStatus});
+                }
+
+                function onRequestHandler(request) {
+                    wvrmitConnection.dontCaptureUserMedia = true;
+                    if(request.session && request.session.actionType == 'Knock') {
+                        var acceptDecision = confirm(request.userid + ' is knocking, would you respond?');
+                        if(acceptDecision) {
+                            wvrmitConnection.accept(request);
+                        } else {
+                            wvrmitConnection.reject(request);
+                        }
+                    } else {
+                        wvrmitConnection.accept(request);
+                    }
                 }
 
                 function displaySpace() {
