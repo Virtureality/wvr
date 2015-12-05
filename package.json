@@ -33,6 +33,7 @@
     "mongoose": "latest",
     "morgan": "latest",
     "ms": "latest",
+    "node-cryptojs-aes": "^0.4.0",
     "node-paginate-anything": "0.0.5",
     "nodemailer": "latest",
     "npm": "^2.1.0",

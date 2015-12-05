@@ -19,7 +19,9 @@
         "bower_components/imagesloaded/imagesloaded.pkgd.min.js",
         "bower_components/jquery-ui/jquery-ui.min.js",
         "bower_components/angular-dragdrop/src/angular-dragdrop.min.js",
-        "bower_components/angular-paginate-anything/dist/paginate-anything-tpls.min.js"
+        "bower_components/angular-paginate-anything/dist/paginate-anything-tpls.min.js",
+        "bower_components/cryptojslib/rollups/aes.js",
+        "bower_components/angular-cryptography/mdo-angular-cryptography.js"
       ]
     }
   }

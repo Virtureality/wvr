@@ -40,7 +40,7 @@ function assembleSpace(space, req) {
 
 // jshint -W098 
 // The Package is past automatically as first parameter
-module.exports = function(Wvr, app, auth, database) {
+module.exports = function(Wvr, app, auth, database, passport) {
 
 	var express = require('express');
 	var router = express.Router();
@@ -52,6 +52,8 @@ module.exports = function(Wvr, app, auth, database) {
 	 	console.log('Time: ', Date.now());
 	 	next();
 	 });*/
+
+	router.all('*', passport.authenticate('bearer', { session: false }));
 
 	router.route('/spaces')
 		.get(function(req, res, next) {
@@ -196,7 +198,7 @@ module.exports = function(Wvr, app, auth, database) {
 	router.route('/key')
 		.post(function(req, res, next) {
 			/*console.log('space: ' + req.body.spaceId);
-			console.log('key: ' + req.body.key);*/
+			 console.log('key: ' + req.body.key);*/
 			SpaceModel
 				.findOne({ uuid: req.body.spaceId }, function(err, space) {
 

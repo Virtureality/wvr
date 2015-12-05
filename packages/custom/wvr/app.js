@@ -11,10 +11,10 @@ var Wvr = new Module('wvr');
  * All MEAN packages require registration
  * Dependency injection is used to define required modules
  */
-Wvr.register(function(system, app, auth, database) {
+Wvr.register(function(system, app, auth, database, passport) {
 
   //We enable routing. By default the Package Object is passed to the routes
-  Wvr.routes(app, auth, database);
+  Wvr.routes(app, auth, database, passport);
 
   Wvr.aggregateAsset('css', 'fancybox/jquery.fancybox.css');
   Wvr.aggregateAsset('css', 'style.css');

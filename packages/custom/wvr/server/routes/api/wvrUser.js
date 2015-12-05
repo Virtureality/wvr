@@ -7,10 +7,12 @@ var mongoose = require('mongoose'),
 
 // jshint -W098 
 // The Package is past automatically as first parameter
-module.exports = function(Wvr, app, auth, database) {
+module.exports = function(Wvr, app, auth, database, passport) {
 
 	 var express = require('express');
 	 var router = express.Router();
+
+	router.all('*', passport.authenticate('bearer', { session: false }));
 
 	router.route('/users')
 		.post(function(req, res, next) {

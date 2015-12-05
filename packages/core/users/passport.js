@@ -2,13 +2,15 @@
 
 var mongoose = require('mongoose'),
   LocalStrategy = require('passport-local').Strategy,
+  BearerStrategy = require('passport-http-bearer').Strategy,
   TwitterStrategy = require('passport-twitter').Strategy,
   FacebookStrategy = require('passport-facebook').Strategy,
   GitHubStrategy = require('passport-github').Strategy,
   GoogleStrategy = require('passport-google-oauth').OAuth2Strategy,
   LinkedinStrategy = require('passport-linkedin').Strategy,
   User = mongoose.model('User'),
-  config = require('meanio').loadConfig();
+  config = require('meanio').loadConfig(),
+  cryptoJS = require('node-cryptojs-aes').CryptoJS;
 
 module.exports = function(passport) {
   // Serialize the user id to push into the session
@@ -52,6 +54,42 @@ module.exports = function(passport) {
       });
     }
   ));
+
+  // Use Bearer strategy
+  passport.use(new BearerStrategy(
+      function(token, done) {
+        /*User.findOne({ token: token }, function (err, user) {
+          if (err) { return done(err); }
+          if (!user) { return done(null, false); }
+          return done(null, user, { scope: 'all' });
+        });*/
+        findByToken(token, function (err, user) {
+          if (err) { return done(err); }
+          if (!user) { return done(null, false); }
+          return done(null, user, { scope: 'all' });
+        });
+      }
+  ));
+
+  var bearerRecords = [
+    { id: 1, username: 'fbl', token: 'fbl_api_54fbf04ed87c38e661e06a00', displayName: 'FBL', emails: [ { value: 'fbl@edening.net' } ] },
+    { id: 2, username: 'wvr', token: 'wvr_api_54fbf04ed87c38e661e06a00', displayName: 'WVR', emails: [ { value: 'wvr@edening.net' } ] }
+  ];
+
+  function findByToken(token, cb) {
+    process.nextTick(function() {
+      var decrypted = cryptoJS.AES.decrypt(token, 'FBLWVRCipherKey333');
+      var clearToken = cryptoJS.enc.Utf8.stringify(decrypted);
+
+      for (var i = 0, len = bearerRecords.length; i < len; i++) {
+        var record = bearerRecords[i];
+        if (record.token === clearToken) {
+          return cb(null, record);
+        }
+      }
+      return cb(null, null);
+    });
+  }
 
   // Use twitter strategy
   passport.use(new TwitterStrategy({

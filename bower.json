@@ -18,6 +18,7 @@
     "masonry": "~3.2.2",
     "imagesloaded": "~3.1.8",
     "angular-dragdrop": "~1.0.11",
-    "angular-paginate-anything": "~4.1.2"
+    "angular-paginate-anything": "~4.1.2",
+    "angular-cryptography": "~1.0.1"
   }
 }

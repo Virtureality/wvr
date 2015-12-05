@@ -1,4 +1,4 @@
-angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', function($timeout, $http) {
+angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', '$crypto', function($timeout, $http, $crypto) {
     return {
         priority: 10,
         link: function(scope, elm, attrs) {
@@ -438,6 +438,9 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', function
                      key = prompt('Wrong Key! Insert Correct Key: ');
                      processKey(key);
                      }*/
+
+                    $http.defaults.headers.common.Authorization = 'Bearer ' + $crypto.encrypt('fbl_api_54fbf04ed87c38e661e06a00');
+
                     $http
                         .post('/api/wvr/space/key', {
                             spaceId: mname,

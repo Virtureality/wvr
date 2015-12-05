@@ -59,7 +59,8 @@ module.exports = function(MeanUser) {
         signout: function(req, res) {
 
             MeanUser.events.publish('logout', {
-                description: req.user.name + ' logout.'
+                //description: req.user.name + ' logout.'
+                description: 'Somebody logout.'
             });
 
             req.logout();

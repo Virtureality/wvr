@@ -11,9 +11,12 @@ angular.module('wvr.space')
             q: $scope.q
           };
         };
+        $scope.headers = {
+          'Authorization': 'Bearer fbl_api_54fbf04ed87c38e661e06a00'
+        };
       }])
-    .controller('SpaceDetailController', ['$window', '$location', '$scope', '$rootScope', 'MeanUser', '$stateParams', 'Space', '$http',
-      function($window, $location, $scope, $rootScope, MeanUser, $stateParams, Space, $http){
+    .controller('SpaceDetailController', ['$window', '$location', '$scope', '$rootScope', 'MeanUser', '$stateParams', 'Space', '$http', '$crypto',
+      function($window, $location, $scope, $rootScope, MeanUser, $stateParams, Space, $http, $crypto){
         $scope.loginUser = MeanUser.user;
         $rootScope.$on('loggedin', function() {
           $scope.loginUser = MeanUser.user;
@@ -29,6 +32,11 @@ angular.module('wvr.space')
         };
         $scope.searchUser = function() {
           $scope.operationInfo = 'Searching for users ...';
+
+          var encryptedToken = $crypto.encrypt('fbl_api_54fbf04ed87c38e661e06a00');
+          console.log('encryptedToken: ' + encryptedToken);
+          $http.defaults.headers.common.Authorization = 'Bearer ' + encryptedToken;
+
           $http.post('/api/wvr/user/users', { "keywords" : $scope.keywords}).
               success(function(data, status) {
                 $scope.userSearchStatus = status;
