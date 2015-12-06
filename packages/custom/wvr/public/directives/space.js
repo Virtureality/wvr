@@ -439,10 +439,8 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', '$crypto
                      processKey(key);
                      }*/
 
-                    $http.defaults.headers.common.Authorization = 'Bearer ' + $crypto.encrypt('fbl_api_54fbf04ed87c38e661e06a00');
-
                     $http
-                        .post('/api/wvr/space/key', {
+                        .post('/api/proxy/wvr/space/key', {
                             spaceId: mname,
                             key: key
                         })

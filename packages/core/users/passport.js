@@ -9,8 +9,7 @@ var mongoose = require('mongoose'),
   GoogleStrategy = require('passport-google-oauth').OAuth2Strategy,
   LinkedinStrategy = require('passport-linkedin').Strategy,
   User = mongoose.model('User'),
-  config = require('meanio').loadConfig(),
-  cryptoJS = require('node-cryptojs-aes').CryptoJS;
+  config = require('meanio').loadConfig();
 
 module.exports = function(passport) {
   // Serialize the user id to push into the session
@@ -78,12 +77,9 @@ module.exports = function(passport) {
 
   function findByToken(token, cb) {
     process.nextTick(function() {
-      var decrypted = cryptoJS.AES.decrypt(token, 'FBLWVRCipherKey333');
-      var clearToken = cryptoJS.enc.Utf8.stringify(decrypted);
-
       for (var i = 0, len = bearerRecords.length; i < len; i++) {
         var record = bearerRecords[i];
-        if (record.token === clearToken) {
+        if (record.token === token) {
           return cb(null, record);
         }
       }

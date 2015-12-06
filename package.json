@@ -21,6 +21,7 @@
     "compression": "latest",
     "connect-flash": "latest",
     "connect-modrewrite": "latest",
+    "connect-restreamer": "^1.0.3",
     "consolidate": "latest",
     "cookie-parser": "latest",
     "errorhandler": "latest",
