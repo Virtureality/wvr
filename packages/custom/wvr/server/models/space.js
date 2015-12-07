@@ -88,7 +88,33 @@ SpaceSchema.methods = {
     hash: function(txt) {
         if (!txt || !this.salt) return '';
         var salt = new Buffer(this.salt, 'base64');
-        return crypto.pbkdf2Sync(password, salt, 10000, 64).toString('base64');
+        return crypto.pbkdf2Sync(txt, salt, 10000, 64).toString('base64');
+    },
+
+    /**
+     * VerifyKey - check if the passwords are the same
+     *
+     * @param {String} plainText
+     * @return {Boolean}
+     * @api public
+     */
+    verifyKey: function(plainText) {
+        return this.hash(plainText) === this.hashed_locker;
+    },
+
+    /**
+     * Hide security sensitive fields
+     *
+     * @returns {*|Array|Binary|Object}
+     */
+    toJSON: function() {
+        var obj = this.toObject();
+        if(obj.hashed_locker) {
+            obj.locker = true;
+        }
+        delete obj.hashed_locker;
+        delete obj.salt;
+        return obj;
     }
 };
 

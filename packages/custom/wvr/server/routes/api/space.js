@@ -33,6 +33,10 @@ function assembleSpace(space, req) {
 			space.spaces = spaceObj.spaces;
 		}
 
+		if(spaceObj.locker && spaceObj.locker != '') {
+			space.locker = spaceObj.locker;
+		}
+
 	}
 
 	return space;
@@ -137,7 +141,7 @@ module.exports = function(Wvr, app, auth, database, passport) {
 							if(err) {
 								res.send(err);
 							} else {
-								res.json({"message": 'Space Created!', "space": space});
+								res.json({"message": 'Space Created!', "space": space.toJSON()});
 							}
 						})
 						.populate('owner', '_id email name');
@@ -154,31 +158,35 @@ module.exports = function(Wvr, app, auth, database, passport) {
 					if(err) {
 						res.send(err);
 					} else {
-						res.json(space);
+						res.json(space? space.toJSON(): space);
 					}
 				})
 				.populate('owner', '_id email name')
 				.populate('facilities.owner', '_id email name');
 		})
 		.put(function(req, res, next) {
-			var query;
 
-			query = SpaceModel.findOneAndUpdate({ uuid: req.params.spaceId }, req.body);
-
-			query.exec(function(err, result) {
-				if(err) {
+			SpaceModel.findOne({ uuid: req.params.spaceId }, function (err, result) {
+				if (err) {
 					res.send(err);
 				} else {
-					SpaceModel
-						.findById(result, function(err, space) {
-							if(err) {
-								res.send(err);
-							} else {
-								res.json({"message": 'Space Updated!', "space": space});
-							}
-						})
-						.populate('owner', '_id email name')
-						.populate('facilities.owner', '_id email name');
+					result = assembleSpace(result, req);
+					result.save(function(err) {
+						if(err) {
+							res.send(err);
+						} else {
+							SpaceModel
+								.findById(result, function(err, space) {
+									if(err) {
+										res.send(err);
+									} else {
+										res.json({"message": 'Space Updated!', "space": space.toJSON()});
+									}
+								})
+								.populate('owner', '_id email name')
+								.populate('facilities.owner', '_id email name');
+						}
+					});
 				}
 			});
 
@@ -197,26 +205,12 @@ module.exports = function(Wvr, app, auth, database, passport) {
 
 	router.route('/key')
 		.post(function(req, res, next) {
-			/*console.log('space: ' + req.body.spaceId);
-			 console.log('key: ' + req.body.key);*/
 			SpaceModel
 				.findOne({ uuid: req.body.spaceId }, function(err, space) {
-
-					var spaceResultAsString = JSON.stringify(space);
-					//console.log('Space for verifying the key: ' + spaceResultAsString);
-					var spaceResultAsJSON = JSON.parse(spaceResultAsString);
-					//console.log('spaceResultAsJSON.locker: ' + spaceResultAsJSON.locker);
-					//console.log('space.locker: ' + space.locker);
-					//console.log('spaceResultAsJSON.locker == req.body.key: ' + (spaceResultAsJSON.locker == req.body.key));
-					//console.log('spaceResultAsJSON.locker === req.body.key: ' + (spaceResultAsJSON.locker === req.body.key));
-
 					if(err) {
 						res.send(err);
 					} else {
-						var result = false;
-						if(spaceResultAsJSON.locker == req.body.key) {
-							result = true;
-						}
+						var result = space.verifyKey(req.body.key);
 						res.json({pass: result});
 					}
 				});
