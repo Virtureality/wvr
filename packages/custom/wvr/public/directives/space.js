@@ -1,4 +1,4 @@
-angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', '$crypto', function($timeout, $http, $crypto) {
+angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', function($timeout, $http) {
     return {
         priority: 10,
         link: function(scope, elm, attrs) {
