@@ -1257,7 +1257,7 @@
         connection.sessionDescription = null;
 
         // resources used in RTCMultiConnection
-        connection.resources = {
+        /*connection.resources = {
             RecordRTC: 'https://cdn.webrtc-experiment.com/RecordRTC.js',
             PreRecordedMediaStreamer: 'https://cdn.webrtc-experiment.com/PreRecordedMediaStreamer.js',
             customGetUserMediaBar: 'https://cdn.webrtc-experiment.com/navigator.customGetUserMediaBar.js',
@@ -1268,7 +1268,7 @@
             muted: 'https://cdn.webrtc-experiment.com/images/muted.png',
             getConnectionStats: 'https://cdn.webrtc-experiment.com/getConnectionStats.js',
             FileBufferReader: 'https://cdn.webrtc-experiment.com/FileBufferReader.js'
-        };
+        };*/
 
         // www.RTCMultiConnection.org/docs/body/
         connection.body = document.body || document.documentElement;
@@ -4415,11 +4415,11 @@
             loadScreenFrame();
         }
 
-        if (connection.getExternalIceServers) {
+        /*if (connection.getExternalIceServers) {
             loadIceFrame(function(iceServers) {
                 connection.iceServers = connection.iceServers.concat(iceServers);
             });
-        }
+        }*/
 
         if (connection.log === false) {
             connection.skipLogs();
