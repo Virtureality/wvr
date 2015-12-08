@@ -57,120 +57,127 @@ angular.module('wvr.space')
 
                 $scope.addLocker = function() {
 
-                  var lockerKey = prompt('Input to create the key: ');
+                  $scope.$apply(function() {
 
-                  if(lockerKey !== null) {
+                    var lockerKey = prompt('Input to create the key: ');
 
-                    $scope.operationInfo = 'Processing...[Add Space Locker]';
-                    $scope.alertStyle = 'alert-info';
+                    if(lockerKey !== null) {
 
-                    if(!resultSpace.locker) {
-                      var loginUser = $scope.loginUser;
-                      if(loginUser && loginUser._id) {
-                        Space.get({spaceId: resultSpace.uuid}).$promise.then(
-                            function(space) {
-                              if (space && (!space.uuid || space.uuid === "")) {//Space not found, so to create then own
-                                $scope.operationInfo = 'Sorry, failed to lock the space at the moment! You could try again later on.';
-                                $scope.alertStyle = 'alert-danger';
-                              } else {//Space found, so to update the locker
-                                if(space.owner) {
-                                  delete space.owner;
-                                }
-                                space.locker = lockerKey;
-                                space.$update({spaceId: space.uuid}, function(result) {
-                                  if(result && result.space) {
-                                    $scope.space = result.space;
-                                    $scope.operationInfo = 'Congratulations! You have added locker to the space! ';
-                                    $scope.alertStyle = 'alert-success';
+                      $scope.operationInfo = 'Processing...[Add Space Locker]';
+                      $scope.alertStyle = 'alert-info';
 
-                                    $window.location.reload(true);
-                                  } else {
-                                    $scope.operationInfo = 'Sorry, failed to lock the space at the moment! You could try again later on.';
-                                    $scope.alertStyle = 'alert-danger';
-                                  }
-                                }, function(error) {
+                      if(!resultSpace.locker) {
+                        var loginUser = $scope.loginUser;
+                        if(loginUser && loginUser._id) {
+                          Space.get({spaceId: resultSpace.uuid}).$promise.then(
+                              function(space) {
+                                if (space && (!space.uuid || space.uuid === "")) {//Space not found, so to create then own
                                   $scope.operationInfo = 'Sorry, failed to lock the space at the moment! You could try again later on.';
                                   $scope.alertStyle = 'alert-danger';
-                                });
-                              }
-                            });
+                                } else {//Space found, so to update the locker
+                                  if(space.owner) {
+                                    delete space.owner;
+                                  }
+                                  space.locker = lockerKey;
+                                  space.$update({spaceId: space.uuid}, function(result) {
+                                    if(result && result.space) {
+                                      $scope.space = result.space;
+                                      $scope.operationInfo = 'Congratulations! You have added locker to the space! ';
+                                      $scope.alertStyle = 'alert-success';
+
+                                      $window.location.reload(true);
+                                    } else {
+                                      $scope.operationInfo = 'Sorry, failed to lock the space at the moment! You could try again later on.';
+                                      $scope.alertStyle = 'alert-danger';
+                                    }
+                                  }, function(error) {
+                                    $scope.operationInfo = 'Sorry, failed to lock the space at the moment! You could try again later on.';
+                                    $scope.alertStyle = 'alert-danger';
+                                  });
+                                }
+                              });
+                        } else {
+                          //alert('You would be redirected to login. Please come back to own after. :)');
+                          $scope.operationInfo = 'You would be redirected to login. Please come back to finish operation then. ';
+                          $scope.alertStyle = 'alert-info';
+                          $location.path('/auth/login');
+                          $location.replace();
+                        }
                       } else {
-                        //alert('You would be redirected to login. Please come back to own after. :)');
-                        $scope.operationInfo = 'You would be redirected to login. Please come back to finish operation then. ';
-                        $scope.alertStyle = 'alert-info';
-                        $location.path('/auth/login');
-                        $location.replace();
+                        $scope.operationInfo = 'The space has locker already, no need to add again!';
+                        $scope.alertStyle = 'alert-warning';
                       }
-                    } else {
-                      $scope.operationInfo = 'The space has locker already, no need to add again!';
-                      $scope.alertStyle = 'alert-warning';
                     }
-                  }
+                  });
 
                 };
 
                 $scope.ownSpace = function() {
 
-                  $scope.operationInfo = 'Processing...[Own the Space]';
-                  $scope.alertStyle = 'alert-info';
+                  $scope.$apply(function() {
+                    $scope.operationInfo = 'Processing...[Own the Space]';
+                    $scope.alertStyle = 'alert-info';
 
-                  if(!resultSpace.owner) {
-                    var loginUser = $scope.loginUser;
-                    if(loginUser && loginUser._id) {
-                      Space.get({spaceId: resultSpace.uuid}).$promise.then(
-                          function(space) {
-                            if(space && (!space.uuid || space.uuid === "")) {//Space not found, so to create then own
-                              spaceToOwn.owner = loginUser._id;
-                              Space.save(spaceToOwn, function(result) {
-                                if(result && result.space) {
-                                  $scope.space = result.space;
-                                  $scope.operationInfo = 'Congratulations! You are the space owner now!';
-                                  $scope.alertStyle = 'alert-success';
+                    if(!resultSpace.owner) {
+                      var loginUser = $scope.loginUser;
+                      if(loginUser && loginUser._id) {
+                        Space.get({spaceId: resultSpace.uuid}).$promise.then(
+                            function(space) {
+                              if(space && (!space.uuid || space.uuid === "")) {//Space not found, so to create then own
+                                space.owner = loginUser._id;
+                                Space.save(space, function(result) {
+                                  if(result && result.space) {
+                                    $scope.space = result.space;
+                                    $scope.operationInfo = 'Congratulations! You are the space owner now!';
+                                    $scope.alertStyle = 'alert-success';
 
-                                  $window.location.reload(true);
-                                } else {
+                                    $window.location.reload(true);
+                                  } else {
+                                    $scope.operationInfo = 'Sorry, failed to own the space at the moment! You could try again later on.';
+                                    $scope.alertStyle = 'alert-danger';
+                                  }
+                                }, function(error) {
                                   $scope.operationInfo = 'Sorry, failed to own the space at the moment! You could try again later on.';
                                   $scope.alertStyle = 'alert-danger';
-                                }
-                              }, function(error) {
-                                $scope.operationInfo = 'Sorry, failed to own the space at the moment! You could try again later on.';
-                                $scope.alertStyle = 'alert-danger';
-                              });
-                            } else {//Space found, so to update the owner
-                              space.owner = loginUser._id;
-                              space.$update({spaceId: space.uuid}, function(result) {
-                                if(result && result.space) {
-                                  $scope.space = result.space;
-                                  $scope.operationInfo = 'Congratulations! You are the space owner now! ';
-                                  $scope.alertStyle = 'alert-success';
+                                });
+                              } else {//Space found, so to update the owner
+                                space.owner = loginUser._id;
+                                space.$update({spaceId: space.uuid}, function(result) {
+                                  if(result && result.space) {
+                                    $scope.space = result.space;
+                                    $scope.operationInfo = 'Congratulations! You are the space owner now! ';
+                                    $scope.alertStyle = 'alert-success';
 
-                                  $window.location.reload(true);
-                                } else {
+                                    $window.location.reload(true);
+                                  } else {
+                                    $scope.operationInfo = 'Sorry, failed to own the space at the moment! You could try again later on.';
+                                    $scope.alertStyle = 'alert-danger';
+                                  }
+                                }, function(error) {
                                   $scope.operationInfo = 'Sorry, failed to own the space at the moment! You could try again later on.';
                                   $scope.alertStyle = 'alert-danger';
-                                }
-                              }, function(error) {
-                                $scope.operationInfo = 'Sorry, failed to own the space at the moment! You could try again later on.';
-                                $scope.alertStyle = 'alert-danger';
-                              });
+                                });
+                              }
+                            },
+                            function(reason) {
+                              $scope.operationInfo = 'Oops, space service is in trouble right now! You may try again later.';
+                              $scope.alertStyle = 'alert-warning';
                             }
-                          },
-                          function(reason) {
-                            $scope.operationInfo = 'Oops, space service is in trouble right now! You may try again later.';
-                            $scope.alertStyle = 'alert-warning';
-                          }
-                      );
+                        );
+                      } else {
+                        //alert('You would be redirected to login. Please come back to own after. :)');
+                        /*$scope.operationInfo = 'You would be redirected to login. Please come back to own after. ';
+                         $scope.alertStyle = 'alert-info';
+                         $location.path('/auth/login');
+                         $location.replace();*/
+                        $scope.operationInfo = 'You need to login to own the space. Please register if not yet, then login for coming back to own after. Good luck! :)';
+                        $scope.alertStyle = 'alert-info';
+                      }
                     } else {
-                      //alert('You would be redirected to login. Please come back to own after. :)');
-                      $scope.operationInfo = 'You would be redirected to login. Please come back to own after. ';
-                      $scope.alertStyle = 'alert-info';
-                      $location.path('/auth/login');
-                      $location.replace();
+                      $scope.operationInfo = 'Sorry! The space has been owned.';
+                      $scope.alertStyle = 'alert-warning';
                     }
-                  } else {
-                    $scope.operationInfo = 'Sorry! The space has been owned.';
-                    $scope.alertStyle = 'alert-warning';
-                  }
+                  });
 
                 };
 
@@ -188,6 +195,7 @@ angular.module('wvr.space')
                 if(isSpaceOwner) {
 
                   $scope.assignOwner = function(spaceForFacility, facilityToAssign, resultUser) {
+
                     $scope.operationInfo = 'Assigning seat owner ...';
                     $scope.alertStyle = 'alert-info';
 
@@ -201,6 +209,11 @@ angular.module('wvr.space')
                               $scope.operationInfo = 'Sorry, failed to assign facility owner! You could try again later on.';
                               $scope.alertStyle = 'alert-danger';
                             } else {//Space found, so to update the facility owner
+
+                              if(space.locker) {
+                                delete space.locker;
+                              }
+
                               var facilities = space.facilities;
                               var curFacility, targetFacility;
                               for(var i = 0; i< facilities.length; i++) {
@@ -217,6 +230,8 @@ angular.module('wvr.space')
                                     $('#seat-owner-' + targetFacility._id).text(resultUser.name || resultUser.email || resultUser._id);
                                     $scope.operationInfo = 'Congratulations! Facility assigned as you wish! ';
                                     $scope.alertStyle = 'alert-success';
+
+                                    $window.location.reload(true);
                                   } else {
                                     $scope.operationInfo = 'Sorry, failed to assign facility owner! You could try again later on.';
                                     $scope.alertStyle = 'alert-danger';
@@ -267,8 +282,13 @@ angular.module('wvr.space')
                   };
 
                   $scope.updateSpace = function() {
-                    Space.get({spaceId: $scope.space.uuid}).$promise.then(
+
+                    Space.get({spaceId: resultSpace.uuid}).$promise.then(
                         function(space) {
+                          if(space.locker) {
+                            delete space.locker;
+                          }
+
                           space.type = $scope.space.type;
 
                           var newFacilities = $scope.newFacilities;
@@ -288,6 +308,8 @@ angular.module('wvr.space')
                               $scope.spaceChanged = false;
                               $scope.operationInfo = 'Congratulations! Space updated as you wish. ';
                               $scope.alertStyle = 'alert-success';
+
+                              $window.location.reload(true);
                             } else {
                               $scope.operationInfo = 'Sorry, failed to update the space! You could try again later on.';
                               $scope.alertStyle = 'alert-danger';
