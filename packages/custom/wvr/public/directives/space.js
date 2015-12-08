@@ -323,7 +323,7 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', function
                             console.log('After setting, wvrmitConnection.peers: ' + Object.keys(wvrmitConnection.peers));
                         }*/
 
-                        setButton(sendMsgButton, 'Send', false);
+                        //setButton(sendMsgButton, 'Send', false);
 
                         if(screenSharingDisabled) {
                             enableScreenSharing();
@@ -747,6 +747,8 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', function
                         var seats;
                         var seat;
                         var seatElement;
+
+                        setButton(sendMsgButton, 'Send', false);
 
                         if(space) {
 
