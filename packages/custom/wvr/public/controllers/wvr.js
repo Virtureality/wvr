@@ -70,12 +70,12 @@ angular.module('mean.wvr').controller('WvrHeaderController', ['$scope', '$rootSc
 
     $rootScope.$on('$locationChangeSuccess',function(evt, absNewUrl, absOldUrl) {
 
-      if(absNewUrl.indexOf('/login') !== -1) {
+      if(absNewUrl.indexOf('/login') !== -1 || absNewUrl.indexOf('/register') !== -1) {
         var pathIndex = $location.absUrl().indexOf($location.path());
         $cookies.redirect = absOldUrl.substr(pathIndex, absOldUrl.length);
       }
 
-      if(absOldUrl.indexOf('/login') !== -1) {
+      if(absOldUrl.indexOf('/login') !== -1 || absOldUrl.indexOf('/register') !== -1) {
         window.location.reload(true);
       }
 
