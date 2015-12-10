@@ -47,53 +47,6 @@ angular.module('mean.wvr').directive('wvrSignaling', [
               scope.currentUserID = scope.currentUserID || getUserID();
               var channel = config.channel || this.channel;
 
-              /*io.connect(SIGNALING_SERVER).emit('new-channel', {
-                channel: channel,
-                sender: scope.currentUserID
-              });*/
-              /*var rootNSPSocket = io.connect(SIGNALING_SERVER);
-              rootNSPSocket.emit('presence', channel);
-              rootNSPSocket.on('presence', function(isChannelPresent) {
-                if(isChannelPresent) {
-                  connectToChannel();
-                } else {
-                  rootNSPSocket.emit('new-channel', {
-                    channel: channel,
-                    sender: scope.currentUserID
-                  });
-                  setTimeout(function() {
-                    rootNSPSocket.emit('presence', channel);
-                  }, 1000);
-                }
-              });
-
-              function connectToChannel() {
-                var socket = io.connect(SIGNALING_SERVER + channel);
-                socket.channel = channel;
-
-                socket.on('connect', function () {
-                  if (config.callback) config.callback(socket);
-
-                  if(socket.channel != 'wvrmit-screen' && !roomEntered) {
-                    roomEntered = true;
-                    socket.emit('room-reached', {
-                      room: scope.webrtcRoom || 'default',
-                      userid: scope.currentUserID
-                    });
-                  }
-                });
-
-                socket.send = function (message) {
-
-                  socket.emit('message', {
-                    sender: scope.currentUserID,
-                    data: message
-                  });
-                };
-
-                socket.on('message', config.onmessage);
-              }*/
-
               var socket = io.connect(SIGNALING_SERVER + channel);
               socket.channel = channel;
 
@@ -118,22 +71,6 @@ angular.module('mean.wvr').directive('wvrSignaling', [
               };
 
               socket.on('message', config.onmessage);
-              /*socket.on('message', onmessage);
-
-              function onmessage(responseMsg) {
-                if(responseMsg.sessionid && responseMsg.userid && (responseMsg.userid === scope.currentUserID)) {
-                  scope.webrtcConnection.open({sessionid: responseMsg.sessionid, dontTransmit: true});
-                }
-
-                config.onmessage(responseMsg);
-              }*/
-
-              /*window.addEventListener('beforeunload', leaveHandler);
-
-              function leaveHandler() {
-                //console.log('Disconnected your sockets, peers, streams and everything except RTCMultiConnection object.');
-                socket.emit('disconnect', {socketId: socket.id});
-              }*/
 
             };
           }

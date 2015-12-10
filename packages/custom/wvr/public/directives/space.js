@@ -840,9 +840,6 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', function
                                 scope.screenAction = function() {
                                     setButton($('#screenActionButton'), 'Processing...', true);
                                     var peers = Object.keys(wvrmitScreenConnection.peers);
-                                    for(var i = 0; i < peers.length; i++) {
-                                        wvrmitScreenConnection.remove(peers[i]);
-                                    }
                                     wvrmitScreenConnection.close();
                                     setTimeout(enableScreenSharing, 1000);
                                 };
@@ -884,6 +881,14 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', function
                     scope.screenOpen = false;
                     scope.toggleScreen = function() {
                         scope.screenOpen = !scope.screenOpen;
+                        if(scope.screenOpen && !scope.screenExtensionReminded) {
+                            scope.operationInfo = 'Remind: Screen needs extension: ';
+                            var operationInfoElem = $('#operationInfoElem');
+                            $('<a>').attr('class', 'btn btn-info badge').attr('target', '_blank').attr('href', 'https://chrome.google.com/webstore/detail/screen-capturing/ajhifddimkapgcifgcodmmfdlknahffk').text('Chrome').appendTo(operationInfoElem);
+                            $('<a>').attr('class', 'btn btn-info badge').attr('target', '_blank').attr('href', 'https://addons.mozilla.org/en-US/firefox/addon/enable-screen-capturing/').text('Firefox').appendTo(operationInfoElem);
+                            scope.alertStyle = 'alert-info';
+                            scope.screenExtensionReminded = true;
+                        }
                     };
 
                     wvrmitScreenConnection.connect();
@@ -917,6 +922,7 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', function
                     setButton($('#screenActionButton'), 'Processing...', true);
 
                     wvrmitScreenConnection.isInitiator = true;
+                    //wvrmitScreenConnection.autoCloseEntireSession = false;
                     // screen sender don't need to receive any media.
                     // so both media-lines must be "sendonly".
                     wvrmitScreenConnection.sdpConstraints.mandatory = {

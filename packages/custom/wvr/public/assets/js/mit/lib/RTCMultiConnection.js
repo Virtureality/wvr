@@ -1269,6 +1269,18 @@
             getConnectionStats: 'https://cdn.webrtc-experiment.com/getConnectionStats.js',
             FileBufferReader: 'https://cdn.webrtc-experiment.com/FileBufferReader.js'
         };*/
+        connection.resources = {
+            RecordRTC: '/wvr/assets/js/rtc/RecordRTC.js',
+            PreRecordedMediaStreamer: '/wvr/assets/js/rtc/PreRecordedMediaStreamer.js',
+            customGetUserMediaBar: '/wvr/assets/js/rtc/navigator.customGetUserMediaBar.js',
+            html2canvas: '/wvr/assets/js/rtc/screenshot.js',
+            hark: '/wvr/assets/js/rtc/hark.js',
+            firebase: '/wvr/assets/js/rtc/firebase.js',
+            firebaseio: 'https://webrtc-experiment.firebaseIO.com/',
+            getConnectionStats: '/wvr/assets/js/rtc/getConnectionStats.js',
+            FileBufferReader: '/wvr/assets/js/rtc/FileBufferReader.js',
+            muted: '/wvr/assets/img/lily.jpeg'
+        };
 
         // www.RTCMultiConnection.org/docs/body/
         connection.body = document.body || document.documentElement;
@@ -4318,24 +4330,6 @@
                 }
 
                 // keeping session active even if initiator leaves
-                /*if (response.isPlayRoleOfInitiator && response.messageFor === connection.userid) {
-                    console.log('Play role of initiator ...');
-
-                    if (response.extra) {
-                        // clone extra-data from initial moderator
-                        connection.extra = merge(connection.extra, response.extra);
-                    }
-                    if (response.participants) {
-                        participants = response.participants;
-
-                        // make sure that if 2nd initiator leaves; control is shifted to 3rd person.
-                        if (participants[connection.userid]) {
-                            delete participants[connection.userid];
-                        }
-                    }
-
-                    setTimeout(connection.playRoleOfInitiator, 2000);
-                }*/
                 if (response.isPlayRoleOfInitiator) {
                     if(response.messageFor === connection.userid) {
                         //console.log('Play role of initiator ...');
@@ -4373,9 +4367,13 @@
                     connection.onSessionClosed(response);
                 }
 
-                if (response.left && participants[response.userid]) {
-                    //console.log('Removing left user: ' + response.userid);
-                    connection.remove(response.userid);
+                if (response.left) {
+                    //console.log('Processing left user: ' + response.userid);
+                    if(response.closeEntireSession) {
+                        connection.onSessionClosed(response);
+                    } else if(participants[response.userid]) {
+                        connection.remove(response.userid);
+                    }
                 }
 
             },
