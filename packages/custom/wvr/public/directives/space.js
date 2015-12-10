@@ -839,7 +839,6 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', function
                             if(e.type === 'local') {
                                 scope.screenAction = function() {
                                     setButton($('#screenActionButton'), 'Processing...', true);
-                                    var peers = Object.keys(wvrmitScreenConnection.peers);
                                     wvrmitScreenConnection.close();
                                     setTimeout(enableScreenSharing, 1000);
                                 };
