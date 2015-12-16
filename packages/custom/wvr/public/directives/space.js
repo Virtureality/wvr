@@ -758,30 +758,39 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', function
                                 ownActionBtn.bind('click', scope.ownSpace);
 
                                 ownActionBtn.appendTo(actionArea);
-                            }
-
-                            if(space.locker) {
-                                var lockBtnText;
-                                /*if(wvrmitConnection.isInitiator) {
+                            } else {
+                                console.log('Locker related processing...');
+                                var lockerManagerBtn = $('#lockerManagerBtn');
+                                if(lockerManagerBtn && lockerManagerBtn.size() < 1) {
+                                    lockerManagerBtn = $('<button/>').attr('id', 'lockerManagerBtn');
+                                }
+                                if(space.locker) {
+                                    var lockBtnText;
                                     space.locked = false;
                                     lockBtnText = 'Lock';
 
                                     var lockBtn = $('<button/>').attr('id', 'roomLocker').attr('class', 'btn btnIptSmOR badge').text(lockBtnText);
                                     lockBtn.bind('click', lockHandler);
                                     lockBtn.appendTo(actionArea);
-                                }*/
-                                space.locked = false;
-                                lockBtnText = 'Lock';
 
-                                var lockBtn = $('<button/>').attr('id', 'roomLocker').attr('class', 'btn btnIptSmOR badge').text(lockBtnText);
-                                lockBtn.bind('click', lockHandler);
-                                lockBtn.appendTo(actionArea);
-                            } else if(scope.loginUser && scope.space.owner && (scope.loginUser._id === scope.space.owner._id)) {
-                                var addLockerActionBtn = $('<button/>').attr('class', 'btn btnIptSmOR badge').text('Add Locker');
+                                    if(scope.loginUser && scope.space.owner && (scope.loginUser._id === scope.space.owner._id)) {
+                                        lockerManagerBtn.unbind();
 
-                                addLockerActionBtn.bind('click', scope.addLocker);
+                                        lockerManagerBtn.attr('class', 'btn btnIptSmOR badge').text('Change Locker');
 
-                                addLockerActionBtn.appendTo(actionArea);
+                                        lockerManagerBtn.bind('click', scope.changeLocker);
+
+                                        lockerManagerBtn.appendTo(actionArea);
+                                    }
+                                } else if(scope.loginUser && scope.space.owner && (scope.loginUser._id === scope.space.owner._id)) {
+                                    lockerManagerBtn.unbind();
+
+                                    lockerManagerBtn.attr('class', 'btn btnIptSmOR badge').text('Add Locker');
+
+                                    lockerManagerBtn.bind('click', scope.addLocker);
+
+                                    lockerManagerBtn.appendTo(actionArea);
+                                }
                             }
 
                             if(space.owner && space.owner._id) {

@@ -71,7 +71,7 @@ angular.module('wvr.space')
                         if(loginUser && loginUser._id) {
                           Space.get({spaceId: resultSpace.uuid}).$promise.then(
                               function(space) {
-                                if (space && (!space.uuid || space.uuid === "")) {//Space not found, so to create then own
+                                if (space && (!space.uuid || space.uuid === "")) {//Space not found
                                   $scope.operationInfo = 'Sorry, failed to lock the space at the moment! You could try again later on.';
                                   $scope.alertStyle = 'alert-danger';
                                 } else {//Space found, so to update the locker
@@ -105,6 +105,63 @@ angular.module('wvr.space')
                         }
                       } else {
                         $scope.operationInfo = 'The space has locker already, no need to add again!';
+                        $scope.alertStyle = 'alert-warning';
+                      }
+                    }
+                  });
+
+                };
+
+                $scope.changeLocker = function() {
+
+                  $scope.$apply(function() {
+
+                    var lockerKey = prompt('Input new key: ');
+
+                    if(lockerKey !== null) {
+
+                      $scope.operationInfo = 'Processing...[Change Space Locker]';
+                      $scope.alertStyle = 'alert-info';
+
+                      if(resultSpace.locker) {
+                        var loginUser = $scope.loginUser;
+                        if(loginUser && loginUser._id) {
+                          Space.get({spaceId: resultSpace.uuid}).$promise.then(
+                              function(space) {
+                                if (space && (!space.uuid || space.uuid === "")) {//Space not found
+                                  $scope.operationInfo = 'Sorry, failed to change locker at the moment! You could try again later on.';
+                                  $scope.alertStyle = 'alert-danger';
+                                } else {//Space found, so to change the locker
+                                  if(space.owner) {
+                                    delete space.owner;
+                                  }
+                                  space.locker = lockerKey;
+                                  space.$update({spaceId: space.uuid}, function(result) {
+                                    if(result && result.space) {
+                                      $scope.space = result.space;
+                                      $scope.operationInfo = 'Congratulations! You have changed the locker! ';
+                                      $scope.alertStyle = 'alert-success';
+
+                                      $window.location.reload(true);
+                                    } else {
+                                      $scope.operationInfo = 'Sorry, failed to change locker at the moment! You could try again later on.';
+                                      $scope.alertStyle = 'alert-danger';
+                                    }
+                                  }, function(error) {
+                                    $scope.operationInfo = 'Sorry, failed to change locker at the moment! You could try again later on.';
+                                    $scope.alertStyle = 'alert-danger';
+                                  });
+                                }
+                              });
+                        } else {
+                          //alert('You would be redirected to login. Please come back to own after. :)');
+                          $scope.operationInfo = 'You would be redirected to login. Please come back to finish operation then. ';
+                          $scope.alertStyle = 'alert-info';
+                          $location.path('/auth/login');
+                          $location.replace();
+                        }
+                      } else {
+                        $scope.operationInfo = 'Oops, it turns out there is no locker yet!';
                         $scope.alertStyle = 'alert-warning';
                       }
                     }
