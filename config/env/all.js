@@ -14,8 +14,8 @@ module.exports = {
 
     // Paths to key and cert as string
     ssl: {
-      key: rootPath + '/config/sslcert/privatekey.pem',
-      cert: rootPath + '/config/sslcert/certificate.pem'
+      key: rootPath + '/config/sslcert/wvr.key',
+      cert: rootPath + '/config/sslcert/wvr.crt'
     }
   },
   hostname: process.env.HOST || process.env.HOSTNAME,
