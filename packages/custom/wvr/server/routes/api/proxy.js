@@ -1,5 +1,9 @@
 'use strict';
 
+var fs = require('fs'),
+	path = require('path'),
+	rootPath = path.normalize(__dirname + '/../../../../../..');
+
 var httpForward = require('http-forward'),
 	cryptoJS = require('node-cryptojs-aes').CryptoJS;
 
@@ -20,6 +24,14 @@ module.exports = function(Wvr, app, auth, database, passport) {
 		var clearToken = cryptoJS.enc.Utf8.stringify(decrypted);
 		req.headers.authorization = 'Bearer ' + clearToken;
 		req.forward = { target: targetURL};
+		if(req.protocol === 'https') {
+			req.proxy = req.proxy || {};
+			req.proxy.ssl = {
+				key: fs.readFileSync(rootPath + '/config/sslcert/wvr.key', 'utf8'),
+				cert: fs.readFileSync(rootPath + '/config/sslcert/wvr.crt', 'utf8')
+			};
+			req.proxy.secure = false;
+		}
 		httpForward(req, res);
 	});
 
