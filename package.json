@@ -26,6 +26,7 @@
     "cookie-parser": "latest",
     "errorhandler": "latest",
     "express": "latest",
+    "express-sslify": "^1.0.1",
     "forever": "latest",
     "gridfs-stream": "latest",
     "jsonwebtoken": "latest",

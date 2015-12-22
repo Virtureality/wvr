@@ -24,13 +24,22 @@ module.exports = function(Wvr, app, auth, database, passport) {
 		var clearToken = cryptoJS.enc.Utf8.stringify(decrypted);
 		req.headers.authorization = 'Bearer ' + clearToken;
 		req.forward = { target: targetURL};
-		if(req.protocol === 'https') {
+
+		//req.headers["x-forwarded-proto"] = 'https';
+		//console.log('API Proxy: Setting req.headers["x-forwarded-proto"]: ' + req.headers["x-forwarded-proto"]);
+		var isHTTPs = req.secure || req.protocol === 'https' || req.headers["x-forwarded-proto"] === 'https';
+		//console.log('API Proxy: isHTTPs: ' + isHTTPs);
+
+		if(isHTTPs) {
+			//console.log('API Proxy: Configuring ssl for the https request.');
 			req.proxy = req.proxy || {};
 			req.proxy.ssl = {
 				key: fs.readFileSync(rootPath + '/config/sslcert/wvr.key', 'utf8'),
 				cert: fs.readFileSync(rootPath + '/config/sslcert/wvr.crt', 'utf8')
 			};
 			req.proxy.secure = false;
+			req.proxy.autoRewrite = true;
+			//console.log('API Proxy: Setting autoRewrite:' + req.proxy.autoRewrite);
 		}
 		httpForward(req, res);
 	});

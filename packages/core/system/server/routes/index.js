@@ -1,8 +1,13 @@
 'use strict';
 
+var sslEnforcer = require('express-sslify');
+
 var mean = require('meanio');
 
 module.exports = function(System, app, auth, database) {
+    if(process.env.ENFORCE_HTTPS) {
+        app.use(sslEnforcer.HTTPS({trustProtoHeader: true}));
+    }
 
   // Home route
   var index = require('../controllers/index');
