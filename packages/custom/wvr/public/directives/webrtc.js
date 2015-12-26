@@ -50,6 +50,16 @@ angular.module('mean.wvr').directive('wvrSignaling', [
               var socket = io.connect(SIGNALING_SERVER + channel);
               socket.channel = channel;
 
+              socket.on('error', function(err) {
+                console.error('error: ' + err);
+                var curLocation = window.location.href;
+                window.location.replace(SIGNALING_SERVER + '?redirect=' + curLocation);
+              });
+
+              socket.on('connect_failed', function(err) {
+                console.error('connect_failed: ' + err);
+              });
+
               socket.on('connect', function () {
                 if (config.callback) config.callback(socket);
 
