@@ -82,13 +82,13 @@
 
           <div id="container" class="clearfix masonry">
 
-            <div id="ownerPresenceBox" class="box-masonry photo col2 masonry-brick" data-space-type="seat">
+            <!--<div id="ownerPresenceBox" class="box-masonry photo col2 masonry-brick" data-space-type="seat">
               <p><span data-ng-show="space.owner">{{space.owner.name}}</span></p>
               <p id="{{space.owner._id}}">
                 <span><a id="{{space.owner.name + '-' + space.owner._id}}" href="/wvr/assets/img/lily.jpeg" title="Lily"><img src="/wvr/assets/img/lily.jpeg" alt="Lily"></a></span>
               </p>
               <p data-ng-show="space.owner" ><span id="{{'seat-' + space.owner._id}}">{{'Seat - Space Owner - ' + space.owner.name}}</span></p>
-            </div>
+            </div>-->
 
             <div data-type="Facility" data-ng-repeat="facility in space.facilities track by $index" class="box-masonry photo col2 masonry-brick" data-space-type="seat" data-drag="true" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" data-ng-model="space.facilities" jqyoui-draggable="{index: {{$index}}, animate: true}">
               <p><span id="{{'seat-owner-' + facility._id}}">{{facility.owner.name || facility.owner}}</span>&nbsp;<button data-ng-show="isSpaceOwner" data-ng-click="showUserSearch(facility)">Assign Seat Owner</button></p>
