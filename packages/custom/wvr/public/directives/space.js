@@ -40,7 +40,8 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', function
 
                 function activateRTCRoom() {
 
-                    setButton(actionButton, 'Activating RTC ...', true, true);
+                    //setButton(actionButton, 'Activating RTC ...', true, true);
+                    setButton(actionButton, 'Marching...', true);
 
                     wvrmitConnection = new RTCMultiConnection(defaultChannel);
                     scope.webrtcRoom = mname;
@@ -61,7 +62,7 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', function
                             function fixRTCRoom() {
                                 actionButton.unbind();
 
-                                wvrmitConnection.send({
+                                wvrmitConnection.sendCustomMessage({
                                     msgType: 'fixRTCRoom',
                                     roomId: mname
                                 });
@@ -110,9 +111,9 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', function
                             setButton(actionButton, state.reason, true, true);
                         }
 
-                        /*if(state.name == 'room-available') {
-                            setButton(actionButton, state.reason + ' Accessing ...', true);
-                        }*/
+                        if(state.name == 'room-available') {
+                            setButton(actionButton, 'Accessing ...', true, true);
+                        }
 
                         if(state.name == 'room-not-available') {
                             setButton(actionButton, state.reason, true);
@@ -254,7 +255,7 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', function
                         // session.extra
                         // session.session i.e. {audio,video,screen,data}
 
-                        setButton(actionButton, 'Checking ...', true, true);
+                        setButton(actionButton, 'Accessing ...', true, true);
 
                         if (session.sessionid == mname) {
 
@@ -357,6 +358,8 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', function
                         }
 
                         if(msg.msgType === 'initiateRoom' && msg.roomId === mname && msg.initiator === wvrmitConnection.userid) {
+                            setButton(actionButton, 'Accessing ...', true, true);
+
                             if(!wvrmitConnection.isInitiator) {
                                 wvrmitConnection.isInitiator = true;
 
@@ -377,7 +380,8 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', function
                         if(msg.msgType === 'rtcRoomFixed' && msg.roomId === mname && msg.requester === wvrmitConnection.userid) {
                             roomFixed = true;
                             setButton(actionButton, 'Fixed', true, true);
-                            activateRTCRoom();
+                            //activateRTCRoom();
+                            window.location.reload(true);
                         }
 
                         if(msg.msgType === 'RoomStatusChange' && msg.roomId === mname) {
@@ -423,21 +427,6 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', function
                 }
 
                 function processKey(key) {
-                    /*if(key === scope.space.locker) {
-                     if(wvrmitConnection.isInitiator) {
-                     initiateRoom(mname);
-                     } else {
-                     wvrmitConnection.join(currentSessionToJoin);
-                     }
-
-                     var askForKeyActionBtn = $('#askForKeyActionBtn');
-                     if(askForKeyActionBtn) {
-                     setButton(askForKeyActionBtn, 'Open', true, true);
-                     }
-                     } else if(key !== null){
-                     key = prompt('Wrong Key! Insert Correct Key: ');
-                     processKey(key);
-                     }*/
 
                     $http
                         .post('/api/proxy/wvr/space/key', {
@@ -759,7 +748,6 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', function
 
                                 ownActionBtn.appendTo(actionArea);
                             } else {
-                                console.log('Locker related processing...');
                                 var lockerManagerBtn = $('#lockerManagerBtn');
                                 if(lockerManagerBtn && lockerManagerBtn.size() < 1) {
                                     lockerManagerBtn = $('<button/>').attr('id', 'lockerManagerBtn');
@@ -793,7 +781,7 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', function
                                 }
                             }
 
-                            if(space.owner && space.owner._id) {
+                            /*if(space.owner && space.owner._id) {
 
                                 seatElement = $('#' + space.owner._id);
                                 if(seatElement.length == 1) {
@@ -802,7 +790,7 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', function
                                     seatElement.children().remove();
                                     seatTakeElement.appendTo(seatElement);
                                 }
-                            }
+                            }*/
 
                             if(space.facilities) {
                                 seats = space.facilities;
