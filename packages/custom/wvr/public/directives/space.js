@@ -657,7 +657,8 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', function
                     newPElement.appendTo(userPresenceBox);
                     userPresenceBox.appendTo(container);
 
-                    container.masonry('appended', userPresenceBox);
+                    //container.masonry('appended', userPresenceBox);
+                    container.masonry();
 
                     var videoDOMObj = video.get(0);
 
