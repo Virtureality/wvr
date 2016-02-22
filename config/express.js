@@ -6,7 +6,7 @@
  */
 var mean = require('meanio'),
   compression = require('compression'),
-  morgan = require('morgan'),
+  //morgan = require('morgan'),
   consolidate = require('consolidate'),
   express = require('express'),
   helpers = require('view-helpers'),
@@ -14,6 +14,8 @@ var mean = require('meanio'),
   modRewrite = require('connect-modrewrite'),
   // seo = require('mean-seo'),
   config = mean.loadConfig();
+    //LE = require('letsencrypt')
+    //lex = require('letsencrypt-express').testing();
 
 module.exports = function(app, db) {
 
@@ -59,4 +61,62 @@ module.exports = function(app, db) {
   ]));
 
   // app.use(seo());
+
+  /*// Note: you should make this special dir in your product and leave it empty
+  config.le.webrootPath = __dirname + '/../test/acme-challenge';
+  config.le.server = LE.stagingServer;
+
+  var le = LE.create(config.le, {
+    sniRegisterCallback: function (args, expiredCert, cb) {
+      // In theory you should never get an expired certificate because
+      // the certificates automatically renew in the background starting
+      // about a week before they expire.
+      // (the default behavior is to randomly stagger renewals)
+      // so in this case we'll just return the expired certificate
+      if (expiredCert) { return cb(null, expiredCert); }
+
+      // If we get here that means this domain hasn't been registered yet
+      // Security Warning: you should either manually register domains
+      // and return null here or check that the sni header isn't being
+      // spoofed and this is actually a domain you own before registering
+      //
+      //   cb(null, null);
+
+      var hostname = args.domains[0];
+      console.log("[TODO] check that '" + hostname + "' is one I expect");
+
+      args.agreeTos = true;
+      args.email = 'mahaofeng81@163.com';
+
+      le.register(args, cb);
+    }
+  });
+
+  app.use('/', le.middleware());
+
+  require('https').createServer({
+    key: config.le.daplieTLSKey,
+    cert: config.le.daplieTLSCert,
+    SNICallback: le.sniCallback
+  }, app).listen(config.le.tlsPort, function () {
+    console.log('Listening https: ', this.address());
+  });*/
+
+  /*lex.create({
+    configDir: './letsencrypt.config',                 // ~/letsencrypt, /etc/letsencrypt, whatever you want
+    onRequest: app,                                    // your express app (or plain node http app)
+    letsencrypt: null,                                // you can provide you own instance of letsencrypt
+                                                        // if you need to configure it (with an agreeToTerms
+                                                        // callback, for example)
+    approveRegistration: function (hostname, cb) {    // PRODUCTION MODE needs this function, but only if you want automatic registration (usually not necessary) renewals for registered domains will still be automatic
+      cb(null, {
+        domains: [hostname],
+        email: 'mahaofeng81@163.com',
+        agreeTos: true
+      });
+    }
+  }).listen(config.lex.tlsPort, function () {
+    console.log('LetsEncrypt protected https server listening on: ', this.address());
+  });*/
+
 };

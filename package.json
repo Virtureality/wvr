@@ -30,6 +30,7 @@
     "forever": "latest",
     "gridfs-stream": "latest",
     "jsonwebtoken": "latest",
+    "letsencrypt-express": "^1.0.3",
     "lodash": "latest",
     "meanio": "latest",
     "mongoose": "latest",
