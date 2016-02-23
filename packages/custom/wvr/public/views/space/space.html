@@ -34,21 +34,21 @@
         <div class="col-lg-9" style="position:relative">
 
           <div data-ng-show="isSpaceOwner">
-            <div pageslide ps-open="designPanelOpen" ps-side="right" ps-custom-top="300px" ps-custom-height="800px" ps-class="wvr-pageslide">
+            <div pageslide ps-open="designPanelOpen" ps-side="right" ps-custom-top="100px" ps-custom-height="800px" ps-class="wvr-pageslide">
               <h2 style="text-align: center;">Space Design Panel</h2>
               <div style="padding:20px" id="space-design-panel">
                 <div class="row">
                   <h3>Facilities:</h3>
                   <hr/>
-                  <div data-type="Facility" class="box-masonry" data-ng-repeat="item in designerResources.facilities" data-drag="true" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" data-ng-model="designerResources.facilities" jqyoui-draggable="{index: {{$index}}, placeholder: 'keep', animate: true}">{{item.type}}</div>
+                  <div data-type="Facility" class="box-masonry" data-ng-repeat="item in designerResources.facilities" data-drag="true" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" data-ng-model="designerResources.facilities" jqyoui-draggable="{index: {{$index}}, placeholder: 'keep', animate: true, deepCopy: true}">{{item.type}}</div>
                 </div>
                 <br/>
                 <hr/>
-                <div class="row" data-drop="true" data-ng-model="trash" data-jqyoui-options="{accept: '[data-type|=&quot;Facility&quot;]'}" jqyoui-droppable="{multiple:true}">
+                <div class="row" data-drop="true" data-ng-model="trash" data-jqyoui-options="{accept: '[data-type|=&quot;Facility&quot;]'}" jqyoui-droppable="{multiple:true, onDrop: 'onFacilityTrashed'}">
                   <h3>Trash:</h3>
                   <p><span class="alert-info">Drop stuff here as trash.</span></p>
                   <ul>
-                    <li data-type="Facility" data-ng-repeat="item in trash track by $index" data-drag="true" data-jqyoui-options="{revert: 'invalid'}" data-ng-model="trash" jqyoui-draggable="{index: {{$index}}, animate: true}">trash - {{item.name || item}}</li>
+                    <li data-type="Facility" data-ng-repeat="item in trash track by $index" data-drag="true" data-jqyoui-options="{revert: 'invalid'}" data-ng-model="trash" jqyoui-draggable="{index: {{$index}}, animate: true}">trash - {{item.name || item}} - {{item._id || 'new'}}</li>
                   </ul>
                 </div>
               </div>
@@ -90,18 +90,23 @@
               <p data-ng-show="space.owner" ><span id="{{'seat-' + space.owner._id}}">{{'Seat - Space Owner - ' + space.owner.name}}</span></p>
             </div>-->
 
-            <div data-type="Facility" data-ng-repeat="facility in space.facilities track by $index" class="box-masonry photo col2 masonry-brick" data-space-type="seat" data-drag="true" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" data-ng-model="space.facilities" jqyoui-draggable="{index: {{$index}}, animate: true}">
-              <p><span id="{{'seat-owner-' + facility._id}}">{{facility.owner.name || facility.owner}}</span>&nbsp;<button data-ng-show="isSpaceOwner" data-ng-click="showUserSearch(facility)">Assign Seat Owner</button></p>
+            <div data-type="Facility" data-ng-repeat="facility in space.facilities track by $index" class="box-masonry photo col2 masonry-brick" data-space-type="seat" data-drag="true" data-jqyoui-options="{revert: 'invalid'}" data-ng-model="space.facilities" jqyoui-draggable="{index: {{$index}}, animate: true}">
+              <p><span id="{{'facility-owner-' + facility._id}}">{{facility.owner.name || facility.owner}}</span>&nbsp;<button data-ng-show="isSpaceOwner" data-ng-click="showUserSearch(facility)">Assign Facility Owner</button></p>
               <p id="{{facility._id}}"></p>
-              <p><span id="{{'seat-' + facility._id}}">{{facility.name}}</span></p>
+              <p><span id="{{'facility-' + facility._id}}">{{facility.name}}</span></p>
             </div>
 
           </div>
 
-          <div data-ng-show="designPanelOpen" data-ng-model="newFacilities" data-drop="true" data-jqyoui-options="{accept: '[data-type|=&quot;Facility&quot;]'}" jqyoui-droppable="{multiple:true, onDrop: 'onFacilityDropped', containment: 'position'}">
+          <div data-ng-show="designPanelOpen" data-ng-model="newFacilities" data-drop="true" data-jqyoui-options="{accept: '[data-type|=&quot;Facility&quot;]'}" jqyoui-droppable="{multiple:true, onDrop: 'onFacilityAdded', containment: 'position'}">
             <p><span class="alert-info">Drop new facilities here!</span></p>
-            <div class="box-masonry photo col2 masonry-brick" data-type="Facility" data-ng-repeat="facility in newFacilities track by $index" data-ng-model="newFacilities" data-drag="true" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" jqyoui-draggable="{index: {{$index}}, animate: true}">
-              <p><span id="{{'seat-' + facilityDroppedTime}}">{{facility.type}}</span></p>
+            <div class="box-masonry photo col2 masonry-brick" data-type="Facility" data-ng-repeat="newFacility in newFacilities track by $index" data-ng-model="newFacilities" data-drag="true" data-jqyoui-options="{revert: 'invalid'}" jqyoui-draggable="{index: {{$index}}, animate: true}">
+              <p><span id="{{'facility-' + facilityDroppedTime}}">{{newFacility.type}}</span></p>
+              <p data-ng-show="newFacility.extra.address">
+              <div class="input-group">
+                <input data-ng-show="newFacility.extra.address" data-ng-model="newFacility.extra.address" id="{{'spaceAddress-' + facilityDroppedTime}}" class="form-control" type="text" placeholder="Input Space Address"/>
+              </div>
+              </p>
             </div>
           </div>
 

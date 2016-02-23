@@ -734,9 +734,9 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', function
                         scope.showSpace();
 
                         var space = scope.space;
-                        var seats;
-                        var seat;
-                        var seatElement;
+                        var facilities;
+                        var facility;
+                        var facilityElement;
 
                         setButton(sendMsgButton, 'Send', false);
 
@@ -782,28 +782,24 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', function
                                 }
                             }
 
-                            /*if(space.owner && space.owner._id) {
-
-                                seatElement = $('#' + space.owner._id);
-                                if(seatElement.length == 1) {
-                                    var seatTakeElement = $('<button/>').attr('class', 'btn btn-success badge').text('Take the Seat');
-                                    seatTakeElement.bind('click', takeSeatHandler);
-                                    seatElement.children().remove();
-                                    seatTakeElement.appendTo(seatElement);
-                                }
-                            }*/
-
                             if(space.facilities) {
-                                seats = space.facilities;
+                                facilities = space.facilities;
 
-                                for(var i = 0; i < seats.length; i++) {
-                                    seat = seats[i];
+                                for(var i = 0; i < facilities.length; i++) {
+                                    facility = facilities[i];
 
-                                    seatElement = $('#' + seat._id);
-                                    if(seatElement.length == 1) {
-                                        var seatTakeElement = $('<button/>').attr('class', 'btn btn-success badge').text('Take the Seat');
-                                        seatTakeElement.bind('click', takeSeatHandler);
-                                        seatTakeElement.appendTo(seatElement);
+                                    facilityElement = $('#' + facility._id);
+                                    if(facilityElement.length == 1) {
+                                        if(facility.type === "Seat") {
+                                            var seatTakeElement = $('<button/>').attr('class', 'btn btn-success badge').text('Take the Seat');
+                                            seatTakeElement.bind('click', takeSeatHandler);
+                                            seatTakeElement.appendTo(facilityElement);
+                                        } else if(facility.type === "SpaceGate" && facility.extra && facility.extra.address) {
+                                            var spaceURL = '/spaces/' + facility.extra.address;
+                                            var enterSpaceElement = $('<a/>').attr('href', spaceURL).attr('_target', '_self').attr('class', 'btn btnIptSmOR badge').text(facility.extra.address);
+                                            enterSpaceElement.bind('click', enterSpaceHandler);
+                                            enterSpaceElement.appendTo(facilityElement);
+                                        }
                                     }
                                 }
                             }
@@ -1023,6 +1019,10 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', function
 
                         }
                     }
+                }
+
+                function enterSpaceHandler() {
+                    window.location.reload(true);
                 }
 
             });

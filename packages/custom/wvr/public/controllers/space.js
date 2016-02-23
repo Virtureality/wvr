@@ -284,7 +284,8 @@ angular.module('wvr.space')
                                 space.$update({spaceId: space.uuid}, function(result) {
                                   if(result && result.space) {
                                     $scope.userSearchDisplay = false;
-                                    $('#seat-owner-' + targetFacility._id).text(resultUser.name || resultUser.email || resultUser._id);
+                                    //$('#seat-owner-' + targetFacility._id).text(resultUser.name || resultUser.email || resultUser._id);
+                                    $('#facility-owner-' + targetFacility._id).text(resultUser.name || resultUser.email || resultUser._id);
                                     $scope.operationInfo = 'Congratulations! Facility assigned as you wish! ';
                                     $scope.alertStyle = 'alert-success';
 
@@ -314,7 +315,8 @@ angular.module('wvr.space')
                   $scope.designPanelOpen = false; // This will be binded using the ps-open attribute
 
                   $scope.toggleDesignPanel = function(){
-                    $scope.designPanelOpen = !$scope.designPanelOpen
+                    $scope.designPanelOpen = !$scope.designPanelOpen;
+                    $scope.spaceChanged = !$scope.spaceChanged;
                   };
 
                   /*$scope.designerResources = {
@@ -322,14 +324,14 @@ angular.module('wvr.space')
                    "spaces": [{type: "Building"}, {type: "Room"}, {type: "Office"}, {type: "Studio"}, {type: "Workspace"}]
                    };*/
                   $scope.designerResources = {
-                    "facilities": [{type: "Seat"}],
-                    "spaces": [{type: "Studio"}]
+                    "facilities": [{type: "Seat", extra: {}}, {type: "SpaceGate", extra: {address: "TBD"}}],
+                    "spaces": [{type: "Studio", extra: {}}]
                   };
                   $scope.trash = [];
                   $scope.newFacilities = [];
                   $scope.spaceChanged = false;
 
-                  $scope.onFacilityDropped = function(event, ui) {
+                  $scope.onFacilityAdded = function(event, ui) {
 
                     $scope.facilityDroppedTime = event.timeStamp;
 
@@ -338,7 +340,17 @@ angular.module('wvr.space')
                     $('#container').masonry();
                   };
 
-                  $scope.updateSpace = function() {
+                  $scope.onFacilityTrashed = function(event, ui) {
+                    var dragSettings = $scope.$eval(ui.draggable.attr('jqyoui-draggable') || ui.draggable.attr('data-jqyoui-draggable')) || {};
+                    var trashedItemIndex = dragSettings.index;
+                    var curSpace = $scope.space;
+
+                    if(curSpace && curSpace.facilities) {
+                      curSpace.facilities.splice(trashedItemIndex, 1);
+                    }
+                  };
+
+                  /*$scope.updateSpace = function() {
 
                     Space.get({spaceId: resultSpace.uuid}).$promise.then(
                         function(space) {
@@ -351,7 +363,7 @@ angular.module('wvr.space')
                           var newFacilities = $scope.newFacilities;
 
                           for(var i = 0; i < newFacilities.length; i++) {
-                            space.facilities.push({name: newFacilities[i].type, type: newFacilities[i].type});
+                            space.facilities.push({name: newFacilities[i].type, type: newFacilities[i].type, extra: newFacilities[i].extra});
                           }
 
                           space.owner = $scope.loginUser._id;
@@ -381,6 +393,45 @@ angular.module('wvr.space')
                           $scope.alertStyle = 'alert-warning';
                         }
                     );
+                  };*/
+                  $scope.updateSpace = function() {
+                    var spaceToUpdate = $scope.space;
+
+                    if(!spaceToUpdate) {
+                      return;
+                    }
+
+                    if(spaceToUpdate.locker) {
+                      delete spaceToUpdate.locker;
+                    }
+
+                    var newFacilities = $scope.newFacilities;
+
+                    for(var i = 0; i < newFacilities.length; i++) {
+                      spaceToUpdate.facilities.push({name: newFacilities[i].type, type: newFacilities[i].type, extra: newFacilities[i].extra});
+                    }
+
+                    spaceToUpdate.owner = $scope.loginUser._id;
+
+                    spaceToUpdate.$update({spaceId: spaceToUpdate.uuid}, function(result) {
+                      if(result && result.space) {
+                        $scope.space.type = result.space.type;
+                        $scope.space.facilities = result.space.facilities;
+                        $scope.trash = [];
+                        $scope.newFacilities = [];
+                        $scope.spaceChanged = false;
+                        $scope.operationInfo = 'Congratulations! Space updated as you wish. ';
+                        $scope.alertStyle = 'alert-success';
+
+                        $window.location.reload(true);
+                      } else {
+                        $scope.operationInfo = 'Sorry, failed to update the space! You could try again later on.';
+                        $scope.alertStyle = 'alert-danger';
+                      }
+                    }, function(error) {
+                      $scope.operationInfo = 'Sorry, failed to update the space! You could try again later on.';
+                      $scope.alertStyle = 'alert-danger';
+                    });
                   };
 
                 }
