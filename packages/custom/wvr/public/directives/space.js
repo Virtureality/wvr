@@ -787,7 +787,6 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', function
 
                                 for(var i = 0; i < facilities.length; i++) {
                                     facility = facilities[i];
-
                                     facilityElement = $('#' + facility._id);
                                     if(facilityElement.length == 1) {
                                         if(facility.type === "Seat") {

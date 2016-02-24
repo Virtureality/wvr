@@ -51,6 +51,20 @@ angular.module('wvr.space')
                 $scope.operationInfo = 'Oops, you have reached an unknown space! Please check the address and try again with a correct one. :)';
                 $scope.alertStyle = 'alert-danger';
               } else {
+                var facilities = resultSpace.facilities;
+                var facility;
+                $scope.sgFacilities = [];
+                $scope.nonSGFacilities = [];
+
+                for(var i = 0; i < facilities.length; i++) {
+                  facility = facilities[i];
+                  if(facility.type === 'SpaceGate') {
+                    $scope.sgFacilities.push(facility);
+                  } else {
+                    $scope.nonSGFacilities.push(facility);
+                  }
+                }
+
                 $scope.space = resultSpace;
 
                 $scope.ableToOpenDefaultRoom = !resultSpace.owner || resultSpace.owner._id == $scope.loginUser._id;
@@ -246,6 +260,16 @@ angular.module('wvr.space')
                   $scope.space.visible = false;
                 };
 
+                $scope.isSGFacility = function(facility) {
+                  var result = false;
+
+                  if(facility && facility.type === 'SpaceGate') {
+                    result = true;
+                  }
+
+                  return result;
+                };
+
                 var isSpaceOwner = resultSpace.owner && resultSpace.owner._id == $scope.loginUser._id;
                 $scope.isSpaceOwner = isSpaceOwner;
 
@@ -329,6 +353,7 @@ angular.module('wvr.space')
                   };
                   $scope.trash = [];
                   $scope.newFacilities = [];
+                  $scope.newSGFacilities = [];
                   $scope.spaceChanged = false;
 
                   $scope.onFacilityAdded = function(event, ui) {
@@ -343,10 +368,19 @@ angular.module('wvr.space')
                   $scope.onFacilityTrashed = function(event, ui) {
                     var dragSettings = $scope.$eval(ui.draggable.attr('jqyoui-draggable') || ui.draggable.attr('data-jqyoui-draggable')) || {};
                     var trashedItemIndex = dragSettings.index;
-                    var curSpace = $scope.space;
+                    /*var curSpace = $scope.space;
 
                     if(curSpace && curSpace.facilities) {
                       curSpace.facilities.splice(trashedItemIndex, 1);
+                    }*/
+                    var dragFacilityType = ui.draggable.attr('data-facility-type');
+                    var nonSGFacilities = $scope.nonSGFacilities;
+                    var sgFacilities = $scope.sgFacilities;
+
+                    if(dragFacilityType === 'SpaceGate') {
+                      sgFacilities.splice(trashedItemIndex, 1);
+                    } else {
+                      nonSGFacilities.splice(trashedItemIndex, 1);
                     }
                   };
 
@@ -405,10 +439,30 @@ angular.module('wvr.space')
                       delete spaceToUpdate.locker;
                     }
 
-                    var newFacilities = $scope.newFacilities;
+                    /*var newFacilities = $scope.newFacilities;
 
                     for(var i = 0; i < newFacilities.length; i++) {
                       spaceToUpdate.facilities.push({name: newFacilities[i].type, type: newFacilities[i].type, extra: newFacilities[i].extra});
+                    }
+
+                    var newSGFacilities = $scope.newSGFacilities;
+
+                    for(var i = 0; i < newSGFacilities.length; i++) {
+                      spaceToUpdate.facilities.push({name: newSGFacilities[i].type, type: newSGFacilities[i].type, extra: newSGFacilities[i].extra});
+                    }*/
+                    var newFacilities = $scope.newFacilities;
+                    var newSGFacilities = $scope.newSGFacilities;
+
+                    spaceToUpdate.facilities = [];
+                    spaceToUpdate.facilities = spaceToUpdate.facilities.concat($scope.nonSGFacilities);
+                    spaceToUpdate.facilities = spaceToUpdate.facilities.concat($scope.sgFacilities);
+
+                    for(var i = 0; i < newFacilities.length; i++) {
+                      spaceToUpdate.facilities.push({name: newFacilities[i].type, type: newFacilities[i].type, extra: newFacilities[i].extra});
+                    }
+
+                    for(var i = 0; i < newSGFacilities.length; i++) {
+                      spaceToUpdate.facilities.push({name: newSGFacilities[i].type, type: newSGFacilities[i].type, extra: newSGFacilities[i].extra});
                     }
 
                     spaceToUpdate.owner = $scope.loginUser._id;
