@@ -1672,6 +1672,20 @@
         var iceServers = [];
 
         iceServers.push({
+            url: 'stun:120.25.244.9:3478'
+        });
+
+        iceServers.push({
+            url: 'turn:120.25.244.9:3478',
+            credential: 'wvr',
+            username: 'wvr'
+        });
+
+        iceServers.push({
+            url: 'stun:stun.services.mozilla.com'
+        });
+
+        iceServers.push({
             url: 'stun:stun.l.google.com:19302'
         });
 
@@ -6126,7 +6140,7 @@
                     this.rtcConfiguration = null;
                 }
 
-                log('rtc-configuration', toStr(this.rtcConfiguration));
+                //log('rtc-configuration', toStr(this.rtcConfiguration));
             },
             onSdpError: function(e) {
                 var message = toStr(e);
