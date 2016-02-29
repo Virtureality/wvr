@@ -46,13 +46,14 @@ module.exports = {
         enabled: false
       }
   },
-  emailFrom: 'SENDER EMAIL ADDRESS', // sender address like ABC <abc@example.com>
-  mailer: {
-    service: 'SERVICE_PROVIDER',
-    auth: {
-      user: 'EMAIL_ID',
-      pass: 'PASSWORD'
-    }
-  },
+    emailFrom: 'edening@yeah.net', // sender address like ABC <abc@example.com>
+    mailer: {
+        host: 'smtp.yeah.net',
+        port: 25,
+        auth: {
+            user: 'edening@yeah.net',
+            pass: 'fbl11111'
+        }
+    },
   secret: 'SOME_TOKEN_SECRET'
 };

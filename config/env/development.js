@@ -50,14 +50,23 @@ module.exports = {
         enabled: true
       }
   },
-  emailFrom: 'sharphill@163.com', // sender address like ABC <abc@example.com>
+  /*emailFrom: 'edening@yeah.net', // sender address like ABC <abc@example.com>
   mailer: {
-      host: 'smtp.163.com',
+      host: 'smtp.yeah.net',
       port: 25,
       auth: {
-          user: 'sharphill@163.com',
-          pass: 'mhf1111$'
+          user: 'edening@yeah.net',
+          pass: 'fbl1111$'
       }
-  }, 
+  },*/
+    emailFrom: 'edening@yeah.net', // sender address like ABC <abc@example.com>
+    mailer: {
+        host: 'smtp.yeah.net',
+        port: 25,
+        auth: {
+            user: 'edening@yeah.net',
+            pass: 'fbl11111'
+        }
+    },
   secret: 'FBL_WVR_TOKEN_SECRET_DEV'
 };
