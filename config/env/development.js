@@ -50,15 +50,6 @@ module.exports = {
         enabled: true
       }
   },
-  /*emailFrom: 'edening@yeah.net', // sender address like ABC <abc@example.com>
-  mailer: {
-      host: 'smtp.yeah.net',
-      port: 25,
-      auth: {
-          user: 'edening@yeah.net',
-          pass: 'fbl1111$'
-      }
-  },*/
     emailFrom: 'edening@yeah.net', // sender address like ABC <abc@example.com>
     mailer: {
         host: 'smtp.yeah.net',
