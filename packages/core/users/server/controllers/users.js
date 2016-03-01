@@ -254,7 +254,7 @@ module.exports = function(MeanUser) {
                         return res.status(400);
                     }
 
-                    var payload = user;
+                    /*var payload = user;
                     payload.redirect = req.body.redirect;
                     var escaped = JSON.stringify(payload);
                     escaped = encodeURI(escaped);
@@ -269,7 +269,10 @@ module.exports = function(MeanUser) {
                         var token = jwt.sign(escaped, config.secret, { expiresInMinutes: 60*5 });
                         res.json({ token: token });
                     });
-                    res.status(200);
+                    res.status(200);*/
+                    res.status(200).json({
+                        msg: 'Password reset successfully!'
+                    });
                 });
             });
         },
@@ -337,6 +340,7 @@ module.exports = function(MeanUser) {
                 }
 
                 if (err) {
+                    //console.log('Problem happened for processing forgotpassword for: ' + req.body.text + '. Reason: ' + err);
                     response.message = 'Problem happened for processing forgotpassword for: ' + req.body.text + '. Reason: Probably user email does not exist!';
                     response.status = 'danger';
                 }

@@ -121,7 +121,10 @@ angular.module('mean.users').factory('MeanUser', [ '$rootScope', '$http', '$loca
           password: user.password,
           confirmPassword: user.confirmPassword
         })
-          .success(this.onIdentity.bind(this))
+          //.success(this.onIdentity.bind(this))
+            .success(function(response) {
+              $rootScope.$emit('passwordreset', response);
+            })
           .error(this.onIdFail.bind(this));
       };
 

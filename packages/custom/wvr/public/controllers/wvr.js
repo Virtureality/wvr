@@ -72,7 +72,7 @@ angular.module('mean.wvr').controller('WvrHeaderController', ['$scope', '$rootSc
 
       if(absNewUrl.indexOf('/login') !== -1 || absNewUrl.indexOf('/register') !== -1) {
         var pathIndex = $location.absUrl().indexOf($location.path());
-        $cookies.redirect = absOldUrl.substr(pathIndex, absOldUrl.length);
+        $cookies.redirect = absOldUrl.substr(pathIndex, absOldUrl.length) || '/';
       }
 
       if(absOldUrl.indexOf('/login') !== -1 || absOldUrl.indexOf('/register') !== -1) {
