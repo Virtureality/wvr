@@ -291,18 +291,14 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', function
                             var targets = scope.imers;
 
                             if (targets.size > 0) {
-                                /*console.log('Broadcasting to wvrmitConnection.peers: ' + Object.keys(wvrmitConnection.peers));
-                                targets.forEach(function(value1, value2, set) {
-                                    console.log('Sending message: ' + msgBody + ' to: ' + value1);
-                                    wvrmitConnection.peers[value1].sendCustomMessage({msgType: 'IM', sender: wvrmitConnection.userid, message: msgBody});
-                                });*/
                                 targets.forEach(function(value1, value2, set) {
                                     wvrmitConnection.sendCustomMessage({msgType: 'IM', sender: wvrmitConnection.userid, receiver: value1, message: msgBody});
                                 });
                             } else {
                                 wvrmitConnection.send(msgBody);
                             }
-                            messageArea.append($('<div>').append('Me: ' + msgBody));
+                            //messageArea.append($('<div>').append('Me: ' + msgBody));
+                            messageArea.append($('<div>').append(msgBody + ' -- Posted by ' + 'Me'));
                         } else{
                             alert('Please input message content correctly!');
                         }
@@ -311,20 +307,6 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', function
                     wvrmitConnection.onopen = function(e) {
                         // e.userid
                         // e.extra
-
-                        /*if(!wvrmitConnection.peers[e.userid].onCustomMessageUpdated) {
-                            console.log('Setting onCustomMessage handler between me[' + wvrmitConnection.userid + '] and ' + e.userid);
-                            wvrmitConnection.peers[e.userid].onCustomMessageUpdated = true;
-                            wvrmitConnection.peers[e.userid].onCustomMessage = function(msg) {
-                                console.log('I[' + wvrmitConnection.userid + '] received message from ' + this.userid);
-                                if(msg.msgType == 'IM') {
-                                    messageArea.append($('<div>').append(msg.sender + ': ' + msg.message));
-                                }
-                            };
-                            console.log('After setting, wvrmitConnection.peers: ' + Object.keys(wvrmitConnection.peers));
-                        }*/
-
-                        //setButton(sendMsgButton, 'Send', false);
 
                         if(screenSharingDisabled) {
                             enableScreenSharing();
@@ -342,7 +324,8 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', function
                             userName = userName.substr(0, userName.lastIndexOf('-'));
                         }
 
-                        messageArea.append($('<div>').append(userName + ': ' + e.data));
+                        //messageArea.append($('<div>').append(userName + ': ' + e.data));
+                        messageArea.append($('<div>').append(e.data + ' --- Posted by ' + userName));
                     };
 
                     wvrmitConnection.onCustomMessage = function(msg) {
@@ -354,7 +337,8 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', function
                         }
 
                         if(msg.msgType == 'IM' && msg.receiver == wvrmitConnection.userid) {
-                            messageArea.append($('<div>').append(msg.sender + ': ' + msg.message));
+                            //messageArea.append($('<div>').append(msg.sender + ': ' + msg.message));
+                            messageArea.append($('<div>').append(msg.message + ' --- Posted by ' + userName));
                         }
 
                         if(msg.msgType === 'initiateRoom' && msg.roomId === mname && msg.initiator === wvrmitConnection.userid) {
@@ -625,18 +609,12 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', function
                     var userPElement = $('<p/>');
                     userPElement.appendTo(newPElement);
                     userSpan.appendTo(userPElement);
-                    if(e.userid !== userID) {
+                    /*if(e.userid !== userID) {
                         var imSwitch = $('<button/>').attr('id', e.userid + '-im').attr('class', 'btn btn-info').attr('style', 'margin-left: 6px;').attr('title', 'Click to Add for Messaging').text('IM Off').appendTo(userPElement);
 
                         imSwitch.bind('click', {targetIMer: e.userid}, function(event) {
                             var imSwitchBtn = $(this);
                             var status = imSwitchBtn.text();
-                            /*var imer = imSwitchBtn.attr('id');
-
-                            var index = imer.indexOf('-im');
-                            if(index !== -1) {
-                                imer = imer.substr(0, index);
-                            }*/
                             var imer = event.data.targetIMer;
 
                             if(status === 'IM Off') {
@@ -653,7 +631,7 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', function
                                 imSwitchBtn.attr('title', 'Click to Add for Messaging').text('IM Off');
                             }
                         });
-                    }
+                    }*/
                     newPElement.appendTo(userPresenceBox);
                     userPresenceBox.appendTo(container);
 
@@ -738,7 +716,7 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', function
                         var facility;
                         var facilityElement;
 
-                        setButton(sendMsgButton, 'Send', false);
+                        setButton(sendMsgButton, 'Post', false);
 
                         if(space) {
 

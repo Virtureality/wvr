@@ -115,6 +115,12 @@
         <div class="col-lg-3">
 
           <div class="row">
+            <div class="row stdbkg">
+              <label class="textLgWL" style="font-size: 18px;">Space Gates</label>
+            </div>
+
+            <hr>
+
             <div class="row">
               <div data-type="Facility" data-ng-repeat="sgFacility in sgFacilities track by $index" data-facility-type="{{sgFacility.type}}" class="box-masonry photo col2 masonry-brick" data-drag="true" data-jqyoui-options="{revert: 'invalid'}" data-ng-model="sgFacilities" jqyoui-draggable="{index: {{$index}}, animate: true}">
                 <p><span id="{{'facility-owner-' + sgFacility._id}}">{{sgFacility.owner.name || sgFacility.owner}}</span>&nbsp;<button data-ng-show="isSpaceOwner" data-ng-click="showUserSearch(sgFacility)">Assign Facility Owner</button></p>
@@ -138,19 +144,25 @@
             </div>
           </div>
 
-          <hr>
-
           <div class="row">
+
+            <div class="row stdbkg">
+              <label class="textLgWL" style="font-size: 18px;">Message Board</label>
+            </div>
+
+            <hr>
+
             <div class="input-group">
-              <input id="message-text" class="form-control" type="text" placeholder="Instant Messaging ..."/>
+              <input id="message-text" class="form-control" type="text" placeholder="Message Board Posting"/>
               <span class="input-group-btn">
                 <button id="send-msg-btn" class="btn btn-info" disabled="true">Waiting ...</button>
               </span>
             </div>
             <div id="message-area">
-              <p>
+              <!--<p>
                 <span><label class="textLgWL" style="font-size: 23px;">To:&nbsp;</label></span><span data-ng-show="!(imers.size > 0)">All</span><span data-ng-repeat="imer in imerList">{{imer}}&nbsp;</span>
-              </p>
+              </p>-->
+              <br>
             </div>
           </div>
 
