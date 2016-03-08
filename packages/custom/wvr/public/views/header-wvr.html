@@ -2,20 +2,18 @@
     <div class="navbar navbar-default navbar-static-top">
         <div class="container">
             <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" href="/"><span>W</span>VR</a>
+                <div style="margin-top: 9px;">
+                    <a class="navbar-brand" href="/"><span>W</span>VR</a>&nbsp;
+                    <span><a id="zhSelector" class="btn" ng-click="changeLanguage('zh')" translate="BUTTON_LANG_ZH"></a>|<a id="enSelector" class="btn" ng-click="changeLanguage('en')" translate="BUTTON_LANG_EN"></a></span>
+                </div>
             </div>
 
             <div class="navbar-collapse collapse ">
 
                 <ul class="navbar-nav nav auth-link" data-ng-show="!hdrctr.hdrvars.authenticated">
-                    <li><a ui-sref='auth.register'>Join</a></li>
+                    <li><a ui-sref='auth.register' translate="REGISTER"></a></li>
                     <li class="divider-vertical"></li>
-                    <li><a ui-sref='auth.login'>Log In</a></li>
+                    <li><a ui-sref='auth.login' translate="LOGIN"></a></li>
                 </ul>
 
                 <ul class="navbar-nav nav" data-ng-show="hdrctr.hdrvars.authenticated">
@@ -24,15 +22,16 @@
                             <span>{{hdrctr.hdrvars.user.name}}</span> <b class="caret"></b>
                         </a>
                         <ul class="dropdown-menu" style="top: 70px;">
-                            <li><a href="#" ng-click="hdrctr.logout()">Log Out</a></li>
+                            <li><a href="#" ng-click="hdrctr.logout()" translate="LOGOUT"></a></li>
                         </ul>
                     </li>
                 </ul>
 
                 <ul class="nav navbar-nav">
-                    <li class="active"><a href="/">Home</a></li>
+                    <li class="active"><a href="/" translate="HOME"></a></li>
                 </ul>
             </div>
+
         </div>
     </div>
 </header>

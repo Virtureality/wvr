@@ -56,10 +56,10 @@ module.exports = {
   },
   languages: [{
     name: 'en',
-    direction: 'ltr',
+    direction: 'ltr'
   }, {
     name: 'he',
-    direction: 'rtl',
+    direction: 'rtl'
   }],
   currentLanguage: 'en',
   // The session cookie name

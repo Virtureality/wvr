@@ -1,7 +1,7 @@
 'use strict';
 
-angular.module('mean.users').factory('MeanUser', [ '$rootScope', '$http', '$location', '$stateParams', '$cookies', '$q', '$timeout', '$cookieStore',
-  function($rootScope, $http, $location, $stateParams, $cookies, $q, $timeout, $cookieStore) {
+angular.module('mean.users').factory('MeanUser', [ '$rootScope', '$http', '$location', '$stateParams', '$cookies', '$q', '$timeout', '$cookieStore', '$translate',
+  function($rootScope, $http, $location, $stateParams, $cookies, $q, $timeout, $cookieStore, $translate) {
 
     var self;
 
@@ -130,7 +130,8 @@ angular.module('mean.users').factory('MeanUser', [ '$rootScope', '$http', '$loca
 
     MeanUserKlass.prototype.forgotpassword = function(user) {
         $http.post('/api/forgot-password', {
-          text: user.email
+          text: user.email,
+          lang: $translate.proposedLanguage()
         })
           .success(function(response) {
             $rootScope.$emit('forgotmailsent', response);

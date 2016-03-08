@@ -82,12 +82,11 @@ module.exports = function(MeanUser) {
 
             user.provider = 'local';
 
-            // because we set our user.provider to local our models/user.js validation will always be true
-            req.assert('name', 'You must enter a name').notEmpty();
-            req.assert('email', 'You must enter a valid email address').isEmail();
-            req.assert('password', 'Password must be between 8-20 characters long').len(8, 20);
-            req.assert('username', 'Username cannot be more than 20 characters').len(1, 20);
-            req.assert('confirmPassword', 'Passwords do not match').equals(req.body.password);
+            req.assert('name', 'INFO_RULE_NAME').notEmpty();
+            req.assert('email', 'INFO_RULE_VALIDEMAIL').isEmail();
+            req.assert('password', 'INFO_RULE_PWD').len(8, 20);
+            req.assert('username', 'INFO_RULE_USERNAME').len(1, 20);
+            req.assert('confirmPassword', 'INFO_RULE_CONFIRMPWD').equals(req.body.password);
 
             var errors = req.validationErrors();
             if (errors) {
@@ -212,8 +211,8 @@ module.exports = function(MeanUser) {
                         msg: 'Token invalid or expired'
                     });
                 }
-                req.assert('password', 'Password must be between 8-20 characters long').len(8, 20);
-                req.assert('confirmPassword', 'Passwords do not match').equals(req.body.password);
+                req.assert('password', 'INFO_RULE_PWD').len(8, 20);
+                req.assert('confirmPassword', 'INFO_RULE_CONFIRMPWD').equals(req.body.password);
                 var errors = req.validationErrors();
                 if (errors) {
                     return res.status(400).send(errors);
@@ -311,7 +310,8 @@ module.exports = function(MeanUser) {
                 function(token, user, done) {
                     var mailOptions = {
                         to: user.email,
-                        from: config.emailFrom
+                        from: config.emailFrom,
+                        lang: req.body.lang
                     };
                     mailOptions = templates.forgot_password_email(user, req, token, mailOptions);
                     /*sendMail(mailOptions);
@@ -325,28 +325,27 @@ module.exports = function(MeanUser) {
             function(err, user, result) {
 
                 var response = {
-                    message: 'Mail sent unknown',
+                    message: 'INFO_EMAILSENT_UNKNOWN',
                     status: 'unknown'
                 };
                 if(result) {
                     response = result;
                     if(result.response && result.response.indexOf('250') != -1) {
-                        response.message = 'Mail sent successfully';
+                        response.message = 'INFO_EMAILSENT';
                         response.status = 'success';
                     } else {
-                        response.message = 'Mail sent unknown';
+                        response.message = 'INFO_EMAILSENT_UNKNOWN';
                         response.status = 'unknown';
                     }
                 }
 
                 if (err) {
-                    //console.log('Problem happened for processing forgotpassword for: ' + req.body.text + '. Reason: ' + err);
-                    response.message = 'Problem happened for processing forgotpassword for: ' + req.body.text + '. Reason: Probably user email does not exist!';
+                    response.message = 'INFO_FORGOTPWD_PROBLEM';
                     response.status = 'danger';
                 }
 
                 MeanUser.events.publish('forgotpassword', {
-                    description: req.body.text + ' forgot his password.'
+                    description: req.body.text + ' forgot password.'
                 });
 
                 res.json(response);

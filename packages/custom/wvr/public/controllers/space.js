@@ -4,8 +4,6 @@
 angular.module('wvr.space')
     .controller('SpaceListController', ['$scope', 'Space',
       function($scope, Space) {
-        //$scope.spaces = Space.query();
-        //$scope.url = '/api/wvr/space/spaces';
         $scope.url = '/api/proxy/wvr/space/spaces';
         $scope.search = function() {
           $scope.urlParams = {
@@ -15,6 +13,9 @@ angular.module('wvr.space')
       }])
     .controller('SpaceDetailController', ['$window', '$location', '$scope', '$rootScope', 'MeanUser', '$stateParams', 'Space', '$http',
       function($window, $location, $scope, $rootScope, MeanUser, $stateParams, Space, $http){
+
+        $scope.actionText = 'TXT_MARCHING';
+
         $scope.loginUser = MeanUser.user;
         $rootScope.$on('loggedin', function() {
           $scope.loginUser = MeanUser.user;
@@ -29,7 +30,8 @@ angular.module('wvr.space')
           $scope.userSearchDisplay = false;
         };
         $scope.searchUser = function() {
-          $scope.operationInfo = 'Searching for users ...';
+          //$scope.operationInfo = 'Searching for users ...';
+          $scope.operationInfo = '';
 
           $http.post('/api/proxy/wvr/user/users', { "keywords" : $scope.keywords}).
               success(function(data, status) {
@@ -48,9 +50,13 @@ angular.module('wvr.space')
               // Success!
 
               if(resultSpace && (!resultSpace.uuid || resultSpace.uuid === "")) {//Not Explored Yet i.e. No record in the system.
-                $scope.operationInfo = 'Oops, you have reached an unknown space! Please check the address and try again with a correct one. :)';
+                $scope.operationInfo = 'INFO_UNKNOWN_SPACE';
                 $scope.alertStyle = 'alert-danger';
               } else {
+                if(resultSpace.uuid === 'try') {
+                  $scope.isTrial = true;
+                }
+
                 var facilities = resultSpace.facilities;
                 var facility;
                 $scope.sgFacilities = [];
@@ -77,7 +83,8 @@ angular.module('wvr.space')
 
                     if(lockerKey !== null) {
 
-                      $scope.operationInfo = 'Processing...[Add Space Locker]';
+                      //$scope.operationInfo = 'Processing...[Add Space Locker]';
+                      $scope.operationInfo = 'INFO_PROCESSING_ADDLOCKER';
                       $scope.alertStyle = 'alert-info';
 
                       if(!resultSpace.locker) {
@@ -86,7 +93,8 @@ angular.module('wvr.space')
                           Space.get({spaceId: resultSpace.uuid}).$promise.then(
                               function(space) {
                                 if (space && (!space.uuid || space.uuid === "")) {//Space not found
-                                  $scope.operationInfo = 'Sorry, failed to lock the space at the moment! You could try again later on.';
+                                  //$scope.operationInfo = 'Sorry, failed to lock the space at the moment! You could try again later on.';
+                                  $scope.operationInfo = 'INFO_ADDLOCKER_FAILED';
                                   $scope.alertStyle = 'alert-danger';
                                 } else {//Space found, so to update the locker
                                   if(space.owner) {
@@ -96,29 +104,33 @@ angular.module('wvr.space')
                                   space.$update({spaceId: space.uuid}, function(result) {
                                     if(result && result.space) {
                                       $scope.space = result.space;
-                                      $scope.operationInfo = 'Congratulations! You have added locker to the space! ';
+                                      //$scope.operationInfo = 'Congratulations! You have added locker to the space! ';
+                                      $scope.operationInfo = 'INFO_ADDLOCKER_SUCCESS';
                                       $scope.alertStyle = 'alert-success';
 
                                       $window.location.reload(true);
                                     } else {
-                                      $scope.operationInfo = 'Sorry, failed to lock the space at the moment! You could try again later on.';
+                                      //$scope.operationInfo = 'Sorry, failed to lock the space at the moment! You could try again later on.';
+                                      $scope.operationInfo = 'INFO_ADDLOCKER_FAILED';
                                       $scope.alertStyle = 'alert-danger';
                                     }
                                   }, function(error) {
-                                    $scope.operationInfo = 'Sorry, failed to lock the space at the moment! You could try again later on.';
+                                    //$scope.operationInfo = 'Sorry, failed to lock the space at the moment! You could try again later on.';
+                                    $scope.operationInfo = 'INFO_ADDLOCKER_FAILED';
                                     $scope.alertStyle = 'alert-danger';
                                   });
                                 }
                               });
                         } else {
-                          //alert('You would be redirected to login. Please come back to own after. :)');
-                          $scope.operationInfo = 'You would be redirected to login. Please come back to finish operation then. ';
+                          //$scope.operationInfo = 'You would be redirected to login. Please come back to finish operation then. ';
+                          $scope.operationInfo = 'INFO_REDIRECTING';
                           $scope.alertStyle = 'alert-info';
                           $location.path('/auth/login');
                           $location.replace();
                         }
                       } else {
-                        $scope.operationInfo = 'The space has locker already, no need to add again!';
+                        //$scope.operationInfo = 'The space has locker already, no need to add again!';
+                        $scope.operationInfo = 'INFO_LOCKEREXIST';
                         $scope.alertStyle = 'alert-warning';
                       }
                     }
@@ -134,7 +146,8 @@ angular.module('wvr.space')
 
                     if(lockerKey !== null) {
 
-                      $scope.operationInfo = 'Processing...[Change Space Locker]';
+                      //$scope.operationInfo = 'Processing...[Change Space Locker]';
+                      $scope.operationInfo = 'INFO_PROCESSING_CHANGELOCKER';
                       $scope.alertStyle = 'alert-info';
 
                       if(resultSpace.locker) {
@@ -143,7 +156,8 @@ angular.module('wvr.space')
                           Space.get({spaceId: resultSpace.uuid}).$promise.then(
                               function(space) {
                                 if (space && (!space.uuid || space.uuid === "")) {//Space not found
-                                  $scope.operationInfo = 'Sorry, failed to change locker at the moment! You could try again later on.';
+                                  //$scope.operationInfo = 'Sorry, failed to change locker at the moment! You could try again later on.';
+                                  $scope.operationInfo = 'INFO_CHANGELOCKER_FAILED';
                                   $scope.alertStyle = 'alert-danger';
                                 } else {//Space found, so to change the locker
                                   if(space.owner) {
@@ -153,29 +167,33 @@ angular.module('wvr.space')
                                   space.$update({spaceId: space.uuid}, function(result) {
                                     if(result && result.space) {
                                       $scope.space = result.space;
-                                      $scope.operationInfo = 'Congratulations! You have changed the locker! ';
+                                      //$scope.operationInfo = 'Congratulations! You have changed the locker! ';
+                                      $scope.operationInfo = 'INFO_CHANGELOCKER_SUCCESS';
                                       $scope.alertStyle = 'alert-success';
 
                                       $window.location.reload(true);
                                     } else {
-                                      $scope.operationInfo = 'Sorry, failed to change locker at the moment! You could try again later on.';
+                                      //$scope.operationInfo = 'Sorry, failed to change locker at the moment! You could try again later on.';
+                                      $scope.operationInfo = 'INFO_CHANGELOCKER_FAILED';
                                       $scope.alertStyle = 'alert-danger';
                                     }
                                   }, function(error) {
-                                    $scope.operationInfo = 'Sorry, failed to change locker at the moment! You could try again later on.';
+                                    //$scope.operationInfo = 'Sorry, failed to change locker at the moment! You could try again later on.';
+                                    $scope.operationInfo = 'INFO_CHANGELOCKER_FAILED';
                                     $scope.alertStyle = 'alert-danger';
                                   });
                                 }
                               });
                         } else {
-                          //alert('You would be redirected to login. Please come back to own after. :)');
-                          $scope.operationInfo = 'You would be redirected to login. Please come back to finish operation then. ';
+                          //$scope.operationInfo = 'You would be redirected to login. Please come back to finish operation then. ';
+                          $scope.operationInfo = 'INFO_REDIRECTING';
                           $scope.alertStyle = 'alert-info';
                           $location.path('/auth/login');
                           $location.replace();
                         }
                       } else {
-                        $scope.operationInfo = 'Oops, it turns out there is no locker yet!';
+                        //$scope.operationInfo = 'Oops, it turns out there is no locker yet!';
+                        $scope.operationInfo = 'INFO_NOLOCKER';
                         $scope.alertStyle = 'alert-warning';
                       }
                     }
@@ -186,7 +204,8 @@ angular.module('wvr.space')
                 $scope.ownSpace = function() {
 
                   $scope.$apply(function() {
-                    $scope.operationInfo = 'Processing...[Own the Space]';
+                    //$scope.operationInfo = 'Processing...[Own the Space]';
+                    $scope.operationInfo = 'INFO_PROCESSING_OWN';
                     $scope.alertStyle = 'alert-info';
 
                     if(!resultSpace.owner) {
@@ -199,16 +218,19 @@ angular.module('wvr.space')
                                 Space.save(space, function(result) {
                                   if(result && result.space) {
                                     $scope.space = result.space;
-                                    $scope.operationInfo = 'Congratulations! You are the space owner now!';
+                                    //scope.operationInfo = 'Congratulations! You are the space owner now!';
+                                    $scope.operationInfo = 'INFO_OWNSPACE_SUCCESS';
                                     $scope.alertStyle = 'alert-success';
 
                                     $window.location.reload(true);
                                   } else {
-                                    $scope.operationInfo = 'Sorry, failed to own the space at the moment! You could try again later on.';
+                                    //$scope.operationInfo = 'Sorry, failed to own the space at the moment! You could try again later on.';
+                                    $scope.operationInfo = 'INFO_OWNSPACE_FAILED';
                                     $scope.alertStyle = 'alert-danger';
                                   }
                                 }, function(error) {
-                                  $scope.operationInfo = 'Sorry, failed to own the space at the moment! You could try again later on.';
+                                  //$scope.operationInfo = 'Sorry, failed to own the space at the moment! You could try again later on.';
+                                  $scope.operationInfo = 'INFO_OWNSPACE_FAILED';
                                   $scope.alertStyle = 'alert-danger';
                                 });
                               } else {//Space found, so to update the owner
@@ -216,36 +238,37 @@ angular.module('wvr.space')
                                 space.$update({spaceId: space.uuid}, function(result) {
                                   if(result && result.space) {
                                     $scope.space = result.space;
-                                    $scope.operationInfo = 'Congratulations! You are the space owner now! ';
+                                    //$scope.operationInfo = 'Congratulations! You are the space owner now! ';
+                                    $scope.operationInfo = 'INFO_OWNSPACE_SUCCESS';
                                     $scope.alertStyle = 'alert-success';
 
                                     $window.location.reload(true);
                                   } else {
-                                    $scope.operationInfo = 'Sorry, failed to own the space at the moment! You could try again later on.';
+                                    //$scope.operationInfo = 'Sorry, failed to own the space at the moment! You could try again later on.';
+                                    $scope.operationInfo = 'INFO_OWNSPACE_FAILED';
                                     $scope.alertStyle = 'alert-danger';
                                   }
                                 }, function(error) {
-                                  $scope.operationInfo = 'Sorry, failed to own the space at the moment! You could try again later on.';
+                                  //$scope.operationInfo = 'Sorry, failed to own the space at the moment! You could try again later on.';
+                                  $scope.operationInfo = 'INFO_OWNSPACE_FAILED';
                                   $scope.alertStyle = 'alert-danger';
                                 });
                               }
                             },
                             function(reason) {
-                              $scope.operationInfo = 'Oops, space service is in trouble right now! You may try again later.';
+                              //$scope.operationInfo = 'Oops, space service is in trouble right now! You may try again later.';
+                              $scope.operationInfo = 'INFO_SPACESERVICE_UNAVAILABLE';
                               $scope.alertStyle = 'alert-warning';
                             }
                         );
                       } else {
-                        //alert('You would be redirected to login. Please come back to own after. :)');
-                        /*$scope.operationInfo = 'You would be redirected to login. Please come back to own after. ';
-                         $scope.alertStyle = 'alert-info';
-                         $location.path('/auth/login');
-                         $location.replace();*/
-                        $scope.operationInfo = 'You need to login to own the space. Please register if not yet, then login for coming back to own after. Good luck! :)';
+                        //$scope.operationInfo = 'You need to login to own the space. Please register if not yet, then login for coming back to own after. Good luck! :)';
+                        $scope.operationInfo = 'INFO_LOGINNEEDED';
                         $scope.alertStyle = 'alert-info';
                       }
                     } else {
-                      $scope.operationInfo = 'Sorry! The space has been owned.';
+                      //$scope.operationInfo = 'Sorry! The space has been owned.';
+                      $scope.operationInfo = 'INFO_SPACEOWNEREXIST';
                       $scope.alertStyle = 'alert-warning';
                     }
                   });
@@ -277,17 +300,20 @@ angular.module('wvr.space')
 
                   $scope.assignOwner = function(spaceForFacility, facilityToAssign, resultUser) {
 
-                    $scope.operationInfo = 'Assigning seat owner ...';
+                    //$scope.operationInfo = 'Assigning seat owner ...';
+                    $scope.operationInfo = 'INFO_ASSIGNINGOWNER';
                     $scope.alertStyle = 'alert-info';
 
                     if(!resultUser) {
-                      $scope.operationInfo = 'You must choose a user for assigning to!';
+                      //$scope.operationInfo = 'You must choose a user for assigning to!';
+                      $scope.operationInfo = 'INFO_CHOOSEUSER';
                       $scope.alertStyle = 'alert-warning';
                     } else {
                       Space.get({spaceId: spaceForFacility.uuid}).$promise.then(
                           function(space) {
                             if(space && (!space.uuid || space.uuid === "")) {//Space not found
-                              $scope.operationInfo = 'Sorry, failed to assign facility owner! You could try again later on.';
+                              //$scope.operationInfo = 'Sorry, failed to assign facility owner! You could try again later on.';
+                              $scope.operationInfo = 'INFO_ASSIGNOWNER_FAILED';
                               $scope.alertStyle = 'alert-danger';
                             } else {//Space found, so to update the facility owner
 
@@ -310,26 +336,31 @@ angular.module('wvr.space')
                                     $scope.userSearchDisplay = false;
                                     //$('#seat-owner-' + targetFacility._id).text(resultUser.name || resultUser.email || resultUser._id);
                                     $('#facility-owner-' + targetFacility._id).text(resultUser.name || resultUser.email || resultUser._id);
-                                    $scope.operationInfo = 'Congratulations! Facility assigned as you wish! ';
+                                    //$scope.operationInfo = 'Congratulations! Facility assigned as you wish! ';
+                                    $scope.operationInfo = 'INFO_ASSIGNOWNER_SUCCESS';
                                     $scope.alertStyle = 'alert-success';
 
                                     $window.location.reload(true);
                                   } else {
-                                    $scope.operationInfo = 'Sorry, failed to assign facility owner! You could try again later on.';
+                                    //$scope.operationInfo = 'Sorry, failed to assign facility owner! You could try again later on.';
+                                    $scope.operationInfo = 'INFO_ASSIGNOWNER_FAILED';
                                     $scope.alertStyle = 'alert-danger';
                                   }
                                 }, function(error) {
-                                  $scope.operationInfo = 'Sorry, failed to assign facility owner! You could try again later on.';
+                                  //$scope.operationInfo = 'Sorry, failed to assign facility owner! You could try again later on.';
+                                  $scope.operationInfo = 'INFO_ASSIGNOWNER_FAILED';
                                   $scope.alertStyle = 'alert-danger';
                                 });
                               } else {
-                                $scope.operationInfo = 'Sorry, failed to assign facility owner! You could try again later on.';
+                                //$scope.operationInfo = 'Sorry, failed to assign facility owner! You could try again later on.';
+                                $scope.operationInfo = 'INFO_ASSIGNOWNER_FAILED';
                                 $scope.alertStyle = 'alert-danger';
                               }
                             }
                           },
                           function(reason) {
-                            $scope.operationInfo = 'Oops, space service is in trouble right now! You may try again later.';
+                            //$scope.operationInfo = 'Oops, space service is in trouble right now! You may try again later.';
+                            $scope.operationInfo = 'INFO_SPACESERVICE_UNAVAILABLE';
                             $scope.alertStyle = 'alert-warning';
                           }
                       );
@@ -348,7 +379,7 @@ angular.module('wvr.space')
                    "spaces": [{type: "Building"}, {type: "Room"}, {type: "Office"}, {type: "Studio"}, {type: "Workspace"}]
                    };*/
                   $scope.designerResources = {
-                    "facilities": [{type: "Seat", extra: {}}, {type: "SpaceGate", extra: {address: "TBD"}}],
+                    "facilities": [{type: "Seat", imgURL: "/wvr/assets/img/Seat.png", extra: {}}, {type: "SpaceGate", imgURL: "/wvr/assets/img/SpaceGate.png", extra: {address: "TBD"}}],
                     "spaces": [{type: "Studio", extra: {}}]
                   };
                   $scope.trash = [];
@@ -384,50 +415,6 @@ angular.module('wvr.space')
                     }
                   };
 
-                  /*$scope.updateSpace = function() {
-
-                    Space.get({spaceId: resultSpace.uuid}).$promise.then(
-                        function(space) {
-                          if(space.locker) {
-                            delete space.locker;
-                          }
-
-                          space.type = $scope.space.type;
-
-                          var newFacilities = $scope.newFacilities;
-
-                          for(var i = 0; i < newFacilities.length; i++) {
-                            space.facilities.push({name: newFacilities[i].type, type: newFacilities[i].type, extra: newFacilities[i].extra});
-                          }
-
-                          space.owner = $scope.loginUser._id;
-
-                          space.$update({spaceId: space.uuid}, function(result) {
-                            if(result && result.space) {
-                              $scope.space.type = result.space.type;
-                              $scope.space.facilities = result.space.facilities;
-                              $scope.trash = [];
-                              $scope.newFacilities = [];
-                              $scope.spaceChanged = false;
-                              $scope.operationInfo = 'Congratulations! Space updated as you wish. ';
-                              $scope.alertStyle = 'alert-success';
-
-                              $window.location.reload(true);
-                            } else {
-                              $scope.operationInfo = 'Sorry, failed to update the space! You could try again later on.';
-                              $scope.alertStyle = 'alert-danger';
-                            }
-                          }, function(error) {
-                            $scope.operationInfo = 'Sorry, failed to update the space! You could try again later on.';
-                            $scope.alertStyle = 'alert-danger';
-                          });
-                        },
-                        function(reason) {
-                          $scope.operationInfo = 'Oops, space service is in trouble right now! You may try again later.';
-                          $scope.alertStyle = 'alert-warning';
-                        }
-                    );
-                  };*/
                   $scope.updateSpace = function() {
                     var spaceToUpdate = $scope.space;
 
@@ -439,17 +426,6 @@ angular.module('wvr.space')
                       delete spaceToUpdate.locker;
                     }
 
-                    /*var newFacilities = $scope.newFacilities;
-
-                    for(var i = 0; i < newFacilities.length; i++) {
-                      spaceToUpdate.facilities.push({name: newFacilities[i].type, type: newFacilities[i].type, extra: newFacilities[i].extra});
-                    }
-
-                    var newSGFacilities = $scope.newSGFacilities;
-
-                    for(var i = 0; i < newSGFacilities.length; i++) {
-                      spaceToUpdate.facilities.push({name: newSGFacilities[i].type, type: newSGFacilities[i].type, extra: newSGFacilities[i].extra});
-                    }*/
                     var newFacilities = $scope.newFacilities;
                     var newSGFacilities = $scope.newSGFacilities;
 
@@ -474,16 +450,19 @@ angular.module('wvr.space')
                         $scope.trash = [];
                         $scope.newFacilities = [];
                         $scope.spaceChanged = false;
-                        $scope.operationInfo = 'Congratulations! Space updated as you wish. ';
+                        //$scope.operationInfo = 'Congratulations! Space updated as you wish. ';
+                        $scope.operationInfo = 'INFO_UPDATESPACE_SUCCESS';
                         $scope.alertStyle = 'alert-success';
 
                         $window.location.reload(true);
                       } else {
-                        $scope.operationInfo = 'Sorry, failed to update the space! You could try again later on.';
+                        //$scope.operationInfo = 'Sorry, failed to update the space! You could try again later on.';
+                        $scope.operationInfo = 'INFO_UPDATESPACE_FAILED';
                         $scope.alertStyle = 'alert-danger';
                       }
                     }, function(error) {
-                      $scope.operationInfo = 'Sorry, failed to update the space! You could try again later on.';
+                      //$scope.operationInfo = 'Sorry, failed to update the space! You could try again later on.';
+                      $scope.operationInfo = 'INFO_UPDATESPACE_FAILED';
                       $scope.alertStyle = 'alert-danger';
                     });
                   };
@@ -497,7 +476,8 @@ angular.module('wvr.space')
 
             },
             function(reason) {
-              $scope.spaceServiceInfo = "Warning: Space service is in trouble right now! You could continue if you just want to use it temporarily.";
+              //$scope.spaceServiceInfo = "Warning: Space service is in trouble right now! You could continue if you just want to use it temporarily.";
+              $scope.operationInfo = 'INFO_SPACESERVICE_UNAVAILABLE';
             }
         );
 

@@ -1,19 +1,32 @@
 <div data-ng-controller="SpaceDetailController" data-wvr-signaling data-wvr-space>
 
   <div id="space" data-ng-model="space" class="container">
+    <div data-ng-show="isTrial">
+      <span>🔑:&nbsp;</span>
+      <span>try</span><br>
+      <label translate="TXT_OWNERLOGIN">&nbsp;</label>
+      <span>try@try.com/try11111</span>
+      <br>
+    </div>
     <div class="row stdbkg">
       <div class="col-lg-12">
         <span >
           <label class="textLgWL" style="font-size: 23px;">{{space.uuid}}</label>&nbsp;
         </span>
-        <span id="action-area"><button id="action-button" class="btn btnIptSmOR badge">Marching...</button></span>
+        <span id="action-area">
+          <button id="action-button" class="btn btnIptSmOR badge" translate="{{actionText}}"></button>
+          <button id="ownBtn" class="btn btnIptSmOR badge" style="display:none" translate="TXT_OWN"></button>
+          <button id="askForKeyActionBtn" class="btn btnIptSmOR badge" style="display:none" translate="TXT_OPEN"></button>
+          <button id="lockerManagerBtn" class="btn btnIptSmOR badge" translate="{{lockerStatusText}}"></button>
+          <button id="roomLocker" class="btn btnIptSmOR badge" translate="{{lockStatusText}}"></button>
+        </span>
       </div>
     </div>
     <br>
 
     <div class="row">
       <div class="col-lg-9">
-        <p id="operationInfoElem" data-ng-show="operationInfo" class="{{alertStyle}}">{{operationInfo}}</p>
+        <p id="operationInfoElem" data-ng-show="operationInfo" class="{{alertStyle}}" translate="{{operationInfo}}"></p>
       </div>
     </div>
 
@@ -21,9 +34,9 @@
 
       <div class="row">
         <div class="col-lg-12">
-          <span class="pull-right"><button class="btn btnIptSmBL" ng-click="toggleScreen()">Screen Toggle</button></span>&nbsp;
+          <span class="pull-right"><button class="btn btnIptSmBL" ng-click="toggleScreen()" translate="SCREEN_TOGGLE"></button></span>&nbsp;
           <span class="pull-right" data-ng-show="isSpaceOwner">
-            <button class="btn btnIptSmBL" ng-click="toggleDesignPanel()">Design Toggle</button>&nbsp;
+            <button class="btn btnIptSmBL" ng-click="toggleDesignPanel()" translate="SPACE_BUILDER_TOGGLE"></button>&nbsp;
           </span>
         </div>
       </div>
@@ -35,18 +48,18 @@
 
           <div data-ng-show="isSpaceOwner">
             <div pageslide ps-open="designPanelOpen" ps-side="right" ps-custom-top="100px" ps-custom-height="800px" ps-class="wvr-pageslide">
-              <h2 style="text-align: center;">Space Builder</h2>
+              <h2 style="text-align: center;" translate="SPACE_BUILDER"></h2>
               <div style="padding:20px" id="space-design-panel">
                 <div class="row">
-                  <h3>Facilities:</h3>
+                  <h3 translate="FACILITIES"></h3>
                   <hr/>
-                  <div data-type="Facility" data-facility-type="{{item.type}}" class="box-masonry" data-ng-repeat="item in designerResources.facilities" data-drag="true" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" data-ng-model="designerResources.facilities" jqyoui-draggable="{index: {{$index}}, placeholder: 'keep', animate: true, deepCopy: true}">{{item.type}}</div>
+                  <div data-type="Facility" data-facility-type="{{item.type}}" class="box-masonry" data-ng-repeat="item in designerResources.facilities" data-drag="true" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" data-ng-model="designerResources.facilities" jqyoui-draggable="{index: {{$index}}, placeholder: 'keep', animate: true, deepCopy: true}"><img src="{{item.imgURL}}"></div>
                 </div>
                 <br/>
                 <hr/>
                 <div class="row" data-drop="true" data-ng-model="trash" data-jqyoui-options="{accept: '[data-type|=&quot;Facility&quot;]'}" jqyoui-droppable="{multiple:true, onDrop: 'onFacilityTrashed'}">
-                  <h3>Trash:</h3>
-                  <p><span class="alert-info">Drop stuff here as trash.</span></p>
+                  <h3 translate="TRASH"></h3>
+                  <p><span class="alert-info" translate="DROP_AREA_TRASH"></span></p>
                   <ul>
                     <li data-type="Facility" data-ng-repeat="item in trash track by $index" data-drag="true" data-jqyoui-options="{revert: 'invalid'}" data-ng-model="trash" jqyoui-draggable="{index: {{$index}}, animate: true}">trash - {{item.name || item}} - {{item._id || 'new'}}</li>
                   </ul>
@@ -59,22 +72,21 @@
             <div pageslide ps-open="userSearchDisplay" ps-side="right" ps-custom-top="300px" ps-custom-height="200px" ps-class="wvr-pageslide">
               <form class="well form-search">
                 <input type="text" data-ng-model="keywords" class="input-medium search-query" placeholder="Name or Email ...">&nbsp;
-                <button type="submit" class="btn-info" data-ng-click="searchUser()">Search</button>
+                <button type="submit" class="btn-info" data-ng-click="searchUser()" translate="SEARCH"></button>
               </form>
               <ul>
                 <li data-ng-repeat="resultUser in resultUserList">
                   <a data-ng-dblclick="assignOwner(space, facilityToAssign, resultUser)">{{resultUser.name + ' - ' + resultUser.email}}</a>
                 </li>
               </ul>
-              <span>&nbsp;&nbsp;&nbsp;<button data-ng-click="hideUserSearch()" class="btn-info">Close</button></span>
+              <span>&nbsp;&nbsp;&nbsp;<button data-ng-click="hideUserSearch()" class="btn-info" translate="CLOSE"></button></span>
             </div>
           </div>
 
           <div data-ng-show="showScreen">
             <br>
-            <!--<button class="btn btnIptSmBL" ng-click="toggleScreen()">Screen Toggle</button>-->
             <div id="screenArea" pageslide ps-open="screenOpen" ps-side="top" ps-size="600px" ps-custom-top="6px" ps-class="wvr-pageslide" ps-container="container">
-              <button id="screenActionButton" class="btn btn-info" ng-click="screenAction()" disabled="disabled"></button>
+              <button id="screenActionButton" class="btn btn-info" ng-click="screenAction()" disabled="disabled" translate="{{shareText}}"></button>
               <div style="padding:20px" id="screenDisplay">
               </div>
             </div>
@@ -82,26 +94,17 @@
 
           <div id="container" class="clearfix masonry">
 
-            <!--<div id="ownerPresenceBox" class="box-masonry photo col2 masonry-brick" data-space-type="seat">
-              <p><span data-ng-show="space.owner">{{space.owner.name}}</span></p>
-              <p id="{{space.owner._id}}">
-                <span><a id="{{space.owner.name + '-' + space.owner._id}}" href="/wvr/assets/img/lily.jpeg" title="Lily"><img src="/wvr/assets/img/lily.jpeg" alt="Lily"></a></span>
-              </p>
-              <p data-ng-show="space.owner" ><span id="{{'seat-' + space.owner._id}}">{{'Seat - Space Owner - ' + space.owner.name}}</span></p>
-            </div>-->
-
             <div data-type="Facility" data-ng-repeat="facility in nonSGFacilities track by $index" data-facility-type="{{facility.type}}" class="box-masonry photo col2 masonry-brick" data-space-type="seat" data-drag="true" data-jqyoui-options="{revert: 'invalid'}" data-ng-model="nonSGFacilities" jqyoui-draggable="{index: {{$index}}, animate: true}">
-              <p><span id="{{'facility-owner-' + facility._id}}">{{facility.owner.name || facility.owner}}</span>&nbsp;<button data-ng-show="isSpaceOwner" data-ng-click="showUserSearch(facility)">Assign Facility Owner</button></p>
+              <p><span id="{{'facility-owner-' + facility._id}}">{{facility.owner.name || facility.owner}}</span>&nbsp;<button data-ng-show="isSpaceOwner" data-ng-click="showUserSearch(facility)" translate="ASSIGN_FACILITY_OWNER"></button></p>
               <p id="{{facility._id}}"></p>
-              <p><span id="{{'facility-' + facility._id}}">{{facility.name}}</span></p>
             </div>
 
           </div>
 
           <div data-ng-show="designPanelOpen" data-ng-model="newFacilities" data-drop="true" data-jqyoui-options="{accept: '[data-facility-type|=&quot;Seat&quot;]'}" jqyoui-droppable="{multiple:true, onDrop: 'onFacilityAdded', containment: 'position'}">
-            <p><span class="alert-info">Drop non-SpaceGate Facilities</span></p>
+            <p><span class="alert-info" translate="DROP_AREA_NONSPACEGATE"></span></p>
             <div class="box-masonry photo col2 masonry-brick" data-type="Facility" data-ng-repeat="newFacility in newFacilities track by $index" data-ng-model="newFacilities" data-drag="true" data-jqyoui-options="{revert: 'invalid'}" jqyoui-draggable="{index: {{$index}}, animate: true}">
-              <p><span>{{newFacility.type}}</span></p>
+              <p><span><img src="{{newFacility.imgURL}}"></span></p>
               <p data-ng-show="newFacility.extra.address">
               <div class="input-group">
                 <input data-ng-show="newFacility.extra.address" data-ng-model="newFacility.extra.address" class="form-control" type="text" placeholder="Input Space Address"/>
@@ -116,24 +119,24 @@
 
           <div class="row">
             <div class="row stdbkg">
-              <label class="textLgWL" style="font-size: 18px;">Space Gates</label>
+              <label class="textLgWL" style="font-size: 18px;" translate="SPACE_GATES"></label>
             </div>
 
             <hr>
 
             <div class="row">
               <div data-type="Facility" data-ng-repeat="sgFacility in sgFacilities track by $index" data-facility-type="{{sgFacility.type}}" class="box-masonry photo col2 masonry-brick" data-drag="true" data-jqyoui-options="{revert: 'invalid'}" data-ng-model="sgFacilities" jqyoui-draggable="{index: {{$index}}, animate: true}">
-                <p><span id="{{'facility-owner-' + sgFacility._id}}">{{sgFacility.owner.name || sgFacility.owner}}</span>&nbsp;<button data-ng-show="isSpaceOwner" data-ng-click="showUserSearch(sgFacility)">Assign Facility Owner</button></p>
+                <p><span id="{{'facility-owner-' + sgFacility._id}}">{{sgFacility.owner.name || sgFacility.owner}}</span>&nbsp;<button data-ng-show="isSpaceOwner" data-ng-click="showUserSearch(sgFacility)" translate="TXT_ASSIGNOWNER"></button></p>
                 <p id="{{sgFacility._id}}"></p>
-                <p><span id="{{'facility-' + sgFacility._id}}">{{sgFacility.name}}</span></p>
+                <p><span id="{{'facility-' + sgFacility._id}}"></span></p>
               </div>
             </div>
 
             <div class="row">
               <div data-ng-show="designPanelOpen" data-ng-model="newSGFacilities" data-drop="true" data-jqyoui-options="{accept: '[data-facility-type|=&quot;SpaceGate&quot;]'}" jqyoui-droppable="{multiple:true, onDrop: 'onFacilityAdded', containment: 'position'}">
-                <p><span class="alert-info">Drop SpaceGate Facilities</span></p>
+                <p><span class="alert-info" translate="DROP_AREA_SPACEGATE"></span></p>
                 <div class="box-masonry photo col2 masonry-brick" data-type="Facility" data-ng-repeat="newSGFacility in newSGFacilities track by $index" data-ng-model="newSGFacilities" data-drag="true" data-jqyoui-options="{revert: 'invalid'}" jqyoui-draggable="{index: {{$index}}, animate: true}">
-                  <p><span>{{newSGFacility.type}}</span></p>
+                  <p><span><img src="{{newSGFacility.imgURL}}"></span></p>
                   <p data-ng-show="newSGFacility.extra.address">
                   <div class="input-group">
                     <input data-ng-show="newSGFacility.extra.address" data-ng-model="newSGFacility.extra.address" class="form-control" type="text" placeholder="Input Space Address"/>
@@ -147,21 +150,18 @@
           <div class="row">
 
             <div class="row stdbkg">
-              <label class="textLgWL" style="font-size: 18px;">Message Board</label>
+              <label class="textLgWL" style="font-size: 18px;" translate="MESSAGE_BOARD"></label>
             </div>
 
             <hr>
 
             <div class="input-group">
-              <input id="message-text" class="form-control" type="text" placeholder="Message Board Posting"/>
+              <input id="message-text" class="form-control" type="text" placeholder="{{ 'INFO_POST' | translate }}"/>
               <span class="input-group-btn">
-                <button id="send-msg-btn" class="btn btn-info" disabled="true">Waiting ...</button>
+                <button id="send-msg-btn" class="btn btn-info" disabled="true" translate="TXT_POST">Waiting ...</button>
               </span>
             </div>
             <div id="message-area">
-              <!--<p>
-                <span><label class="textLgWL" style="font-size: 23px;">To:&nbsp;</label></span><span data-ng-show="!(imers.size > 0)">All</span><span data-ng-repeat="imer in imerList">{{imer}}&nbsp;</span>
-              </p>-->
               <br>
             </div>
           </div>
@@ -169,14 +169,14 @@
         </div>
       </div>
 
+      <div class="row">
+        <button class="btn-info" data-ng-show="isSpaceOwner && spaceChanged" data-ng-click="updateSpace()" translate="UPDATE"></button>
+      </div>
+
       <script type="text/javascript" src="/wvr/assets/js/mit/masonry.js"></script>
       <script type="text/javascript" src="/wvr/assets/js/mit/lib/socket.io.js"></script>
       <script type="text/javascript" src="/wvr/assets/js/mit/lib/RTCMultiConnection.js"></script>
 
-    </div>
-
-    <div class="row">
-      <button class="btn-info" data-ng-show="isSpaceOwner && spaceChanged" data-ng-click="updateSpace()">Update the Space</button>
     </div>
 
   </div>

@@ -10,8 +10,8 @@ angular.module('mean.wvr').controller('WvrController', ['$scope', 'Global', 'Wvr
   }
 ]);
 
-angular.module('mean.wvr').controller('WvrHeaderController', ['$scope', '$rootScope', 'Menus', 'MeanUser', '$state', '$cookies', '$location',
-  function($scope, $rootScope, Menus, MeanUser, $state, $cookies, $location) {
+angular.module('mean.wvr').controller('WvrHeaderController', ['$scope', '$rootScope', 'Menus', 'MeanUser', '$state', '$cookies', '$location', '$translate',
+  function($scope, $rootScope, Menus, MeanUser, $state, $cookies, $location, $translate) {
 
     var vm = this;
 
@@ -80,6 +80,33 @@ angular.module('mean.wvr').controller('WvrHeaderController', ['$scope', '$rootSc
       }
 
     });
+
+    $scope.changeLanguage = changeLang;
+
+    function changeLang(langKey) {
+
+      $translate.use(langKey);
+
+      if(langKey && langKey === 'zh') {
+        $('#zhSelector').attr('class', 'btn btn-warning');
+        $('#enSelector').attr('class', 'btn');
+      } else if(langKey && langKey === 'en') {
+        $('#enSelector').attr('class', 'btn btn-warning');
+        $('#zhSelector').attr('class', 'btn');
+      }
+    };
+
+    var preferredLanguage = getPreferredLanguage();
+
+    if(preferredLanguage === 'zh' || preferredLanguage === 'en') {
+      changeLang(preferredLanguage);
+    }
+
+    function getPreferredLanguage() {
+      var resultLanguage = navigator.languages[0] || navigator.language || navigator.browserLanguage || navigator.systemLanguage || navigator.userLanguage;
+
+      return resultLanguage;
+    }
 
   }
 ]);
