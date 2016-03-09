@@ -53,7 +53,7 @@ angular.module('wvr.space')
                 $scope.operationInfo = 'INFO_UNKNOWN_SPACE';
                 $scope.alertStyle = 'alert-danger';
               } else {
-                if(resultSpace.uuid === 'try') {
+                if(resultSpace.uuid === 'trial') {
                   $scope.isTrial = true;
                 }
 
@@ -379,7 +379,7 @@ angular.module('wvr.space')
                    "spaces": [{type: "Building"}, {type: "Room"}, {type: "Office"}, {type: "Studio"}, {type: "Workspace"}]
                    };*/
                   $scope.designerResources = {
-                    "facilities": [{type: "Seat", imgURL: "/wvr/assets/img/Seat.png", extra: {}}, {type: "SpaceGate", imgURL: "/wvr/assets/img/SpaceGate.png", extra: {address: "TBD"}}],
+                    "facilities": [{type: "Seat", imgURL: "/wvr/assets/img/Seat.png", extra: {}}, {type: "SpaceGate", imgURL: "/wvr/assets/img/SpaceGate.png", extra: {address: ""}}],
                     "spaces": [{type: "Studio", extra: {}}]
                   };
                   $scope.trash = [];

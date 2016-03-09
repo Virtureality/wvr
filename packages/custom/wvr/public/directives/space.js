@@ -597,7 +597,7 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', '$transl
                                     scope.lockStatusText = 'TXT_LOCK';
                                     lockBtn.bind('click', lockHandler);
 
-                                    if(space.uuid !== 'try' && scope.loginUser && scope.space.owner && (scope.loginUser._id === scope.space.owner._id)) {
+                                    if(space.uuid !== 'trial' && scope.loginUser && scope.space.owner && (scope.loginUser._id === scope.space.owner._id)) {
                                         lockerManagerBtn.unbind();
 
                                         scope.lockerStatusText = 'TXT_CHNAGELOCKER';

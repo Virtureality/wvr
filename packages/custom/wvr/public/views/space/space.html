@@ -107,7 +107,7 @@
               <p><span><img src="{{newFacility.imgURL}}"></span></p>
               <p data-ng-show="newFacility.extra.address">
               <div class="input-group">
-                <input data-ng-show="newFacility.extra.address" data-ng-model="newFacility.extra.address" class="form-control" type="text" placeholder="Input Space Address"/>
+                <input data-ng-show="newFacility.extra.address" data-ng-model="newFacility.extra.address" class="form-control" type="text" placeholder="{{'TXT_INPUT_SPACEUUID' | translate}}"/>
               </div>
               </p>
             </div>
@@ -137,9 +137,9 @@
                 <p><span class="alert-info" translate="DROP_AREA_SPACEGATE"></span></p>
                 <div class="box-masonry photo col2 masonry-brick" data-type="Facility" data-ng-repeat="newSGFacility in newSGFacilities track by $index" data-ng-model="newSGFacilities" data-drag="true" data-jqyoui-options="{revert: 'invalid'}" jqyoui-draggable="{index: {{$index}}, animate: true}">
                   <p><span><img src="{{newSGFacility.imgURL}}"></span></p>
-                  <p data-ng-show="newSGFacility.extra.address">
+                  <p>
                   <div class="input-group">
-                    <input data-ng-show="newSGFacility.extra.address" data-ng-model="newSGFacility.extra.address" class="form-control" type="text" placeholder="Input Space Address"/>
+                    <input data-ng-model="newSGFacility.extra.address" class="form-control" type="text" placeholder="{{'TXT_INPUT_SPACEUUID' | translate}}"/>
                   </div>
                   </p>
                 </div>
