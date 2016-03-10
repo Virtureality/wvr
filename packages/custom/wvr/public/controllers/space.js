@@ -340,7 +340,7 @@ angular.module('wvr.space')
                                     $scope.operationInfo = 'INFO_ASSIGNOWNER_SUCCESS';
                                     $scope.alertStyle = 'alert-success';
 
-                                    $window.location.reload(true);
+                                    //$window.location.reload(true);
                                   } else {
                                     //$scope.operationInfo = 'Sorry, failed to assign facility owner! You could try again later on.';
                                     $scope.operationInfo = 'INFO_ASSIGNOWNER_FAILED';

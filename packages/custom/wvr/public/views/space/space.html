@@ -44,72 +44,74 @@
 
       <div class="row">
 
+        <div data-ng-show="isSpaceOwner">
+          <div pageslide ps-size="230px" ps-open="designPanelOpen" ps-side="right" ps-custom-top="100px" ps-custom-height="800px" ps-class="wvr-pageslide">
+            <h2 style="text-align: center;" translate="SPACE_BUILDER"></h2>
+            <div style="padding:20px" id="space-design-panel">
+              <div class="row">
+                <h3 translate="FACILITIES"></h3>
+                <hr/>
+                <div data-type="Facility" data-facility-type="{{item.type}}" class="box-masonry" data-ng-repeat="item in designerResources.facilities" data-drag="true" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" data-ng-model="designerResources.facilities" jqyoui-draggable="{index: {{$index}}, placeholder: 'keep', animate: true, deepCopy: true}"><img src="{{item.imgURL}}"></div>
+              </div>
+              <br/>
+              <hr/>
+              <div class="row" data-drop="true" data-ng-model="trash" data-jqyoui-options="{accept: '[data-type|=&quot;Facility&quot;]'}" jqyoui-droppable="{multiple:true, onDrop: 'onFacilityTrashed'}">
+                <h3 translate="TRASH"></h3>
+                <p><span class="alert-info" translate="DROP_AREA_TRASH"></span></p>
+                <ul>
+                  <li data-type="Facility" data-ng-repeat="item in trash track by $index" data-drag="true" data-jqyoui-options="{revert: 'invalid'}" data-ng-model="trash" jqyoui-draggable="{index: {{$index}}, animate: true}">trash - {{item.name || item}} - {{item._id || 'new'}}</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div data-ng-show="userSearchDisplay">
+          <div pageslide ps-open="userSearchDisplay" ps-side="right" ps-custom-top="300px" ps-custom-height="200px" ps-class="wvr-pageslide">
+            <form class="well form-search">
+              <input type="text" data-ng-model="keywords" class="input-medium search-query" placeholder="Name or Email ...">&nbsp;
+              <button type="submit" class="btn-info" data-ng-click="searchUser()" translate="SEARCH"></button>
+            </form>
+            <ul>
+              <li data-ng-repeat="resultUser in resultUserList">
+                <a data-ng-dblclick="assignOwner(space, facilityToAssign, resultUser)">{{resultUser.name + ' - ' + resultUser.email}}</a>
+              </li>
+            </ul>
+            <span>&nbsp;&nbsp;&nbsp;<button data-ng-click="hideUserSearch()" class="btn-info" translate="CLOSE"></button></span>
+          </div>
+        </div>
+
+        <div data-ng-show="showScreen">
+          <br>
+          <div id="screenArea" pageslide ps-open="screenOpen" ps-side="top" ps-size="600px" ps-custom-top="6px" ps-class="wvr-pageslide" ps-container="container">
+            <button id="screenActionButton" class="btn btn-info" ng-click="screenAction()" disabled="disabled" translate="{{shareText}}"></button>
+            <div style="padding:20px" id="screenDisplay">
+            </div>
+          </div>
+        </div>
+
         <div class="col-lg-9" style="position:relative">
 
-          <div data-ng-show="isSpaceOwner">
-            <div pageslide ps-open="designPanelOpen" ps-side="right" ps-custom-top="100px" ps-custom-height="800px" ps-class="wvr-pageslide">
-              <h2 style="text-align: center;" translate="SPACE_BUILDER"></h2>
-              <div style="padding:20px" id="space-design-panel">
-                <div class="row">
-                  <h3 translate="FACILITIES"></h3>
-                  <hr/>
-                  <div data-type="Facility" data-facility-type="{{item.type}}" class="box-masonry" data-ng-repeat="item in designerResources.facilities" data-drag="true" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" data-ng-model="designerResources.facilities" jqyoui-draggable="{index: {{$index}}, placeholder: 'keep', animate: true, deepCopy: true}"><img src="{{item.imgURL}}"></div>
+          <div class="row">
+            <div id="container" class="clearfix masonry">
+              <div data-type="Facility" data-ng-repeat="facility in nonSGFacilities track by $index" data-facility-type="{{facility.type}}" class="box-masonry photo col2 masonry-brick" data-space-type="seat" data-drag="true" data-jqyoui-options="{revert: 'invalid'}" data-ng-model="nonSGFacilities" jqyoui-draggable="{index: {{$index}}, animate: true}">
+                <p><span id="{{'facility-owner-' + facility._id}}">{{facility.owner.name || facility.owner}}</span>&nbsp;<button data-ng-show="isSpaceOwner" data-ng-click="showUserSearch(facility)" translate="ASSIGN_FACILITY_OWNER"></button></p>
+                <p id="{{facility._id}}"></p>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div style="width: 60%;height: 180px;" data-ng-show="designPanelOpen" data-ng-model="newFacilities" data-drop="true" data-jqyoui-options="{accept: '[data-facility-type|=&quot;Seat&quot;]'}" jqyoui-droppable="{multiple:true, onDrop: 'onFacilityAdded', containment: 'position'}">
+              <p><span class="alert-info" translate="DROP_AREA_NONSPACEGATE"></span></p>
+              <div class="box-masonry photo col2 masonry-brick" data-type="Facility" data-ng-repeat="newFacility in newFacilities track by $index" data-ng-model="newFacilities" data-drag="true" data-jqyoui-options="{revert: 'invalid'}" jqyoui-draggable="{index: {{$index}}, animate: true}">
+                <p><span><img src="{{newFacility.imgURL}}"></span></p>
+                <p data-ng-show="newFacility.extra.address">
+                <div class="input-group">
+                  <input data-ng-show="newFacility.extra.address" data-ng-model="newFacility.extra.address" class="form-control" type="text" placeholder="{{'TXT_INPUT_SPACEUUID' | translate}}"/>
                 </div>
-                <br/>
-                <hr/>
-                <div class="row" data-drop="true" data-ng-model="trash" data-jqyoui-options="{accept: '[data-type|=&quot;Facility&quot;]'}" jqyoui-droppable="{multiple:true, onDrop: 'onFacilityTrashed'}">
-                  <h3 translate="TRASH"></h3>
-                  <p><span class="alert-info" translate="DROP_AREA_TRASH"></span></p>
-                  <ul>
-                    <li data-type="Facility" data-ng-repeat="item in trash track by $index" data-drag="true" data-jqyoui-options="{revert: 'invalid'}" data-ng-model="trash" jqyoui-draggable="{index: {{$index}}, animate: true}">trash - {{item.name || item}} - {{item._id || 'new'}}</li>
-                  </ul>
-                </div>
+                </p>
               </div>
-            </div>
-          </div>
-
-          <div data-ng-show="userSearchDisplay">
-            <div pageslide ps-open="userSearchDisplay" ps-side="right" ps-custom-top="300px" ps-custom-height="200px" ps-class="wvr-pageslide">
-              <form class="well form-search">
-                <input type="text" data-ng-model="keywords" class="input-medium search-query" placeholder="Name or Email ...">&nbsp;
-                <button type="submit" class="btn-info" data-ng-click="searchUser()" translate="SEARCH"></button>
-              </form>
-              <ul>
-                <li data-ng-repeat="resultUser in resultUserList">
-                  <a data-ng-dblclick="assignOwner(space, facilityToAssign, resultUser)">{{resultUser.name + ' - ' + resultUser.email}}</a>
-                </li>
-              </ul>
-              <span>&nbsp;&nbsp;&nbsp;<button data-ng-click="hideUserSearch()" class="btn-info" translate="CLOSE"></button></span>
-            </div>
-          </div>
-
-          <div data-ng-show="showScreen">
-            <br>
-            <div id="screenArea" pageslide ps-open="screenOpen" ps-side="top" ps-size="600px" ps-custom-top="6px" ps-class="wvr-pageslide" ps-container="container">
-              <button id="screenActionButton" class="btn btn-info" ng-click="screenAction()" disabled="disabled" translate="{{shareText}}"></button>
-              <div style="padding:20px" id="screenDisplay">
-              </div>
-            </div>
-          </div>
-
-          <div id="container" class="clearfix masonry">
-
-            <div data-type="Facility" data-ng-repeat="facility in nonSGFacilities track by $index" data-facility-type="{{facility.type}}" class="box-masonry photo col2 masonry-brick" data-space-type="seat" data-drag="true" data-jqyoui-options="{revert: 'invalid'}" data-ng-model="nonSGFacilities" jqyoui-draggable="{index: {{$index}}, animate: true}">
-              <p><span id="{{'facility-owner-' + facility._id}}">{{facility.owner.name || facility.owner}}</span>&nbsp;<button data-ng-show="isSpaceOwner" data-ng-click="showUserSearch(facility)" translate="ASSIGN_FACILITY_OWNER"></button></p>
-              <p id="{{facility._id}}"></p>
-            </div>
-
-          </div>
-
-          <div data-ng-show="designPanelOpen" data-ng-model="newFacilities" data-drop="true" data-jqyoui-options="{accept: '[data-facility-type|=&quot;Seat&quot;]'}" jqyoui-droppable="{multiple:true, onDrop: 'onFacilityAdded', containment: 'position'}">
-            <p><span class="alert-info" translate="DROP_AREA_NONSPACEGATE"></span></p>
-            <div class="box-masonry photo col2 masonry-brick" data-type="Facility" data-ng-repeat="newFacility in newFacilities track by $index" data-ng-model="newFacilities" data-drag="true" data-jqyoui-options="{revert: 'invalid'}" jqyoui-draggable="{index: {{$index}}, animate: true}">
-              <p><span><img src="{{newFacility.imgURL}}"></span></p>
-              <p data-ng-show="newFacility.extra.address">
-              <div class="input-group">
-                <input data-ng-show="newFacility.extra.address" data-ng-model="newFacility.extra.address" class="form-control" type="text" placeholder="{{'TXT_INPUT_SPACEUUID' | translate}}"/>
-              </div>
-              </p>
             </div>
           </div>
 
@@ -133,7 +135,7 @@
             </div>
 
             <div class="row">
-              <div data-ng-show="designPanelOpen" data-ng-model="newSGFacilities" data-drop="true" data-jqyoui-options="{accept: '[data-facility-type|=&quot;SpaceGate&quot;]'}" jqyoui-droppable="{multiple:true, onDrop: 'onFacilityAdded', containment: 'position'}">
+              <div style="width: 210px;height: 60px;" data-ng-show="designPanelOpen" data-ng-model="newSGFacilities" data-drop="true" data-jqyoui-options="{accept: '[data-facility-type|=&quot;SpaceGate&quot;]'}" jqyoui-droppable="{multiple:true, onDrop: 'onFacilityAdded', containment: 'position'}">
                 <p><span class="alert-info" translate="DROP_AREA_SPACEGATE"></span></p>
                 <div class="box-masonry photo col2 masonry-brick" data-type="Facility" data-ng-repeat="newSGFacility in newSGFacilities track by $index" data-ng-model="newSGFacilities" data-drag="true" data-jqyoui-options="{revert: 'invalid'}" jqyoui-draggable="{index: {{$index}}, animate: true}">
                   <p><span><img src="{{newSGFacility.imgURL}}"></span></p>
