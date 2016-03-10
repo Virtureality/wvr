@@ -75,7 +75,7 @@ angular.module('mean.wvr').controller('WvrHeaderController', ['$scope', '$rootSc
         $cookies.redirect = absOldUrl.substr(pathIndex, absOldUrl.length) || '/';
       }
 
-      if(absOldUrl.indexOf('/login') !== -1 || absOldUrl.indexOf('/register') !== -1) {
+      if(absOldUrl.indexOf('/login') !== -1 || absOldUrl.indexOf('/register') !== -1 || $location.url() == '/') {
         window.location.reload(true);
       }
 
