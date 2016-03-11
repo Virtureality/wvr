@@ -299,7 +299,7 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', '$transl
 
                         if(msg.msgType == 'IM' && msg.receiver == wvrmitConnection.userid) {
                             //messageArea.append($('<div>').append(msg.sender + ': ' + msg.message));
-                            messageArea.append($('<div>').append(msg.message + ' --- ' + userName));
+                            messageArea.append($('<div>').append(msg.message + ' --- ' + msg.sender));
                         }
 
                         if(msg.msgType === 'initiateRoom' && msg.roomId === mname && msg.initiator === wvrmitConnection.userid) {
@@ -420,7 +420,7 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', '$transl
                     var loginUser = scope.loginUser;
 
                     if (loginUser && loginUser._id && loginUser._id !== '') {
-                        result = loginUser.name + '-' + loginUser._id;
+                        result = loginUser.name + '-' + loginUser._id + '_' + result;
                     }
 
                     return result;
