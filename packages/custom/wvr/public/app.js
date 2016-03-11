@@ -2,6 +2,7 @@
 
 var translations_zh = {
     WHAT_WE_DO: '重 构 人 们 的 工 作，生 活，娱 乐 方 式',
+    WHO_IS_FOR: '为 寻 求 工 作 灵 活 性 和 移 动 性 的 人 们 而 生',
     TXT_DIET: '吃',
     TXT_WEAR: '穿',
     TXT_HOUSING: '住',
@@ -39,7 +40,6 @@ var translations_zh = {
     SPACE_BUILDER: '空间建造者',
     SPACE_BUILDER_TOGGLE: '空 间 建 造 者 召 唤 器',
     SCREEN_TOGGLE: '大 屏 幕 开 关',
-    TXT_OWNERLOGIN: '空间所有者登陆:',
     TXT_TAKECHARGE: '让我来',
     TXT_TAKECHARGEING: '尝试中...',
     TXT_TAKECHARGE_FAILED: '现在不可用！！！',
@@ -71,6 +71,8 @@ var translations_zh = {
     CLOSE: '关闭',
     SEARCH: '搜索',
     DROP_AREA_TRASH: '回收设施放置区域',
+    INFO_TRIAL_KEY: '&nbsp;打开的钥匙:&nbsp;',
+    INFO_TRIAL_OWNERLOGIN: '&nbsp;以所有者身份登陆:&nbsp;',
     INFO_UNKNOWN_SPACE: '&nbsp; :)&nbsp;&nbsp;哎呦，您进入了一个未知空间，请确认地址！ 或者您也可以联系我们: mahaofeng81@163.com',
     INFO_PROCESSING_ADDLOCKER: '处理中...[加锁]',
     INFO_ADDLOCKER_FAILED: '对不起，加锁失败，请稍后再试！',
@@ -131,6 +133,7 @@ var translations_zh = {
 
 var translations_en = {
     WHAT_WE_DO: 'Reforming the way people live, work, and play',
+    WHO_IS_FOR: 'For people and organizations looking for working flexibility and mobility',
     TXT_DIET: 'Diet',
     TXT_WEAR: 'Wear',
     TXT_HOUSING: 'Housing',
@@ -162,7 +165,6 @@ var translations_en = {
     SPACE_BUILDER: 'Space Builder',
     SPACE_BUILDER_TOGGLE: 'Space Builder Toggle',
     SCREEN_TOGGLE: 'Screen Toggle',
-    TXT_OWNERLOGIN: 'Space Owner Login:',
     TXT_TAKECHARGE: 'Take Charge',
     TXT_TAKECHARGE_TRYING: 'Trying...',
     TXT_TAKECHARGE_FAILED: 'Not Accessible Now!!!',
@@ -200,6 +202,8 @@ var translations_en = {
     RECENT_WORK_1: 'Workplace',
     RECENT_WORK_2: 'Healthcare',
     RECENT_WORK_3: 'Startup',
+    INFO_TRIAL_KEY: '&nbsp;Key for Open:&nbsp;',
+    INFO_TRIAL_OWNERLOGIN: '&nbsp;Login as Owner:&nbsp;',
     INFO_UNKNOWN_SPACE: '&nbsp; :)&nbsp;&nbsp;Oops, you have reached an unknown space! Please check the address and try again with a correct one.',
     INFO_PROCESSING_ADDLOCKER: 'Processing...[Add Space Locker]',
     INFO_ADDLOCKER_FAILED: 'Sorry, failed to add space locker at the moment! You could try again later on.',
