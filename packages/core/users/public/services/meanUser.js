@@ -105,12 +105,14 @@ angular.module('mean.users').factory('MeanUser', [ '$rootScope', '$http', '$loca
     };
 
     MeanUserKlass.prototype.register = function(user) {
+      var destination = $location.path().indexOf('/login') === -1 ? $location.absUrl() : false;
       $http.post('/api/register', {
         email: user.email,
         password: user.password,
         confirmPassword: user.confirmPassword,
         username: user.username,
-        name: user.name
+        name: user.name,
+        redirect: destination
       })
         .success(this.onIdentity.bind(this))
         .error(this.onIdFail.bind(this));
