@@ -30,7 +30,7 @@ module.exports = {
   },
   hostname: 'http://wvr.edening.net',
   app: {
-    name: 'WVR - World Virtual Reality'
+    name: 'VST - Virtual Space Time'
   },
   logging: {
     format: 'combined'

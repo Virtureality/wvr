@@ -2,7 +2,8 @@
 
 var translations_zh = {
     WHAT_WE_DO: '重 构 人 们 的 工 作，生 活，娱 乐 方 式',
-    WHO_IS_FOR: '为 寻 求 工 作 灵 活 性 和 移 动 性 的 人 们 而 生',
+    WHO_IS_FOR: '为 寻 求 突 破 物 理 时 空 的 人 们 而 生',
+    TXT_PRODUCT_NAME: '虚&nbsp;&nbsp;&nbsp;时&nbsp;&nbsp;&nbsp;空',
     TXT_DIET: '吃',
     TXT_WEAR: '穿',
     TXT_HOUSING: '住',
@@ -22,7 +23,7 @@ var translations_zh = {
     INFO_VIRTUALCLOSE: '虚拟之集中',
     INFO_WHEREVER: '无论身在何方，',
     INFO_FEELCLOSE: '心就在一起！：）',
-    TXT_TRY: '试 用',
+    TXT_TRY: '玩 玩 看',
     LEARN_MORE: '详 情',
     INDUSTRY_1: '写字楼',
     INDUSTRY_2: '医疗健康',
@@ -137,7 +138,8 @@ var translations_zh = {
 
 var translations_en = {
     WHAT_WE_DO: 'Reforming the way people live, work, and play',
-    WHO_IS_FOR: 'For people and organizations looking for working flexibility and mobility',
+    WHO_IS_FOR: 'For people and organizations looking for breakthrough against physical space and time.',
+    TXT_PRODUCT_NAME: 'Virtual Space Time',
     TXT_DIET: 'Diet',
     TXT_WEAR: 'Wear',
     TXT_HOUSING: 'Housing',
@@ -157,7 +159,7 @@ var translations_en = {
     INFO_VIRTUALCLOSE: 'Cyber-Together',
     INFO_WHEREVER: 'No matter where you are,',
     INFO_FEELCLOSE: 'Feeling Real Close! :)',
-    TXT_TRY: 'Try',
+    TXT_TRY: 'Go To Play',
     LEARN_MORE: 'Learn More',
     INDUSTRY_1: 'Workplace',
     INDUSTRY_2: 'Healthcare',

@@ -9,7 +9,7 @@ module.exports = {
     format: 'common'
   },
   app: {
-    name: 'WVR - World Virtual Reality - Test'
+    name: 'VST - Virtual Space Time - Test'
   },
   strategies: {
       local: {

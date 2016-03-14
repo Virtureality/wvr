@@ -13,7 +13,7 @@ module.exports = {
   },
   hostname: 'http://localhost:3000',
   app: {
-    name: 'WVR - World Virtual Reality - Development'
+    name: 'VST - Virtual Space Time - Development'
   },
   strategies: {
       local: {
