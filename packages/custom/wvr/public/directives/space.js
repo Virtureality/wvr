@@ -710,19 +710,11 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', '$transl
                     scope.screenOpen = false;
                     scope.toggleScreen = function() {
                         scope.screenOpen = !scope.screenOpen;
-                        var operationInfoElem = $('#operationInfoElem');
                         if(scope.screenOpen) {
                             scope.operationInfo = 'INFO_NEEDSEXTENSION_SCREEN';
-                            var extensionsArea = operationInfoElem.parent();
-                            $('<a>').attr('class', 'btn btn-info badge').attr('target', '_blank').attr('href', 'https://chrome.google.com/webstore/detail/screen-capturing/ajhifddimkapgcifgcodmmfdlknahffk').text('Chrome')
-                                .appendTo(extensionsArea);
-                            $('<span>').text(' | ').appendTo(extensionsArea);
-                            $('<a>').attr('class', 'btn btn-info badge').attr('target', '_blank').attr('href', 'https://addons.mozilla.org/en-US/firefox/addon/enable-screen-capturing/').text('Firefox')
-                                .appendTo(extensionsArea);
                             scope.alertStyle = 'alert-info';
                         } else {
                             scope.operationInfo = '';
-                            operationInfoElem.siblings().remove();
                         }
                     };
 

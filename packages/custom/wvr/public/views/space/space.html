@@ -25,9 +25,23 @@
     </div>
     <br>
 
+    <div data-ng-show="!space.visible" class="row">
+      <div class="col-lg-9">
+        <p id="prerequisite" class="alert-info" translate="INFO_PREREQUISITE"></p>
+        <a target="_blank" href="{{'LINK_CHROME_DOWNLOAD' | translate}}"><img src="/wvr/assets/img/browsers/chrome_50.jpeg"></a>&nbsp;||&nbsp;
+        <a target="_blank" href="https://www.mozilla.org/en-US/firefox/all/"><img src="/wvr/assets/img/browsers/firefox_50.jpeg"></a>&nbsp;||&nbsp;
+        <a target="_blank" href="http://www.browserfordoing.com/en-us/"><img src="/wvr/assets/img/browsers/msedge_50.jpeg"></a>
+      </div>
+    </div>
+
     <div class="row">
       <div class="col-lg-9">
         <p id="operationInfoElem" data-ng-show="operationInfo" class="{{alertStyle}}" translate="{{operationInfo}}"></p>
+        <div data-ng-show="screenOpen">
+          <a class="btn btn-info badge" href="{{'LINK_SCREENEXT_CHROME' | translate}}" target="_blank">Chrome</a>
+          <a class="btn btn-info badge" href="https://addons.mozilla.org/en-US/firefox/addon/enable-screen-capturing/" target="_blank">Firefox</a>
+          <p class="alert-info" translate="INFO_SCREENEXT_CHROME_MANUALINSTALL"></p>
+        </div>
       </div>
     </div>
 

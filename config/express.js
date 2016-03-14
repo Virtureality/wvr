@@ -56,7 +56,7 @@ module.exports = function(app, db) {
 
   app.use(modRewrite([
     
-    '!^/api/.*|\\_getModules|\\.html|\\.js|\\.css|\\.swf|\\.jp(e?)g|\\.png|\\.gif|\\.svg|\\.eot|\\.ttf|\\.woff|\\.pdf$ / [L]'
+    '!^/api/.*|\\_getModules|\\.crx|\\.html|\\.js|\\.css|\\.swf|\\.jp(e?)g|\\.png|\\.gif|\\.svg|\\.eot|\\.ttf|\\.woff|\\.pdf$ / [L]'
 
   ]));
 
