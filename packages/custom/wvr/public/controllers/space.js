@@ -410,7 +410,7 @@ angular.module('wvr.space')
 
                     if(dragFacilityType === 'SpaceGate') {
                       sgFacilities.splice(trashedItemIndex, 1);
-                    } else {
+                    } else if(dragFacilityType === 'Seat') {
                       nonSGFacilities.splice(trashedItemIndex, 1);
                     }
                   };
