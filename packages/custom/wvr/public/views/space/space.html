@@ -69,11 +69,14 @@
               <div class="row">
                 <h3 translate="FACILITIES"></h3>
                 <hr/>
-                <div data-type="Facility" data-facility-type="{{item.type}}" class="box-masonry" data-ng-repeat="item in designerResources.facilities" data-drag="true" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" data-ng-model="designerResources.facilities" jqyoui-draggable="{index: {{$index}}, placeholder: 'keep', animate: true, deepCopy: true}"><img src="{{item.imgURL}}"></div>
+                <div data-type="Facility" data-facility-type="{{item.type}}" class="box-masonry" data-ng-repeat="item in designerResources.facilities" data-drag="true" data-jqyoui-options="{revert: 'invalid', helper: 'clone'}" data-ng-model="designerResources.facilities" jqyoui-draggable="{index: {{$index}}, placeholder: 'keep', animate: true, deepCopy: true}">
+                  <img src="{{item.imgURL}}">
+                  <p style="text-align: center; height: 0px;">{{item.type}}</p>
+                </div>
               </div>
               <br/>
               <hr/>
-              <div class="row" data-drop="true" data-ng-model="trash" data-jqyoui-options="{accept: '[data-type|=&quot;Facility&quot;]'}" jqyoui-droppable="{multiple:true, onDrop: 'onFacilityTrashed'}">
+              <div style="width: 210px;height: 160px;" class="row" data-drop="true" data-ng-model="trash" data-jqyoui-options="{accept: '[data-type|=&quot;Facility&quot;]'}" jqyoui-droppable="{multiple:true, onDrop: 'onFacilityTrashed'}">
                 <h3 translate="TRASH"></h3>
                 <p><span class="alert-info" translate="DROP_AREA_TRASH"></span></p>
                 <ul>
