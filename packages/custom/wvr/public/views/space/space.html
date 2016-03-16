@@ -1,6 +1,9 @@
 <div data-ng-controller="SpaceDetailController" data-wvr-signaling data-wvr-space>
 
   <div id="space" data-ng-model="space" class="container">
+    <div data-ng-show="space.visible">
+      <span class="alert-warning" translate="INFO_BIZ_CONTACT"></span>
+    </div>
     <div data-ng-show="isTrial">
       <span class="alert-info" translate="INFO_TRIAL_KEY"></span>&nbsp;
       <span>try</span>
@@ -27,10 +30,11 @@
 
     <div data-ng-show="!space.visible" class="row">
       <div class="col-lg-9">
-        <p id="prerequisite" class="alert-info" translate="INFO_PREREQUISITE"></p>
-        <a target="_blank" href="{{'LINK_CHROME_DOWNLOAD' | translate}}"><img src="/wvr/assets/img/browsers/chrome_50.jpeg"></a>&nbsp;||&nbsp;
-        <a target="_blank" href="https://www.mozilla.org/en-US/firefox/all/"><img src="/wvr/assets/img/browsers/firefox_50.jpeg"></a>&nbsp;||&nbsp;
-        <a target="_blank" href="http://www.browserfordoing.com/en-us/"><img src="/wvr/assets/img/browsers/msedge_50.jpeg"></a>
+        <label translate="INFO_PREREQUISITE"></label>&nbsp;
+        <span translate="INFO_PREREQUISITE_PC"></span>&nbsp;+&nbsp;
+        <span translate="INFO_PREREQUISITE_CAMERA"></span>&nbsp;+&nbsp;
+        <span translate="INFO_PREREQUISITE_MICROPHONE"></span>&nbsp;+&nbsp;
+        <a target="_blank" href="{{'LINK_CHROME_DOWNLOAD' | translate}}"><img src="/wvr/assets/img/browsers/chrome_50.jpeg"></a>
       </div>
     </div>
 
@@ -39,8 +43,7 @@
         <p id="operationInfoElem" data-ng-show="operationInfo" class="{{alertStyle}}" translate="{{operationInfo}}"></p>
         <div data-ng-show="screenOpen">
           <a class="btn btn-info badge" href="{{'LINK_SCREENEXT_CHROME' | translate}}" target="_blank">Chrome</a>
-          <a class="btn btn-info badge" href="https://addons.mozilla.org/en-US/firefox/addon/enable-screen-capturing/" target="_blank">Firefox</a>
-          <p class="alert-info" translate="INFO_SCREENEXT_CHROME_MANUALINSTALL"></p>
+          <p class="alert-warning" translate="INFO_SCREENEXT_CHROME_MANUALINSTALL"></p>
         </div>
       </div>
     </div>
