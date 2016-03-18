@@ -484,7 +484,7 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', '$transl
                         userName = userTxt;
                     }
 
-                    var video = $(e.mediaElement).attr('controls', false).attr('autoplay', true).attr('height', '161px').attr('width', '230px');
+                    var video = $(e.mediaElement).attr('controls', false).attr('height', '161px').attr('width', '230px');
 
                     var videoSpan = $('<span/>');
                     var userSpan = $('<span/>').text(userName);
@@ -506,6 +506,8 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', '$transl
                     setTimeout(playVideo, 1);
 
                     function playVideo() {
+                        videoDOMObj.volume = 0.6;
+
                         videoDOMObj.play();
                     }
                 }
@@ -795,6 +797,8 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', '$transl
                                 var playElem = userVideoElement.get(0);
 
                                 function playMethod() {
+                                    playElem.volume = 0.6;
+
                                     playElem.play();
                                 }
 
