@@ -484,7 +484,7 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', '$transl
                         userName = userTxt;
                     }
 
-                    var video = $(e.mediaElement).attr('controls', true).attr('autoplay', true).attr('height', '161px').attr('width', '230px');
+                    var video = $(e.mediaElement).attr('controls', false).attr('autoplay', true).attr('height', '161px').attr('width', '230px');
 
                     var videoSpan = $('<span/>');
                     var userSpan = $('<span/>').text(userName);
@@ -503,28 +503,10 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', '$transl
 
                     var videoDOMObj = video.get(0);
 
-                    setTimeout(playVideo, 1000);
-
-
-                    /*setTimeout(function() {
-                        wvrmitConnection.peers[e.userid].takeSnapshot(function(snapshot) {
-                            videoDOMObj.poster = snapshot;
-                        });
-                    }, 3000);*/
-
-                    if(e.type === 'remote') {
-                        setTimeout(pauseVideo, 6000);
-                    }
+                    setTimeout(playVideo, 1);
 
                     function playVideo() {
                         videoDOMObj.play();
-                    }
-
-                    function pauseVideo() {
-                        videoDOMObj.pause();
-                        /*setTimeout(function() {
-                            videoDOMObj.poster = 'http://localhost:3000/wvr/assets/img/lily.jpeg';
-                        }, 1000);*/
                     }
                 }
 
@@ -809,6 +791,14 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', '$transl
                                 }
 
                                 container.masonry();
+
+                                var playElem = userVideoElement.get(0);
+
+                                function playMethod() {
+                                    playElem.play();
+                                }
+
+                                setTimeout(playMethod, 1);
                             }
 
                         }
