@@ -37,6 +37,10 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', '$transl
 
                 var currentSessionToJoin;
 
+                var tryingToTakeSeatID;
+                var tryingToTakeSeatTime;
+                var tryingTakeSeatObj = {};
+
                 activateRTCRoom();
 
                 function activateRTCRoom() {
@@ -201,10 +205,10 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', '$transl
                                 userVideoBox.remove();
                             } else if(userVideoBoxType === 'seat') {
                                 var seatTakeElement = $('<a/>');
-                                $('<img/>').attr('src', '/wvr/assets/img/ws-cube-md.png').appendTo(seatTakeElement);
                                 seatTakeElement.bind('click', takeSeatHandler);
                                 var userVideoPElement = userVideo.parent().parent();
                                 userVideoPElement.children().remove();
+                                $('<img/>').attr('src', '/wvr/assets/img/ws-cube-md.png').appendTo(seatTakeElement);
                                 userVideoPElement.append(seatTakeElement);
                             }
                         }
@@ -291,7 +295,13 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', '$transl
 
                     wvrmitConnection.onCustomMessage = function(msg) {
 
-                        //console.log('onCustomMessage: ' + JSON.stringify(msg));
+                        /*console.log('onCustomMessage: ' + JSON.stringify(msg));*/
+
+                        if(msg.msgType === 'TryingToTakeSeat') {
+                            if(!tryingTakeSeatObj[msg.seatID] || msg.triedTime < tryingTakeSeatObj[msg.seatID]) {
+                                tryingTakeSeatObj[msg.seatID] = msg.triedTime;
+                            }
+                        }
 
                         if(msg.msgType == 'SeatTaken') {
                             takeSeat(msg.seatID, msg.takerID);
@@ -754,14 +764,23 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', '$transl
 
                     var seatTakerID = selfStreamID;
 
-                    takeSeat(desSeatID);
+                    tryingToTakeSeatTime = Date.now();
+                    tryingToTakeSeatID = desSeatID;
+                    wvrmitConnection.sendCustomMessage({msgType: 'TryingToTakeSeat', seatID: desSeatID, triedTime: tryingToTakeSeatTime});
 
-                    if(seatTakenMsgInterval) {
-                        clearInterval(seatTakenMsgInterval);
-                    }
-                    seatTakenMsgInterval = setInterval(function() {
-                        wvrmitConnection.sendCustomMessage({msgType: 'SeatTaken', seatID: desSeatID, takerID: seatTakerID});
-                    }, 1000);
+                    setTimeout(function() {
+                        if(!tryingTakeSeatObj[desSeatID] || tryingToTakeSeatTime < tryingTakeSeatObj[desSeatID]) {
+                            takeSeat(desSeatID);
+
+                            if(seatTakenMsgInterval) {
+                                clearInterval(seatTakenMsgInterval);
+                            }
+                            seatTakenMsgInterval = setInterval(function() {
+                                wvrmitConnection.sendCustomMessage({msgType: 'SeatTaken', seatID: desSeatID, takerID: seatTakerID});
+                            }, 1000);
+                        }
+                    }, 1800);
+
                 }
 
                 function takeSeat(seatID, takerID) {
@@ -774,8 +793,9 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', '$transl
                         var userPElement = userVideoElement.parent().parent();
                         var userDivElement = userPElement.parent();
                         var spaceType = userDivElement.attr('data-space-type');
+                        var takerPosition = userPElement.attr('id');
 
-                        if(userPElement.attr('id') !== seatID) {//Only taking action if the taker is not on the requested seat.
+                        if(takerPosition !== seatID) {//Only taking action if the taker is not on the requested seat.
 
                             if(desSeatElement.length == 1 && userVideoElement.length == 1) {
 
@@ -784,10 +804,14 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', '$transl
 
                                 if(spaceType && spaceType == 'seat') {
                                     var seatTakeElement = $('<a/>');
-                                    $('<img/>').attr('src', '/wvr/assets/img/ws-cube-md.png').appendTo(seatTakeElement);
                                     seatTakeElement.bind('click', takeSeatHandler);
                                     userPElement.children().remove();
+                                    $('<img/>').attr('src', '/wvr/assets/img/ws-cube-md.png').appendTo(seatTakeElement);
                                     seatTakeElement.appendTo(userPElement);
+
+                                    if(tryingTakeSeatObj[takerPosition]) {
+                                        delete tryingTakeSeatObj[takerPosition];
+                                    }
                                 } else if(spaceType == 'freespace' && userDivElement) {
                                     userDivElement.remove();
                                 }
