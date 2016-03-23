@@ -105,17 +105,17 @@ module.exports = function(app, db) {
   /*lex.create({
     configDir: './letsencrypt.config',                 // ~/letsencrypt, /etc/letsencrypt, whatever you want
     onRequest: app,                                    // your express app (or plain node http app)
-    letsencrypt: null,                                // you can provide you own instance of letsencrypt
+    letsencrypt: null,                                // you can provide your own instance of letsencrypt
                                                         // if you need to configure it (with an agreeToTerms
                                                         // callback, for example)
-    approveRegistration: function (hostname, cb) {    // PRODUCTION MODE needs this function, but only if you want automatic registration (usually not necessary) renewals for registered domains will still be automatic
+    /!*approveRegistration: function (hostname, cb) {    // PRODUCTION MODE needs this function, but only if you want automatic registration (usually not necessary) renewals for registered domains will still be automatic
       cb(null, {
         domains: [hostname],
         email: 'mahaofeng81@163.com',
         agreeTos: true
       });
-    }
-  }).listen(config.lex.tlsPort, function () {
+    }*!/
+  }).listen([80], [443, 5001], function () {
     console.log('LetsEncrypt protected https server listening on: ', this.address());
   });*/
 

@@ -14,22 +14,10 @@ module.exports = {
 
     // Paths to key and cert as string
     ssl: {
-      key: rootPath + '/config/sslcert/wvr.key',
-      cert: rootPath + '/config/sslcert/wvr.crt'
+      key: rootPath + '/config/sslcert/letsencrypt/privkey.key',
+      cert: rootPath + '/config/sslcert/letsencrypt/fullchain.crt'
     }
   },
-  /*le: {
-    webrootPath: path.join(__dirname, '..', 'test', 'acme-challenge'),
-    fullchainTpl: '/live/:hostname/fullchain.pem',
-    privkeyTpl: '/live/:hostname/privkey.pem',
-    configDir: path.join(__dirname, '..', 'test', 'letsencrypt.config'),
-    tlsPort: process.env.SSL_PORT || 3443,
-    daplieTLSKey: require('localhost.daplie.com-certificates').key,
-    daplieTLSCert: require('localhost.daplie.com-certificates').cert
-  },*/
-  /*lex: {
-    tlsPort: process.env.SSL_PORT || 3443
-  },*/
   hostname: process.env.HOST || process.env.HOSTNAME,
   db: process.env.MONGOHQ_URL,
   templateEngine: 'swig',
