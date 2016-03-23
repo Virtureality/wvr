@@ -362,10 +362,12 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', '$transl
 
                 function askForKey() {
                     //Ask for key
-                    var key = prompt('🔑: 👋');
-                    if(key != null && key != '') {
-                        processKey(key);
-                    }
+                    $translate('TXT_SHOWPASS').then(function (msg) {
+                        var key = prompt(msg);
+                        if(key != null && key != '') {
+                            processKey(key);
+                        }
+                    });
                 }
 
                 function processKey(key) {
@@ -389,11 +391,12 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', '$transl
                                     setButton(askForKeyActionBtn, '', false, false);
                                 }
                             } else {
-                                key = prompt('🔑: 👋');
-
-                                if(key != null && key != '') {
-                                    processKey(key);
-                                }
+                                $translate('TXT_SHOWPASS').then(function (msg) {
+                                    key = prompt(msg);
+                                    if(key != null && key != '') {
+                                        processKey(key);
+                                    }
+                                });
                             }
                         })
                         .error(function(response) {
