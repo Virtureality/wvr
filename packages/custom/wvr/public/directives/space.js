@@ -486,6 +486,10 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', '$transl
                     }
                 }
 
+                function doMasonry() {
+                    container.masonry();
+                }
+
                 function addUser(e) {
                     var userPresenceBox = $('<div/>').attr('class', 'box-masonry photo col2 masonry-brick').attr('data-space-type', 'freespace');
                     var userTxt = e.userid;
@@ -512,7 +516,7 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', '$transl
                     newPElement.appendTo(userPresenceBox);
                     userPresenceBox.appendTo(container);
 
-                    container.masonry();
+                    setTimeout(doMasonry, 1);
 
                     var videoDOMObj = video.get(0);
 
@@ -638,7 +642,7 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', '$transl
                         }
                     });
 
-                    container.masonry();
+                    setTimeout(doMasonry, 1);
 
                 }
 
@@ -819,7 +823,7 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', '$transl
                                     userDivElement.remove();
                                 }
 
-                                container.masonry();
+                                setTimeout(doMasonry, 1);
 
                                 var playElem = userVideoElement.get(0);
 

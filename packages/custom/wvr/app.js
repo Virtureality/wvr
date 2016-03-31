@@ -23,6 +23,7 @@ Wvr.register(function(system, app, auth, database, passport) {
 
   Wvr.aggregateAsset('css', 'wvr.css');
   Wvr.aggregateAsset('js', 'angular-pageslide-directive.min.js');
+  Wvr.aggregateAsset('js', 'mit/lib/RTCMultiConnection.js');
   Wvr.angularDependencies(['bgf.paginateAnything', 'wvr.space', 'wvr.mit', 'pascalprecht.translate']);
 
   /**
