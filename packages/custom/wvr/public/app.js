@@ -2,7 +2,7 @@
 
 var translations_zh = {
     WHAT_WE_DO: '重 构 人 们 的 工 作，生 活，娱 乐 方 式',
-    WHO_IS_FOR: '为 寻 求 突 破 物 理 时 空 束 缚 的 人 们 而 生',
+    WHO_IS_FOR: '突破物理时空束缚,为人们的交互和社会活动提供虚拟空间及相关设施',
     TXT_UPCOMING: '全息虚拟现实版正在研发中，敬请期待!',
     TXT_MVP: '最小可用产品',
     TXT_PRODUCT_NAME: '虚&nbsp;&nbsp;&nbsp;时&nbsp;&nbsp;&nbsp;空',
@@ -25,7 +25,7 @@ var translations_zh = {
     INFO_VIRTUALCLOSE: '虚拟之集中',
     INFO_WHEREVER: '无论身在何方，',
     INFO_FEELCLOSE: '感觉就在一起！：）',
-    TXT_TRY: '玩 玩 看',
+    TXT_TRY: '去 体 验',
     LEARN_MORE: '详 情',
     INDUSTRY_1: '写字楼',
     INDUSTRY_2: '医疗健康',
@@ -146,7 +146,7 @@ var translations_zh = {
 
 var translations_en = {
     WHAT_WE_DO: 'Reforming the way people live, work, and play',
-    WHO_IS_FOR: 'For people and organizations looking for breakthrough against physical space and time.',
+    WHO_IS_FOR: 'Providing virtual premises for people and organizations to break physical limitations.',
     TXT_UPCOMING: 'Holographic Virtual Reality is on the way!',
     TXT_MVP: 'Minimum Viable Product',
     TXT_PRODUCT_NAME: 'Virtual Space Time',
