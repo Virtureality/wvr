@@ -187,7 +187,7 @@ var translations_en = {
     LEARN_MORE: 'Learn More',
     INDUSTRY_1: 'Workplace',
     INDUSTRY_2: 'Healthcare',
-    INDUSTRY_3: 'Startup',
+    INDUSTRY_3: 'StartupVally',
     UPDATE: 'Update',
     MESSAGE_BOARD: 'Message Board',
     TRASH: 'Trash',
