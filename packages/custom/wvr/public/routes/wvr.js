@@ -22,6 +22,10 @@ angular.module('mean.wvr')
 				 .state('knowus', {
 					 url: '/know-us',
 					 templateUrl: 'wvr/views/wvr_intro.html'
+				 })
+				 .state('contactdetail', {
+					 url: '/contact-detail',
+					 templateUrl: 'wvr/views/contact_detail.html'
 				 });
 	       
 	     }]);/**/

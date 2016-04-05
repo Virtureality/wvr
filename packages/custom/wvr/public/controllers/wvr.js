@@ -90,9 +90,11 @@ angular.module('mean.wvr').controller('WvrHeaderController', ['$scope', '$rootSc
       if(langKey && langKey === 'zh') {
         $('#zhSelector').attr('class', 'btn btn-warning');
         $('#enSelector').attr('class', 'btn');
+        $rootScope.ourCoreValues = '/wvr/assets/img/guides/Edening_Guide_Values.png';
       } else if(langKey && langKey === 'en') {
         $('#enSelector').attr('class', 'btn btn-warning');
         $('#zhSelector').attr('class', 'btn');
+        $rootScope.ourCoreValues = '/wvr/assets/img/guides/Edening_Guide_Values_en.png';
       }
     };
 
