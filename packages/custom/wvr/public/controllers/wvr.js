@@ -87,20 +87,22 @@ angular.module('mean.wvr').controller('WvrHeaderController', ['$scope', '$rootSc
 
       $translate.use(langKey);
 
-      if(langKey && langKey === 'zh') {
+      if(langKey && (langKey === 'zh' || langKey === 'zh-CN')) {
         $('#zhSelector').attr('class', 'btn btn-warning');
         $('#enSelector').attr('class', 'btn');
+        $rootScope.ourQuestions = '/wvr/assets/img/guides/Edening_Team_Questions.png';
         $rootScope.ourCoreValues = '/wvr/assets/img/guides/Edening_Guide_Values.png';
       } else if(langKey && langKey === 'en') {
         $('#enSelector').attr('class', 'btn btn-warning');
         $('#zhSelector').attr('class', 'btn');
+        $rootScope.ourQuestions = null;
         $rootScope.ourCoreValues = '/wvr/assets/img/guides/Edening_Guide_Values_en.png';
       }
     };
 
     var preferredLanguage = getPreferredLanguage();
 
-    if(preferredLanguage === 'zh' || preferredLanguage === 'en') {
+    if(preferredLanguage === 'zh' || preferredLanguage === 'zh-CN' || preferredLanguage === 'en') {
       changeLang(preferredLanguage);
     }
 
