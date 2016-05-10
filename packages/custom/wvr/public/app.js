@@ -2,7 +2,7 @@
 
 var translations_zh = {
     WHAT_WE_DO: '重 构 人 们 的 工 作，生 活，娱 乐 方 式',
-    WHO_IS_FOR: '突破物理时空束缚,为人们的交互和社会活动提供虚拟空间及相关设施',
+    WHO_IS_FOR: '提供虚拟场所，连接现实世界，提升效能且降低开销',
     TXT_GUIDE_EDENING_TEAM_FOUNDERS: '乐境团队成员来自五湖四海，乐境虚拟空间是我们一起工作的地方',
     TXT_GUIDE_EDENING_GUIDE_SCREEN: '使用大屏幕做分享',
     TXT_GUIDE_EDENING_STORY_GARDEN: '美如画的空中花园里工作，心情舒畅效率高，你值得拥有',
@@ -153,7 +153,7 @@ var translations_zh = {
 
 var translations_en = {
     WHAT_WE_DO: 'Reforming the way people live, work, and play',
-    WHO_IS_FOR: 'Providing virtual premises for people and organizations to break physical limitations.',
+    WHO_IS_FOR: 'Provide Virtual Premises, Connect Physical World, For Higher Efficiency and Lower Expense.',
     TXT_GUIDE_EDENING_TEAM_FOUNDERS: 'Our Teammates Are Globally Distributed, And We Stay Working Closely via Our Own Platform',
     TXT_GUIDE_EDENING_GUIDE_SCREEN: 'Making Presentation Facilitating by Screen',
     TXT_GUIDE_EDENING_STORY_GARDEN: 'Working Efficiently in Beautiful Places, You Deserve It',
