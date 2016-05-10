@@ -14,8 +14,8 @@ module.exports = {
 
     // Paths to key and cert as string
     ssl: {
-      key: rootPath + '/config/sslcert/privatekey.pem',
-      cert: rootPath + '/config/sslcert/certificate.pem'
+      key: rootPath + '/config/sslcert/letsencrypt/privkey.key',
+      cert: rootPath + '/config/sslcert/letsencrypt/fullchain.crt'
     }
   },
   hostname: process.env.HOST || process.env.HOSTNAME,
@@ -44,10 +44,10 @@ module.exports = {
   },
   languages: [{
     name: 'en',
-    direction: 'ltr',
+    direction: 'ltr'
   }, {
     name: 'he',
-    direction: 'rtl',
+    direction: 'rtl'
   }],
   currentLanguage: 'en',
   // The session cookie name

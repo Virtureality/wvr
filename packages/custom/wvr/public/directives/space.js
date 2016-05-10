@@ -1,4 +1,4 @@
-angular.module('wvr.space').directive('wvrSpace', function() {
+angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', '$translate', function($timeout, $http, $translate) {
     return {
         priority: 10,
         link: function(scope, elm, attrs) {
@@ -8,30 +8,83 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                 var wvrmitConnection;
                 var wvrmitScreenConnection;
 
-                var detectingRoom = false;
-                var roomDetected = false;
                 var joinDisabled = false;
                 var screenSharingDisabled = true;
 
-                var actionArea = $('#action-area');
                 var actionButton = $('#action-button');
+                var ownActionBtn = $('#ownBtn');
+                var askForKeyActionBtn = $('#askForKeyActionBtn');
+                var lockerManagerBtn = $('#lockerManagerBtn');
+                var lockBtn = $('#roomLocker');
                 var container = $('#container');
 
                 var mname = scope.space.uuid;
 
-                var userID = getUserID();
+                var userID = scope.currentUserID || getUserID();
+                scope.currentUserID = userID;
 
                 var seatTakenMsgInterval;
 
-                startWatching();
+                var messageArea = $('#message-area');
 
-                function startWatching() {
+                var sendMsgButton = $('#send-msg-btn');
 
-                    setButton(actionButton, 'Watching ...', true);
+                var isEnablingRequestToJoin = false;
+
+                var selfStreamID;
+
+                var roomFixed = false;
+
+                var currentSessionToJoin;
+
+                var tryingToTakeSeatID;
+                var tryingToTakeSeatTime;
+                var tryingTakeSeatObj = {};
+
+                activateRTCRoom();
+
+                function activateRTCRoom() {
+
+                    scope.actionText = 'TXT_MARCHING';
+                    actionButton.attr('disabled', true);
+                    actionButton.attr('style', 'display:');
 
                     wvrmitConnection = new RTCMultiConnection(defaultChannel);
+                    scope.webrtcRoom = mname;
+                    scope.webrtcConnection = wvrmitConnection;
 
                     wvrmitConnection.userid = userID;
+
+                    setTimeout(checkForReset, 60000);
+
+                    function checkForReset() {
+                        var styleString = actionButton.attr('style');
+                        if(!styleString || styleString.indexOf('display:none') === -1) {
+                            setButton(actionButton, 'TXT_TAKECHARGE', false);
+
+                            actionButton.unbind();
+                            actionButton.bind('click', fixRTCRoom);
+
+                            function fixRTCRoom() {
+                                actionButton.unbind();
+
+                                wvrmitConnection.sendCustomMessage({
+                                    msgType: 'fixRTCRoom',
+                                    roomId: mname
+                                });
+
+                                setButton(actionButton, 'TXT_TAKECHARGEING', true);
+
+                                setTimeout(function() {
+                                    if(!roomFixed) {
+                                        setButton(actionButton, 'TXT_TAKECHARGE_FAILED', true);
+                                    }
+                                }, 60000);
+                            }
+                        }
+                    }
+
+                    wvrmitConnection.autoCloseEntireSession = false;
 
                     if(window.openSignalingChannel) {
                         wvrmitConnection.openSignalingChannel = window.openSignalingChannel;
@@ -60,19 +113,31 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                         // request-accepted
                         // request-rejected
 
+                        if(state.name == 'detecting-room-presence') {
+                            setButton(actionButton, 'TXT_CHECKING', true);
+                        }
+
+                        if(state.name == 'room-available') {
+                            setButton(actionButton, 'TXT_ACCESSING', true, true);
+                        }
+
                         if(state.name == 'room-not-available') {
-                            setButton(actionButton, state.reason, true);
-                            wvrmitConnection.connect(mname);
+                            setButton(actionButton, 'TXT_NOTACCESSIBLE', true);
                         }
 
                         if(state.name == 'connected-with-initiator') {
-                            setButton(actionButton, 'You Are In :)', true);
-
                             displaySpace();
                         }
 
+                        if(state.name == 'request-accepted') {
+                            var useKeyBtn = $('#askForKeyActionBtn');
+                            if(useKeyBtn.size() === 1) {
+                                setButton(useKeyBtn, '', true, true);
+                            }
+                        }
+
                         if(state.name == 'request-rejected') {
-                            setButton(actionButton, state.reason, true);
+                            setButton(actionButton, 'TXT_REJECTED', true);
 
                             joinDisabled = false;
                             if(!joinDisabled) {
@@ -81,7 +146,7 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                         }
 
                         if(state.name == 'failed---has reason') {
-                            setButton(actionButton, state.reason, true);
+                            setButton(actionButton, 'TXT_NOTACCESSIBLE', true);
                         }
                     };
 
@@ -100,6 +165,20 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                         // e.isAudio ---- if it is an Audio stream
                         // e.isScreen --- if it is screen-sharing stream
 
+                        /*console.log('onstream: ');
+                        console.log('e.streamid: ' + e.streamid);
+                        console.log('e.session: ' + e.session);
+                        console.log('e.blobURL: ' + e.blobURL);
+                        console.log('e.type: ' + e.type);
+                        console.log('e.userid: ' + e.userid);
+                        console.log('e.isVideo: ' + e.isVideo);
+                        console.log('e.isAudio: ' + e.isAudio);
+                        console.log('e.isScreen: ' + e.isScreen);*/
+
+                        if(e.type === 'local' && e.streamid) {
+                            selfStreamID = e.streamid;
+                        }
+
                         if(e.isVideo) {
                             addUser(e);
                         }
@@ -107,61 +186,84 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                     };
 
                     wvrmitConnection.onstreamended = function (e) {
-                        var userTxt = e.userid;
-                        var streamUserID = userTxt;
-                        var index = userTxt.lastIndexOf('-');
-                        if(index !== -1) {
-                            streamUserID = userTxt.substr(index + 1, userTxt.length);
-                        }
 
-                        var userVideo = $('#video-' + streamUserID);
+                        /*console.log('onstreamended: ');
+                        console.log('e.streamid: ' + e.streamid);
+                        console.log('e.session: ' + e.session);
+                        console.log('e.blobURL: ' + e.blobURL);
+                        console.log('e.type: ' + e.type);
+                        console.log('e.userid: ' + e.userid);
+                        console.log('e.isVideo: ' + e.isVideo);
+                        console.log('e.isAudio: ' + e.isAudio);
+                        console.log('e.isScreen: ' + e.isScreen);*/
+
+                        var userVideo = $('#' + e.streamid);
                         if(userVideo) {
                             var userVideoBox = userVideo.parent().parent().parent();
                             var userVideoBoxType = userVideoBox.attr('data-space-type');
                             if(userVideoBoxType === 'freespace') {
                                 userVideoBox.remove();
                             } else if(userVideoBoxType === 'seat') {
-                                var seatTakeElement = $('<button/>').attr('class', 'btn btn-success badge').text('Take the Seat');
+                                var seatTakeElement = $('<a/>');
                                 seatTakeElement.bind('click', takeSeatHandler);
                                 var userVideoPElement = userVideo.parent().parent();
                                 userVideoPElement.children().remove();
+                                $('<img/>').attr('src', '/wvr/assets/img/ws-cube-md.png').appendTo(seatTakeElement);
                                 userVideoPElement.append(seatTakeElement);
                             }
                         }
                     };
 
-                    //wvrmitConnection.transmitRoomOnce = true;
                     wvrmitConnection.onNewSession = function (session) {
+                        //console.log('wvrmitConnection.onNewSession: ' + JSON.stringify(session));
 
                         // session.userid
                         // session.sessionid
                         // session.extra
                         // session.session i.e. {audio,video,screen,data}
 
-                        detectingRoom = true;
-                        setButton(actionButton, 'Checking ...', true);
+                        setButton(actionButton, 'TXT_ACCESSING', true, true);
 
                         if (session.sessionid == mname) {
-                            roomDetected = true;
 
-                            if(!joinDisabled) {
-                                enableRequestToJoin();
+                            //console.log('onNewSession: ' + JSON.stringify(session));
+
+                            currentSessionToJoin = session;
+
+                            if(!wvrmitConnection.isInitiator && wvrmitConnection.sessionid) {
+                                wvrmitConnection.dontCaptureUserMedia = true;
+                            }
+
+                            if(session.session.status && session.session.status.locked) {
+
+                                setButton(askForKeyActionBtn, '', false, false);
+
+                                askForKeyActionBtn.bind('click', askForKey);
+
+                                if(!isEnablingRequestToJoin && !joinDisabled) {
+                                    enableRequestToJoin(false, session);
+                                }
+                            } else {
+                                wvrmitConnection.join(session);
                             }
                         }
 
-                        detectingRoom = false;
-
                     };
-
-                    var messageArea = $('#message-area');
-
-                    var sendMsgButton = $('#send-msg-btn');
 
                     sendMsgButton.on('click', function() {
                         var msgBody = $('#message-text').val() || '';
                         if (msgBody && msgBody !== '') {
-                            wvrmitConnection.send(msgBody);
-                            messageArea.append($('<div>').append('Me: ' + msgBody));
+                            var targets = scope.imers;
+
+                            if (targets.size > 0) {
+                                targets.forEach(function(value1, value2, set) {
+                                    wvrmitConnection.sendCustomMessage({msgType: 'IM', sender: wvrmitConnection.userid, receiver: value1, message: msgBody});
+                                });
+                            } else {
+                                wvrmitConnection.send(msgBody);
+                            }
+                            //messageArea.append($('<div>').append('Me: ' + msgBody));
+                            messageArea.append($('<div>').append(msgBody + ' --- ' + 'Me'));
                         } else{
                             alert('Please input message content correctly!');
                         }
@@ -170,8 +272,6 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                     wvrmitConnection.onopen = function(e) {
                         // e.userid
                         // e.extra
-
-                        setButton(sendMsgButton, 'Send', false);
 
                         if(screenSharingDisabled) {
                             enableScreenSharing();
@@ -189,120 +289,205 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                             userName = userName.substr(0, userName.lastIndexOf('-'));
                         }
 
-                        messageArea.append($('<div>').append(userName + ': ' + e.data));
+                        //messageArea.append($('<div>').append(userName + ': ' + e.data));
+                        messageArea.append($('<div>').append(e.data + ' --- ' + userName));
                     };
 
                     wvrmitConnection.onCustomMessage = function(msg) {
+
+                        /*console.log('onCustomMessage: ' + JSON.stringify(msg));*/
+
+                        if(msg.msgType === 'TryingToTakeSeat') {
+                            if(!tryingTakeSeatObj[msg.seatID] || msg.triedTime < tryingTakeSeatObj[msg.seatID]) {
+                                tryingTakeSeatObj[msg.seatID] = msg.triedTime;
+                            }
+                        }
+
                         if(msg.msgType == 'SeatTaken') {
                             takeSeat(msg.seatID, msg.takerID);
                         }
+
+                        if(msg.msgType == 'IM' && msg.receiver == wvrmitConnection.userid) {
+                            //messageArea.append($('<div>').append(msg.sender + ': ' + msg.message));
+                            messageArea.append($('<div>').append(msg.message + ' --- ' + msg.sender));
+                        }
+
+                        if(msg.msgType === 'initiateRoom' && msg.roomId === mname && msg.initiator === wvrmitConnection.userid) {
+                            setButton(actionButton, 'TXT_ACCESSING', true, true);
+
+                            if(!wvrmitConnection.isInitiator) {
+                                wvrmitConnection.isInitiator = true;
+
+                                if(scope.space.locker) {
+                                    setButton(askForKeyActionBtn, '', false, false);
+
+                                    askForKeyActionBtn.bind('click', askForKey);
+                                } else {
+                                    initiateRoom(mname);
+                                }
+                            }
+                        }
+
+                        if(msg.msgType === 'rtcRoomFixed' && msg.roomId === mname && msg.requester === wvrmitConnection.userid) {
+                            roomFixed = true;
+                            setButton(actionButton, '', true, true);
+                            window.location.reload(true);
+                        }
+
+                        if(msg.msgType === 'RoomStatusChange' && msg.roomId === mname) {
+                            if(scope.space.locker) {
+
+                                lockBtn.bind('click', lockHandler);
+
+                                scope.$apply(function() {
+                                    if(msg.status === 'locked') {
+                                        scope.space.locked = true;
+                                        scope.lockStatusText = 'TXT_UNLOCK';
+                                    } else if(msg.status === 'unlocked') {
+                                        scope.space.locked = false;
+                                        scope.lockStatusText = 'TXT_LOCK';
+                                    }
+                                });
+                            }
+                        }
+
                     };
 
                     //wvrmitConnection.fakeDataChannels = true;
 
                     wvrmitConnection.connect();
 
-                    enableShare(mname);
+                }
 
-                    setTimeout(checkForSetup, 3000);
 
+                function askForKey() {
+                    //Ask for key
+                    $translate('TXT_SHOWPASS').then(function (msg) {
+                        var key = prompt(msg);
+                        if(key != null && key != '') {
+                            processKey(key);
+                        }
+                    });
+                }
+
+                function processKey(key) {
+
+                    $http
+                        .post('/api/proxy/wvr/space/key', {
+                            spaceId: mname,
+                            key: key
+                        })
+                        .success(function(response) {
+                            if(response.pass) {
+                                if(wvrmitConnection.isInitiator) {
+                                    $timeout(function() {
+                                        initiateRoom(mname);
+                                    }, 1, false);
+                                } else {
+                                    wvrmitConnection.join(currentSessionToJoin);
+                                }
+
+                                if(askForKeyActionBtn) {
+                                    setButton(askForKeyActionBtn, '', false, false);
+                                }
+                            } else {
+                                $translate('TXT_SHOWPASS').then(function (msg) {
+                                    key = prompt(msg);
+                                    if(key != null && key != '') {
+                                        processKey(key);
+                                    }
+                                });
+                            }
+                        })
+                        .error(function(response) {
+                            $translate('INFO_SPACESERVICE_UNAVAILABLE').then(function (msg) {
+                                alert(msg);
+                            });
+                        });
+                }
+
+                function initiateRoom(roomId) {
+
+                    wvrmitConnection.isInitiator = true;
+
+                    if(scope.space.locker && wvrmitConnection.session.status && wvrmitConnection.session.status.locked) {
+                        wvrmitConnection.onRequest = onRequestHandler;
+                    }
+                    wvrmitConnection.session = {
+                        audio: true,
+                        video: true,
+                        data:  true
+                    };
+                    wvrmitConnection.maxParticipantsAllowed = 256;
+                    wvrmitConnection.open(roomId);
+
+                    displaySpace();
+
+                    setButton(actionButton, '', true, true);
                 }
 
                 function getUserID() {
+
                     var result = (Math.round(Math.random() * 999999999) + 999999999).toString();
 
                     var loginUser = scope.loginUser;
 
                     if (loginUser && loginUser._id && loginUser._id !== '') {
-                        result = loginUser.name + '-' + loginUser._id;
+                        result = loginUser.name + '-' + loginUser._id + '_' + result;
                     }
 
                     return result;
                 }
 
-                function checkForSetup() {
+                function enableRequestToJoin(retry, session) {
 
-                    if (scope.ableToOpenDefaultRoom && !detectingRoom && !roomDetected) {
-                        setup();
-                    }
-
-                }
-
-                function setup() {
-
-                    setButton(actionButton, 'Unlock', false);
-
-                    actionButton.unbind();
-                    actionButton.bind('click', doSetup);
-
-                    function doSetup() {
-
-                        actionButton.unbind('click', doSetup);
-
-                        setButton(actionButton, 'Setting up ...', true);
-
-                        wvrmitConnection.isInitiator = true;
-                        wvrmitConnection.onRequest = function(request) {
-                            var acceptDecision = confirm(request.userid + ' is requesting to join, would you accept?');
-
-                            wvrmitConnection.dontCaptureUserMedia = true;
-                            if(acceptDecision) {
-                                wvrmitConnection.accept(request);
-                            } else {
-                                wvrmitConnection.reject(request);
-                            }
-                        };
-                        wvrmitConnection.session = {
-                            audio: true,
-                            video: true,
-                            data:  true
-                        };
-                        wvrmitConnection.maxParticipantsAllowed = 256;
-                        wvrmitConnection.open(mname);
-
-                        displaySpace();
-
-                        setButton(actionButton, 'You Are In :)', true);
-
-                    }
-
-                }
-
-                function enableRequestToJoin(retry) {
+                    isEnablingRequestToJoin = true;
 
                     if(retry) {
                         wvrmitConnection.dontCaptureUserMedia = true;
                     }
 
-                    setButton(actionButton, 'Knock', false);
+                    setButton(actionButton, 'TXT_KNOCK', false);
 
                     actionButton.unbind();
                     actionButton.bind('click', requestToJoinHandler);
 
                     function requestToJoinHandler() {
-
                         joinDisabled = true;
                         actionButton.unbind('click', requestToJoinHandler);
 
-                        wvrmitConnection.join(mname);
-                        setButton(actionButton, 'Requesting to Enter ...', true);
+                        if(session) {
+                            wvrmitConnection.session.actionType = 'Knock';
+                            wvrmitConnection.join(session);
+                        } else {
+                            wvrmitConnection.join(mname);
+                        }
+                        setButton(actionButton, 'TXT_KNOCKING', true);
+
+                        isEnablingRequestToJoin = false;
 
                     }
                 }
 
-                function enableShare(mname){
-                    var shareLink = $('<a/>').attr('class', 'pull-left').attr('target', '_blank').attr('href', location.href).text('Share: ' + mname);
-                    shareLink.appendTo(actionArea);
-                }
-
-                function setButton(button, text, disable) {
+                function setButton(button, text, disable, hide) {
                     if(button) {
                         if(text && text !== '') {
-                            button.text(text);
+                            scope.$apply(function() {
+                                scope.actionText = text;
+                            });
                         }
 
                         button.attr('disabled', disable);
+                        if(hide){
+                            button.attr('style', 'display:none');
+                        } else{
+                            button.attr('style', 'display:');
+                        }
                     }
+                }
+
+                function doMasonry() {
+                    container.masonry();
                 }
 
                 function addUser(e) {
@@ -310,15 +495,13 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                     var userTxt = e.userid;
                     var index = userTxt.lastIndexOf('-');
                     var userName;
-                    var streamUserID;
                     if(index !== -1) {
                         userName = userTxt.substr(0, index);
-                        streamUserID = userTxt.substr(index + 1, userTxt.length);
                     } else {
                         userName = userTxt;
-                        streamUserID = userTxt;
                     }
-                    var video = $(e.mediaElement).attr('id', 'video-' + streamUserID).attr('controls', true).attr('height', '180px').attr('width', '230px');
+
+                    var video = $(e.mediaElement).attr('controls', false).attr('height', '161px').attr('width', '230px');
 
                     var videoSpan = $('<span/>');
                     var userSpan = $('<span/>').text(userName);
@@ -329,15 +512,65 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                     var userPElement = $('<p/>');
                     userPElement.appendTo(newPElement);
                     userSpan.appendTo(userPElement);
-                    if(e.userid !== userID) {
-                        $('<button/>').attr('class', 'btn btn-info').attr('style', 'margin-left: 6px;').text('A').appendTo(userPElement);
-                        $('<button/>').attr('class', 'btn btn-info').attr('style', 'margin-left: 6px;').text('T').appendTo(userPElement);
-                        $('<button/>').attr('class', 'btn btn-info').attr('style', 'margin-left: 6px;').text('V').appendTo(userPElement);
-                    }
+
                     newPElement.appendTo(userPresenceBox);
                     userPresenceBox.appendTo(container);
 
-                    container.masonry('appended', userPresenceBox);
+                    setTimeout(doMasonry, 1);
+
+                    var videoDOMObj = video.get(0);
+
+                    setTimeout(playVideo, 1);
+
+                    function playVideo() {
+                        videoDOMObj.volume = 0.6;
+
+                        videoDOMObj.play();
+                    }
+                }
+
+                function lockHandler() {
+
+                    var roomStatus;
+
+                    scope.$apply(function() {
+                        scope.space.locked = !scope.space.locked;
+
+                        if(scope.space.locked) {
+                            roomStatus = 'locked';
+                            scope.lockStatusText = 'TXT_UNLOCK';
+                        } else {
+                            roomStatus = 'unlocked';
+                            scope.lockStatusText = 'TXT_LOCK';
+                        }
+                    });
+
+                    if(wvrmitConnection.isInitiator) {
+                        if(!wvrmitConnection.session.status) {
+                            wvrmitConnection.session.status = {};
+                        }
+                        wvrmitConnection.session.status.locked = true;
+
+                        if(scope.space.locker) {
+                            wvrmitConnection.onRequest = onRequestHandler;
+                        }
+                    }
+
+                    wvrmitConnection.sendCustomMessage({msgType: 'RoomStatusChange', roomId: mname, status: roomStatus});
+                }
+
+                function onRequestHandler(request) {
+                    wvrmitConnection.dontCaptureUserMedia = true;
+                    if(request.session && request.session.actionType == 'Knock') {
+                        var acceptDecision = confirm(request.userid + ' is knocking, would you respond?');
+                        if(acceptDecision) {
+                            wvrmitConnection.accept(request);
+                        } else {
+                            wvrmitConnection.reject(request);
+                        }
+                    } else {
+                        wvrmitConnection.accept(request);
+                    }
                 }
 
                 function displaySpace() {
@@ -346,42 +579,70 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                         scope.showSpace();
 
                         var space = scope.space;
-                        var seats;
-                        var seat;
-                        var seatElement;
+                        var facilities;
+                        var facility;
+                        var facilityElement;
+
+                        setButton(askForKeyActionBtn, '', true, true);
+                        setButton(sendMsgButton, '', false, false);
 
                         if(space) {
-                            if(space.owner && space.owner._id) {
 
-                                seatElement = $('#' + space.owner._id);
-                                if(seatElement.length == 1) {
-                                    var seatTakeElement = $('<button/>').attr('class', 'btn btn-success badge').text('Take the Seat');
-                                    seatTakeElement.bind('click', takeSeatHandler);
-                                    seatElement.children().remove();
-                                    seatTakeElement.appendTo(seatElement);
+                            if(!space.owner) {
+                                setButton(ownActionBtn, '', false, false);
+                                ownActionBtn.bind('click', scope.ownSpace);
+                            } else {
+                                if(space.locker) {
+                                    space.locked = false;
+
+                                    scope.lockStatusText = 'TXT_LOCK';
+                                    lockBtn.bind('click', lockHandler);
+
+                                    if(space.uuid !== 'trial' && scope.loginUser && scope.space.owner && (scope.loginUser._id === scope.space.owner._id)) {
+                                        lockerManagerBtn.unbind();
+
+                                        scope.lockerStatusText = 'TXT_CHNAGELOCKER';
+
+                                        lockerManagerBtn.bind('click', scope.changeLocker);
+                                    }
+                                } else if(scope.loginUser && scope.space.owner && (scope.loginUser._id === scope.space.owner._id)) {
+                                    lockerManagerBtn.unbind();
+
+                                    scope.lockerStatusText = 'TXT_ADDLOCKER';
+
+                                    lockerManagerBtn.bind('click', scope.addLocker);
                                 }
                             }
+
                             if(space.facilities) {
-                                seats = space.facilities;
+                                facilities = space.facilities;
 
-                                for(var i = 0; i < seats.length; i++) {
-                                    seat = seats[i];
-
-                                    seatElement = $('#' + seat._id);
-                                    if(seatElement.length == 1) {
-                                        var seatTakeElement = $('<button/>').attr('class', 'btn btn-success badge').text('Take the Seat');
-                                        seatTakeElement.bind('click', takeSeatHandler);
-                                        seatTakeElement.appendTo(seatElement);
+                                for(var i = 0; i < facilities.length; i++) {
+                                    facility = facilities[i];
+                                    facilityElement = $('#' + facility._id);
+                                    if(facilityElement.length == 1) {
+                                        if(facility.type === "Seat") {
+                                            var seatTakeElement = $('<a/>');
+                                            $('<img/>').attr('src', '/wvr/assets/img/ws-cube-md.png').appendTo(seatTakeElement);
+                                            seatTakeElement.bind('click', takeSeatHandler);
+                                            seatTakeElement.appendTo(facilityElement);
+                                        } else if(facility.type === "SpaceGate" && facility.extra && facility.extra.address) {
+                                            var spaceURL = '/spaces/' + facility.extra.address;
+                                            var enterSpaceElement = $('<a/>').attr('href', spaceURL).attr('_target', '_self');
+                                            $('<img/>').attr('src', '/wvr/assets/img/team-space-md.png').appendTo(enterSpaceElement);
+                                            enterSpaceElement.bind('click', enterSpaceHandler);
+                                            enterSpaceElement.appendTo(facilityElement);
+                                            $('<button/>').attr('class', 'btn btnIptSmOR badge').text(facility.extra.address).appendTo($('#facility-' + facility._id));
+                                        }
                                     }
                                 }
                             }
 
                             enableScreen();
                         }
-
                     });
 
-                    container.masonry();
+                    setTimeout(doMasonry, 1);
 
                 }
 
@@ -401,32 +662,31 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                             var screenDisplayElement = $('#screenDisplay');
                             var screenMediaElement = $(e.mediaElement).attr('height', '96%').attr('width', '96%').attr('autoplay', 'true');
                             screenMediaElement.appendTo(screenDisplayElement);
-                            //rotateVideo(e.mediaElement);
 
-                            if(e.type === 'local') {
-                                scope.screenAction = function() {
-                                    setButton($('#screenActionButton'), 'Processing...', true);
-                                    var peers = Object.keys(wvrmitScreenConnection.peers);
-                                    for(var i = 0; i < peers.length; i++) {
-                                        wvrmitScreenConnection.remove(peers[i]);
+                            scope.$apply(function() {
+                                if(e.type === 'local') {
+                                    scope.screenAction = function() {
+                                        scope.shareText = 'TXT_PROCESSING';
+                                        setButton($('#screenActionButton'), '', true);
+                                        wvrmitScreenConnection.close();
+                                        setTimeout(enableScreenSharing, 1000);
+                                    };
+                                    scope.shareText = 'TXT_SHARING_SELF';
+                                    setButton($('#screenActionButton'), '', false);
+                                } else {
+                                    if(e.mediaElement.play) {
+                                        e.mediaElement.play();
                                     }
-                                    wvrmitScreenConnection.close();
-                                    setTimeout(enableScreenSharing, 1000);
-                                };
-                                setButton($('#screenActionButton'), 'You are sharing screen ... Click to Close!', false);
-                            } else {
-                                if(e.mediaElement.play) {
-                                    e.mediaElement.play();
+                                    scope.shareText = 'TXT_SHARING_OTHER';
+                                    setButton($('#screenActionButton'), '', true);
                                 }
-                                setButton($('#screenActionButton'), e.userid + ' is sharing screen ...', true);
-                            }
+                            });
+
                         }
                     };
 
                     wvrmitScreenConnection.onstreamended = function(e) {
                         if(e.isScreen && e.type === 'local') {
-                            //e.mediaElement.style.opacity = 0;
-                            //rotateVideo(e.mediaElement);
                             setTimeout(function() {
                                 if (e.mediaElement.parentNode) {
                                     e.mediaElement.parentNode.removeChild(e.mediaElement);
@@ -451,11 +711,15 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                     scope.screenOpen = false;
                     scope.toggleScreen = function() {
                         scope.screenOpen = !scope.screenOpen;
+                        if(scope.screenOpen) {
+                            scope.operationInfo = 'INFO_NEEDSEXTENSION_SCREEN';
+                            scope.alertStyle = 'alert-info';
+                        } else {
+                            scope.operationInfo = '';
+                        }
                     };
 
                     wvrmitScreenConnection.connect();
-
-                    //window.onresize = scaleVideos;
                 }
 
                 function enableScreenSharing() {
@@ -473,15 +737,21 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                             oneway: true
                         };
 
-                        scope.screenAction = startSharing;
-                        setButton($('#screenActionButton'), 'Share Screen', false);
+                        scope.$apply(function() {
+                            scope.screenAction = startSharing;
+                            scope.shareText = 'TXT_SHARE';
+                        });
+                        setButton($('#screenActionButton'), '', false);
                         screenSharingDisabled = true;
                     }, 3000);
 
                 }
 
                 function startSharing() {
-                    setButton($('#screenActionButton'), 'Processing...', true);
+                    scope.$apply(function() {
+                        scope.shareText = 'TXT_PROCESSING';
+                    });
+                    setButton($('#screenActionButton'), '', true);
 
                     wvrmitScreenConnection.isInitiator = true;
                     // screen sender don't need to receive any media.
@@ -493,74 +763,46 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                     wvrmitScreenConnection.open(mname + '-screen');
                 }
 
-                function rotateVideo(mediaElement) {
-                    mediaElement.style[navigator.mozGetUserMedia ? 'transform' : '-webkit-transform'] = 'rotate(0deg)';
-                    setTimeout(function() {
-                        mediaElement.style[navigator.mozGetUserMedia ? 'transform' : '-webkit-transform'] = 'rotate(360deg)';
-                    }, 1000);
-                }
-
-                function scaleVideos() {
-                    var videos = document.querySelectorAll('video'),
-                        length = videos.length,
-                        video;
-                    var minus = 130;
-                    var windowHeight = 700;
-                    var windowWidth = 600;
-                    var windowAspectRatio = windowWidth / windowHeight;
-                    var videoAspectRatio = 4 / 3;
-                    var blockAspectRatio;
-                    var tempVideoWidth = 0;
-                    var maxVideoWidth = 0;
-                    for (var i = length; i > 0; i--) {
-                        blockAspectRatio = i * videoAspectRatio / Math.ceil(length / i);
-                        if (blockAspectRatio <= windowAspectRatio) {
-                            tempVideoWidth = videoAspectRatio * windowHeight / Math.ceil(length / i);
-                        } else {
-                            tempVideoWidth = windowWidth / i;
-                        }
-                        if (tempVideoWidth > maxVideoWidth)
-                            maxVideoWidth = tempVideoWidth;
-                    }
-                    for (var i = 0; i < length; i++) {
-                        video = videos[i];
-                        if (video)
-                            video.width = maxVideoWidth - minus;
-                    }
-                }
-
                 function takeSeatHandler() {
 
                     var seatTakeElement = $(this);
                     var desSeatElement = seatTakeElement.parent();
                     var desSeatID = desSeatElement.attr('id');
 
-                    var seatTakerID = userID;
-                    var index = userID.lastIndexOf('-');
-                    if(index !== -1) {
-                        seatTakerID = userID.substr(index + 1, userID.length);
-                    }
+                    var seatTakerID = selfStreamID;
 
-                    takeSeat(desSeatID, seatTakerID);
+                    tryingToTakeSeatTime = Date.now();
+                    tryingToTakeSeatID = desSeatID;
+                    wvrmitConnection.sendCustomMessage({msgType: 'TryingToTakeSeat', seatID: desSeatID, triedTime: tryingToTakeSeatTime});
 
-                    if(seatTakenMsgInterval) {
-                        clearInterval(seatTakenMsgInterval);
-                    }
-                    seatTakenMsgInterval = setInterval(function() {
-                        wvrmitConnection.sendCustomMessage({msgType: 'SeatTaken', seatID: desSeatID, takerID: seatTakerID});
-                    }, 1000);
+                    setTimeout(function() {
+                        if(!tryingTakeSeatObj[desSeatID] || tryingToTakeSeatTime < tryingTakeSeatObj[desSeatID]) {
+                            takeSeat(desSeatID);
+
+                            if(seatTakenMsgInterval) {
+                                clearInterval(seatTakenMsgInterval);
+                            }
+                            seatTakenMsgInterval = setInterval(function() {
+                                wvrmitConnection.sendCustomMessage({msgType: 'SeatTaken', seatID: desSeatID, takerID: seatTakerID});
+                            }, 1000);
+                        }
+                    }, 1800);
+
                 }
 
                 function takeSeat(seatID, takerID) {
 
+                    takerID = takerID || selfStreamID;
+
                     if(seatID && takerID) {
                         var desSeatElement = $('#' + seatID);
-                        var userVideoElement = $('#' + 'video-' + takerID);
+                        var userVideoElement = $('#' + takerID);
                         var userPElement = userVideoElement.parent().parent();
                         var userDivElement = userPElement.parent();
                         var spaceType = userDivElement.attr('data-space-type');
+                        var takerPosition = userPElement.attr('id');
 
-                        if(userPElement.attr('id') !== seatID) {//Only taking action if the taker is not on the requested seat.
+                        if(takerPosition !== seatID) {//Only taking action if the taker is not on the requested seat.
 
                             if(desSeatElement.length == 1 && userVideoElement.length == 1) {
 
@@ -568,22 +810,41 @@ angular.module('wvr.space').directive('wvrSpace', function() {
                                 userPElement.children().appendTo(desSeatElement);
 
                                 if(spaceType && spaceType == 'seat') {
-                                    var seatTakeElement = $('<button/>').attr('class', 'btn btn-success badge').text('Take the Seat');
+                                    var seatTakeElement = $('<a/>');
                                     seatTakeElement.bind('click', takeSeatHandler);
                                     userPElement.children().remove();
+                                    $('<img/>').attr('src', '/wvr/assets/img/ws-cube-md.png').appendTo(seatTakeElement);
                                     seatTakeElement.appendTo(userPElement);
+
+                                    if(tryingTakeSeatObj[takerPosition]) {
+                                        delete tryingTakeSeatObj[takerPosition];
+                                    }
                                 } else if(spaceType == 'freespace' && userDivElement) {
                                     userDivElement.remove();
                                 }
 
-                                container.masonry();
+                                setTimeout(doMasonry, 1);
+
+                                var playElem = userVideoElement.get(0);
+
+                                function playMethod() {
+                                    playElem.volume = 0.6;
+
+                                    playElem.play();
+                                }
+
+                                setTimeout(playMethod, 1);
                             }
 
                         }
                     }
                 }
 
+                function enterSpaceHandler() {
+                    window.location.reload(true);
+                }
+
             });
         }
     }
-});
+}]);

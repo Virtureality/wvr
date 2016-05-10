@@ -6,6 +6,11 @@
 <script>
   var customSignaling = '{{process.env.CUSTOM_SIGNALING}}';
   var signalingServer = '{{process.env.SIGNALING_SERVER}}';
+  /*var ioURL = '{{process.env.IO_URL}}';
+
+  if(ioURL === '') {
+    ioURL = 'http://localhost:8888/socketio.js';
+  }*/
 </script>
 {% endif %}
 

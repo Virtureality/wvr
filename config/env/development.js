@@ -13,7 +13,7 @@ module.exports = {
   },
   hostname: 'http://localhost:3000',
   app: {
-    name: 'WVR - World Virtual Reality - Development'
+    name: 'VST - Virtual Space Time - Development'
   },
   strategies: {
       local: {
@@ -50,14 +50,14 @@ module.exports = {
         enabled: true
       }
   },
-  emailFrom: 'sharphill@163.com', // sender address like ABC <abc@example.com>
-  mailer: {
-      host: 'smtp.163.com',
-      port: 25,
-      auth: {
-          user: 'sharphill@163.com',
-          pass: 'mhf1111$'
-      }
-  }, 
+    emailFrom: 'edening@yeah.net', // sender address like ABC <abc@example.com>
+    mailer: {
+        host: 'smtp.yeah.net',
+        port: 25,
+        auth: {
+            user: 'edening@yeah.net',
+            pass: 'fbl11111'
+        }
+    },
   secret: 'FBL_WVR_TOKEN_SECRET_DEV'
 };

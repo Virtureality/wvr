@@ -2,6 +2,7 @@
 
 var mongoose = require('mongoose'),
   LocalStrategy = require('passport-local').Strategy,
+  BearerStrategy = require('passport-http-bearer').Strategy,
   TwitterStrategy = require('passport-twitter').Strategy,
   FacebookStrategy = require('passport-facebook').Strategy,
   GitHubStrategy = require('passport-github').Strategy,
@@ -52,6 +53,39 @@ module.exports = function(passport) {
       });
     }
   ));
+
+  // Use Bearer strategy
+  passport.use(new BearerStrategy(
+      function(token, done) {
+        /*User.findOne({ token: token }, function (err, user) {
+          if (err) { return done(err); }
+          if (!user) { return done(null, false); }
+          return done(null, user, { scope: 'all' });
+        });*/
+        findByToken(token, function (err, user) {
+          if (err) { return done(err); }
+          if (!user) { return done(null, false); }
+          return done(null, user, { scope: 'all' });
+        });
+      }
+  ));
+
+  var bearerRecords = [
+    { id: 1, username: 'fbl', token: 'fbl_api_54fbf04ed87c38e661e06a00', displayName: 'FBL', emails: [ { value: 'fbl@edening.net' } ] },
+    { id: 2, username: 'wvr', token: 'wvr_api_54fbf04ed87c38e661e06a00', displayName: 'WVR', emails: [ { value: 'wvr@edening.net' } ] }
+  ];
+
+  function findByToken(token, cb) {
+    process.nextTick(function() {
+      for (var i = 0, len = bearerRecords.length; i < len; i++) {
+        var record = bearerRecords[i];
+        if (record.token === token) {
+          return cb(null, record);
+        }
+      }
+      return cb(null, null);
+    });
+  }
 
   // Use twitter strategy
   passport.use(new TwitterStrategy({

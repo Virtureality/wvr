@@ -1,7 +1,7 @@
 'use strict';
 
-angular.module('mean.users').factory('MeanUser', [ '$rootScope', '$http', '$location', '$stateParams', '$cookies', '$q', '$timeout', '$cookieStore',
-  function($rootScope, $http, $location, $stateParams, $cookies, $q, $timeout, $cookieStore) {
+angular.module('mean.users').factory('MeanUser', [ '$rootScope', '$http', '$location', '$stateParams', '$cookies', '$q', '$timeout', '$cookieStore', '$translate',
+  function($rootScope, $http, $location, $stateParams, $cookies, $q, $timeout, $cookieStore, $translate) {
 
     var self;
 
@@ -105,12 +105,14 @@ angular.module('mean.users').factory('MeanUser', [ '$rootScope', '$http', '$loca
     };
 
     MeanUserKlass.prototype.register = function(user) {
+      var destination = $location.path().indexOf('/login') === -1 ? $location.absUrl() : false;
       $http.post('/api/register', {
         email: user.email,
         password: user.password,
         confirmPassword: user.confirmPassword,
         username: user.username,
-        name: user.name
+        name: user.name,
+        redirect: destination
       })
         .success(this.onIdentity.bind(this))
         .error(this.onIdFail.bind(this));
@@ -121,13 +123,17 @@ angular.module('mean.users').factory('MeanUser', [ '$rootScope', '$http', '$loca
           password: user.password,
           confirmPassword: user.confirmPassword
         })
-          .success(this.onIdentity.bind(this))
+          //.success(this.onIdentity.bind(this))
+            .success(function(response) {
+              $rootScope.$emit('passwordreset', response);
+            })
           .error(this.onIdFail.bind(this));
       };
 
     MeanUserKlass.prototype.forgotpassword = function(user) {
         $http.post('/api/forgot-password', {
-          text: user.email
+          text: user.email,
+          lang: $translate.proposedLanguage()
         })
           .success(function(response) {
             $rootScope.$emit('forgotmailsent', response);

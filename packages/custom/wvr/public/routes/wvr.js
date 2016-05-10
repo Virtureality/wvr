@@ -15,9 +15,17 @@ angular.module('mean.wvr')
 			 $viewPathProvider.override('users/views/reset-password.html', 'wvr/views/users/reset-password.html');
 
 	         $stateProvider
-	         .state('wvrhome', {
-	           url: '/',
-	           templateUrl: 'wvr/views/index.html'
-	         });
+				 .state('wvrhome', {
+				   url: '/',
+				   templateUrl: 'wvr/views/index.html'
+				 })
+				 .state('knowus', {
+					 url: '/know-us',
+					 templateUrl: 'wvr/views/wvr_intro.html'
+				 })
+				 .state('contactdetail', {
+					 url: '/contact-detail',
+					 templateUrl: 'wvr/views/contact_detail.html'
+				 });
 	       
 	     }]);/**/

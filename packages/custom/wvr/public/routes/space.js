@@ -7,10 +7,20 @@ angular.module('wvr.space')
         $stateProvider
             .state('spaces', {
               url: '/spaces',
-              templateUrl: 'wvr/views/space/home.html'
+              templateUrl: 'wvr/views/space/home.html',
+              resolve: {
+                  isAdmin: function(MeanUser) {
+                      return MeanUser.checkAdmin();
+                  }
+              }
             }).state('spaces1', {
                 url: '/spaces/',
-                templateUrl: 'wvr/views/space/home.html'
+                templateUrl: 'wvr/views/space/home.html',
+                resolve: {
+                    isAdmin: function(MeanUser) {
+                        return MeanUser.checkAdmin();
+                    }
+                }
             })
             .state('space', {
               url: '/spaces/:spaceId',

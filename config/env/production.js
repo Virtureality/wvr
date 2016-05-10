@@ -30,7 +30,7 @@ module.exports = {
   },
   hostname: 'http://wvr.edening.net',
   app: {
-    name: 'WVR - World Virtual Reality'
+    name: 'VST - Virtual Space Time'
   },
   logging: {
     format: 'combined'
@@ -70,13 +70,22 @@ module.exports = {
         enabled: false
       }
   },
-    emailFrom: 'fbl.edening@gmail.com', // sender address like ABC <abc@example.com>
+    /*emailFrom: 'fbl.edening@gmail.com', // sender address like ABC <abc@example.com>
     mailer: {
         service: 'gmail', // Gmail, SMTP
         auth: {
             user: 'fbl.edening@gmail.com',
             pass: 'fbl1111$'
         }
+    },*/
+    emailFrom: 'edening@yeah.net', // sender address like ABC <abc@example.com>
+    mailer: {
+        host: 'smtp.yeah.net',
+        port: 25,
+        auth: {
+            user: 'edening@yeah.net',
+            pass: 'fbl11111'
+        }
     },
-  secret: 'FBL_WVR_TOKEN_SECRET_PROD'
+    secret: 'FBL_WVR_TOKEN_SECRET_PROD'
 };

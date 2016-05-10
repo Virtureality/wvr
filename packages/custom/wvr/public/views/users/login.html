@@ -1,31 +1,31 @@
 <div data-ng-controller="LoginCtrl as login">
 
-    <div class="alert alert-danger animated fadeIn" ng-show="login.loginError">{{login.loginError}}</div>
+    <div class="alert alert-danger animated fadeIn" ng-show="login.loginError" translate="INFO_AUTHFAILED"></div>
+    <div class="alert alert-success animated fadeIn" ng-show="passwordreset" translate="INFO_PWDRESET"></div>
 
-    <h2>Login</h2>
+    <h2 translate="LOGIN"></h2>
 
     <form id="login_form" ng-submit="login.login()">
         <div class="wvr-input-wrapper">
-            <input required id="email_block" type="email" name="email" placeholder="Email Address" ng-model="login.user.email">
-            <div class="wvr-error_message">Please enter a correct info #</div>
+            <input required id="email_block" type="email" name="email" placeholder="{{'INFO_PLACEHOLDER_EMAIL' | translate}}" ng-model="login.user.email">
+            <div class="wvr-error_message" translate="TXT_CORRECTINFO"></div>
             <span class="wvr-pic email"></span>
         </div>
         <div class="wvr-input-wrapper">
-            <input required id="password_block" name="password" type="{{login.input.type}}" placeholder="{{login.input.placeholder}}" ng-model="login.user.password">
-            <div class="wvr-error_message">Please enter a correct info #</div>
+            <input required id="password_block" name="password" type="{{login.input.type}}" placeholder="{{'INFO_PLACEHOLDER_PWD' | translate}}" ng-model="login.user.password">
+            <div class="wvr-error_message" translate="TXT_CORRECTINFO"></div>
                 <span class="wvr-pic password {{login.input.iconClass}}" ng-click = "login.togglePasswordVisible()">
-                      <div class="wvr-hide_text_password">
-                          {{login.input.tooltipText}}
+                      <div class="wvr-hide_text_password" translate="{{login.input.tooltipText}}">
                       </div>
                 </span>
         </div>
         <div class="wvr-forgot_password">
-            <a ui-sref='forgot-password'>Forgot your password?</a>
+            <a ui-sref='forgot-password' translate="TXT_FORGOTPWD"></a>
         </div>
         <div class="wvr-button_login">
-            <button type="submit" class="wvr-submit_button">Login</button>
-            <p>No Account?</p>
-            <a ui-sref='auth.register' >Sign up</a>
+            <button type="submit" class="wvr-submit_button" translate="LOGIN"></button>
+            <p translate="TXT_NOACCOUNT"></p>
+            <a ui-sref='auth.register' translate="TXT_SIGNUP"></a>
         </div>
     </form>
 </div>

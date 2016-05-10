@@ -33,6 +33,10 @@ function assembleSpace(space, req) {
 			space.spaces = spaceObj.spaces;
 		}
 
+		if(spaceObj.locker && spaceObj.locker != '') {
+			space.locker = spaceObj.locker;
+		}
+
 	}
 
 	return space;
@@ -40,7 +44,7 @@ function assembleSpace(space, req) {
 
 // jshint -W098 
 // The Package is past automatically as first parameter
-module.exports = function(Wvr, app, auth, database) {
+module.exports = function(Wvr, app, auth, database, passport) {
 
 	var express = require('express');
 	var router = express.Router();
@@ -52,6 +56,8 @@ module.exports = function(Wvr, app, auth, database) {
 	 	console.log('Time: ', Date.now());
 	 	next();
 	 });*/
+
+	router.all('*', passport.authenticate('bearer', { session: false }));
 
 	router.route('/spaces')
 		.get(function(req, res, next) {
@@ -135,7 +141,7 @@ module.exports = function(Wvr, app, auth, database) {
 							if(err) {
 								res.send(err);
 							} else {
-								res.json({"message": 'Space Created!', "space": space});
+								res.json({"message": 'Space Created!', "space": space.toJSON()});
 							}
 						})
 						.populate('owner', '_id email name');
@@ -152,31 +158,35 @@ module.exports = function(Wvr, app, auth, database) {
 					if(err) {
 						res.send(err);
 					} else {
-						res.json(space);
+						res.json(space? space.toJSON(): space);
 					}
 				})
 				.populate('owner', '_id email name')
 				.populate('facilities.owner', '_id email name');
 		})
 		.put(function(req, res, next) {
-			var query;
 
-			query = SpaceModel.findOneAndUpdate({ uuid: req.params.spaceId }, req.body);
-
-			query.exec(function(err, result) {
-				if(err) {
+			SpaceModel.findOne({ uuid: req.params.spaceId }, function (err, result) {
+				if (err) {
 					res.send(err);
 				} else {
-					SpaceModel
-						.findById(result, function(err, space) {
-							if(err) {
-								res.send(err);
-							} else {
-								res.json({"message": 'Space Updated!', "space": space});
-							}
-						})
-						.populate('owner', '_id email name')
-						.populate('facilities.owner', '_id email name');
+					result = assembleSpace(result, req);
+					result.save(function(err) {
+						if(err) {
+							res.send(err);
+						} else {
+							SpaceModel
+								.findById(result, function(err, space) {
+									if(err) {
+										res.send(err);
+									} else {
+										res.json({"message": 'Space Updated!', "space": space.toJSON()});
+									}
+								})
+								.populate('owner', '_id email name')
+								.populate('facilities.owner', '_id email name');
+						}
+					});
 				}
 			});
 
@@ -191,6 +201,19 @@ module.exports = function(Wvr, app, auth, database) {
 					res.json({message: 'Successfully Deleted!'});
 				}
 			});
+		});
+
+	router.route('/key')
+		.post(function(req, res, next) {
+			SpaceModel
+				.findOne({ uuid: req.body.spaceId }, function(err, space) {
+					if(err) {
+						res.send(err);
+					} else {
+						var result = space.verifyKey(req.body.key);
+						res.json({pass: result});
+					}
+				});
 		});
 
 	app.use('/api/wvr/space', router);

@@ -10,8 +10,8 @@ angular.module('mean.wvr').controller('WvrController', ['$scope', 'Global', 'Wvr
   }
 ]);
 
-angular.module('mean.wvr').controller('WvrHeaderController', ['$scope', '$rootScope', 'Menus', 'MeanUser', '$state', '$cookies', '$location',
-  function($scope, $rootScope, Menus, MeanUser, $state, $cookies, $location) {
+angular.module('mean.wvr').controller('WvrHeaderController', ['$scope', '$rootScope', 'Menus', 'MeanUser', '$state', '$cookies', '$location', '$translate',
+  function($scope, $rootScope, Menus, MeanUser, $state, $cookies, $location, $translate) {
 
     var vm = this;
 
@@ -64,17 +64,51 @@ angular.module('mean.wvr').controller('WvrHeaderController', ['$scope', '$rootSc
         isAdmin: false
       };
       queryMenu('wvr', defaultMainMenu);
-      $location.path($cookies.redirect || '/');
+      //$location.path($cookies.redirect || '/');
+      window.location.reload(true);
     });
 
-    $scope.$on('$locationChangeSuccess',function(evt, absNewUrl, absOldUrl) {
+    $rootScope.$on('$locationChangeSuccess',function(evt, absNewUrl, absOldUrl) {
 
-      if(absNewUrl.indexOf('/login') !== -1) {
+      if(absNewUrl.indexOf('/login') !== -1 || absNewUrl.indexOf('/register') !== -1) {
         var pathIndex = $location.absUrl().indexOf($location.path());
-        $cookies.redirect = absOldUrl.substr(pathIndex, absOldUrl.length);
+        $cookies.redirect = absOldUrl.substr(pathIndex, absOldUrl.length) || '/';
+      }
+
+      if(absOldUrl.indexOf('/login') !== -1 || absOldUrl.indexOf('/register') !== -1 || $location.url() == '/') {
+        window.location.reload(true);
       }
 
     });
+
+    $scope.changeLanguage = changeLang;
+
+    function changeLang(langKey) {
+
+      $translate.use(langKey);
+
+      if(langKey && langKey === 'zh') {
+        $('#zhSelector').attr('class', 'btn btn-warning');
+        $('#enSelector').attr('class', 'btn');
+        $rootScope.ourCoreValues = '/wvr/assets/img/guides/Edening_Guide_Values.png';
+      } else if(langKey && langKey === 'en') {
+        $('#enSelector').attr('class', 'btn btn-warning');
+        $('#zhSelector').attr('class', 'btn');
+        $rootScope.ourCoreValues = '/wvr/assets/img/guides/Edening_Guide_Values_en.png';
+      }
+    };
+
+    var preferredLanguage = getPreferredLanguage();
+
+    if(preferredLanguage === 'zh' || preferredLanguage === 'en') {
+      changeLang(preferredLanguage);
+    }
+
+    function getPreferredLanguage() {
+      var resultLanguage = navigator.languages[0] || navigator.language || navigator.browserLanguage || navigator.systemLanguage || navigator.userLanguage;
+
+      return resultLanguage;
+    }
 
   }
 ]);

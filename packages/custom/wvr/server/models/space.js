@@ -4,7 +4,8 @@
  * Module dependencies.
  */
 var mongoose = require('mongoose'),
-    Schema = mongoose.Schema;
+    Schema = mongoose.Schema,
+    crypto    = require('crypto');
 
 /**
  * Facility Schema
@@ -36,6 +37,8 @@ var SpaceSchema = new Schema({
     type: {type: String},
     facilities: [FacilitySchema],
     spaces: [{type: Schema.Types.ObjectId, ref: 'SpaceSchema'}],
+    salt: String,
+    hashed_locker: {type: String},
     extra: {}
 }, { strict: true })
     .index({uuid: 'text', name: 'text', owner: 'text'});
@@ -48,5 +51,71 @@ SpaceSchema.pre('save', function(next){
 
     next();
 });
+
+/**
+ * Virtuals
+ */
+SpaceSchema.virtual('locker').set(function(locker) {
+    this._locker = locker;
+    this.salt = this.makeSalt();
+    this.hashed_locker = this.hash(locker);
+}).get(function() {
+    return this._locker;
+});
+
+/**
+ * Methods
+ */
+SpaceSchema.methods = {
+
+    /**
+     * Make salt
+     *
+     * @return {String}
+     * @api public
+     */
+    makeSalt: function() {
+        return crypto.randomBytes(16).toString('base64');
+    },
+
+    /**
+     * Hash txt
+     *
+     * @param {String} txt
+     * @return {String}
+     * @api public
+     */
+    hash: function(txt) {
+        if (!txt || !this.salt) return '';
+        var salt = new Buffer(this.salt, 'base64');
+        return crypto.pbkdf2Sync(txt, salt, 10000, 64).toString('base64');
+    },
+
+    /**
+     * VerifyKey - check if the passwords are the same
+     *
+     * @param {String} plainText
+     * @return {Boolean}
+     * @api public
+     */
+    verifyKey: function(plainText) {
+        return this.hash(plainText) === this.hashed_locker;
+    },
+
+    /**
+     * Hide security sensitive fields
+     *
+     * @returns {*|Array|Binary|Object}
+     */
+    toJSON: function() {
+        var obj = this.toObject();
+        if(obj.hashed_locker) {
+            obj.locker = true;
+        }
+        delete obj.hashed_locker;
+        delete obj.salt;
+        return obj;
+    }
+};
 
 mongoose.model('Space', SpaceSchema);

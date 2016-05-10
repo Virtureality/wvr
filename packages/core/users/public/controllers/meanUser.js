@@ -28,14 +28,14 @@ angular.module('mean.users')
         placeholder: 'Password',
         confirmPlaceholder: 'Repeat Password',
         iconClass: '',
-        tooltipText: 'Show password'
+        tooltipText: 'INFO_SHOWPWD'
       };
 
       vm.togglePasswordVisible = function() {
         vm.input.type = vm.input.type === 'text' ? 'password' : 'text';
         vm.input.placeholder = vm.input.placeholder === 'Password' ? 'Visible Password' : 'Password';
         vm.input.iconClass = vm.input.iconClass === 'icon_hide_password' ? '' : 'icon_hide_password';
-        vm.input.tooltipText = vm.input.tooltipText === 'Show password' ? 'Hide password' : 'Show password';
+        vm.input.tooltipText = vm.input.tooltipText === 'INFO_SHOWPWD' ? 'INFO_HIDEPWD' : 'INFO_SHOWPWD';
       };
 
       $rootScope.$on('loginfailed', function(){
@@ -53,7 +53,7 @@ angular.module('mean.users')
       var vm = this;
 
       vm.user = {};
-      
+
       vm.registerForm = MeanUser.registerForm = true;
 
       vm.input = {
@@ -69,13 +69,13 @@ angular.module('mean.users')
         vm.input.type = vm.input.type === 'text' ? 'password' : 'text';
         vm.input.placeholder = vm.input.placeholder === 'Password' ? 'Visible Password' : 'Password';
         vm.input.iconClass = vm.input.iconClass === 'icon_hide_password' ? '' : 'icon_hide_password';
-        vm.input.tooltipText = vm.input.tooltipText === 'Show password' ? 'Hide password' : 'Show password';
+        vm.input.tooltipText = vm.input.tooltipText === 'INFO_SHOWPWD' ? 'INFO_HIDEPWD' : 'INFO_SHOWPWD';
       };
       vm.togglePasswordConfirmVisible = function() {
         vm.input.type = vm.input.type === 'text' ? 'password' : 'text';
         vm.input.placeholderConfirmPass = vm.input.placeholderConfirmPass === 'Repeat Password' ? 'Visible Password' : 'Repeat Password';
         vm.input.iconClassConfirmPass = vm.input.iconClassConfirmPass === 'icon_hide_password' ? '' : 'icon_hide_password';
-        vm.input.tooltipTextConfirmPass = vm.input.tooltipTextConfirmPass === 'Show password' ? 'Hide password' : 'Show password';
+        vm.input.tooltipTextConfirmPass = vm.input.tooltipTextConfirmPass === 'INFO_SHOWPWD' ? 'INFO_HIDEPWD' : 'INFO_SHOWPWD';
       };
 
       // Register the register() function
@@ -101,8 +101,8 @@ angular.module('mean.users')
       });
     }
   ])
-  .controller('ResetPasswordCtrl', ['MeanUser', '$rootScope',
-    function(MeanUser, $rootScope) {
+  .controller('ResetPasswordCtrl', ['MeanUser', '$rootScope', '$location', '$timeout',
+    function(MeanUser, $rootScope, $location, $timeout) {
       var vm = this;
       vm.user = {};      
       vm.registerForm = MeanUser.registerForm = false;
@@ -114,5 +114,18 @@ angular.module('mean.users')
         vm.validationError = MeanUser.validationError;
         vm.resetpassworderror = MeanUser.resetpassworderror;
       });
+
+      $rootScope.$on('passwordreset', function(event, args){
+        vm.response = args;
+        if(args.msg) {
+          $rootScope.passwordreset = 'You just reset your password! :)';
+        }
+        //setTimeout(goToLogin, 1000);
+        $timeout(goToLogin, 1000);
+      });
+
+      function goToLogin() {
+        $location.path('/auth/login');
+      }
     }
   ]);
