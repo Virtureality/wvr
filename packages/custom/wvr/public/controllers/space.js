@@ -379,7 +379,7 @@ angular.module('wvr.space')
                    "spaces": [{type: "Building"}, {type: "Room"}, {type: "Office"}, {type: "Studio"}, {type: "Workspace"}]
                    };*/
                   $scope.designerResources = {
-                    "facilities": [{type: "Seat", imgURL: "/wvr/assets/img/Seat.png", extra: {}}, {type: "SpaceGate", imgURL: "/wvr/assets/img/SpaceGate.png", extra: {address: ""}}],
+                    "facilities": [{type: "Seat", imgURL: "https://edening.oss-cn-shenzhen.aliyuncs.com/img/Seat.png", extra: {}}, {type: "SpaceGate", imgURL: "https://edening.oss-cn-shenzhen.aliyuncs.com/img/SpaceGate.png", extra: {address: ""}}],
                     "spaces": [{type: "Studio", extra: {}}]
                   };
                   $scope.trash = [];

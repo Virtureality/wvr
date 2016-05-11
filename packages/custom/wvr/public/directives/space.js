@@ -208,7 +208,7 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', '$transl
                                 seatTakeElement.bind('click', takeSeatHandler);
                                 var userVideoPElement = userVideo.parent().parent();
                                 userVideoPElement.children().remove();
-                                $('<img/>').attr('src', '/wvr/assets/img/ws-cube-md.png').appendTo(seatTakeElement);
+                                $('<img/>').attr('src', 'https://edening.oss-cn-shenzhen.aliyuncs.com/img/ws-cube-md.png').appendTo(seatTakeElement);
                                 userVideoPElement.append(seatTakeElement);
                             }
                         }
@@ -623,13 +623,13 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', '$transl
                                     if(facilityElement.length == 1) {
                                         if(facility.type === "Seat") {
                                             var seatTakeElement = $('<a/>');
-                                            $('<img/>').attr('src', '/wvr/assets/img/ws-cube-md.png').appendTo(seatTakeElement);
+                                            $('<img/>').attr('src', 'https://edening.oss-cn-shenzhen.aliyuncs.com/img/ws-cube-md.png').appendTo(seatTakeElement);
                                             seatTakeElement.bind('click', takeSeatHandler);
                                             seatTakeElement.appendTo(facilityElement);
                                         } else if(facility.type === "SpaceGate" && facility.extra && facility.extra.address) {
                                             var spaceURL = '/spaces/' + facility.extra.address;
                                             var enterSpaceElement = $('<a/>').attr('href', spaceURL).attr('_target', '_self');
-                                            $('<img/>').attr('src', '/wvr/assets/img/team-space-md.png').appendTo(enterSpaceElement);
+                                            $('<img/>').attr('src', 'https://edening.oss-cn-shenzhen.aliyuncs.com/img/team-space-md.png').appendTo(enterSpaceElement);
                                             enterSpaceElement.bind('click', enterSpaceHandler);
                                             enterSpaceElement.appendTo(facilityElement);
                                             $('<button/>').attr('class', 'btn btnIptSmOR badge').text(facility.extra.address).appendTo($('#facility-' + facility._id));
@@ -813,7 +813,7 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', '$transl
                                     var seatTakeElement = $('<a/>');
                                     seatTakeElement.bind('click', takeSeatHandler);
                                     userPElement.children().remove();
-                                    $('<img/>').attr('src', '/wvr/assets/img/ws-cube-md.png').appendTo(seatTakeElement);
+                                    $('<img/>').attr('src', 'https://edening.oss-cn-shenzhen.aliyuncs.com/img/ws-cube-md.png').appendTo(seatTakeElement);
                                     seatTakeElement.appendTo(userPElement);
 
                                     if(tryingTakeSeatObj[takerPosition]) {
