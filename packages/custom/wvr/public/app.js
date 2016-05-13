@@ -82,7 +82,7 @@ var translations_zh = {
     CLOSE: '关闭',
     SEARCH: '搜索',
     DROP_AREA_TRASH: '回收站',
-    LINK_CHROME_DOWNLOAD: 'http://www.chromeliulanqi.com/',
+    LINK_CHROME_DOWNLOAD: 'https://www.baidu.com/s?wd=chrome',
     LINK_SCREENEXT_CHROME: '/wvr/assets/downloads/screen.crx',
     INFO_ECHO_SUGGESTION: '&nbsp;如果有回音干扰，请使用耳机！ :)',
     INFO_BIZ_CONTACT: '&nbsp;如果您有类似的需求，请通过底部的信息联系我们！ :)&nbsp;',
