@@ -748,9 +748,7 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', '$transl
                 }
 
                 function startSharing() {
-                    scope.$apply(function() {
-                        scope.shareText = 'TXT_PROCESSING';
-                    });
+                    scope.shareText = 'TXT_PROCESSING';
                     setButton($('#screenActionButton'), '', true);
 
                     wvrmitScreenConnection.isInitiator = true;
