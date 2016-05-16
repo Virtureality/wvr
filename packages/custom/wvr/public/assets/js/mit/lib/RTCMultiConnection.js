@@ -3931,6 +3931,10 @@
                 });
             }*/
 
+            if (signalingHandler.requestsFrom) {
+                signalingHandler.requestsFrom = {};
+            }
+
             var alertMessage = {
                 left: true,
                 extra: connection.extra || {},
