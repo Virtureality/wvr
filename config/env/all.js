@@ -14,9 +14,11 @@ module.exports = {
 
     // Paths to key and cert as string
     ssl: {
-      key: rootPath + '/config/sslcert/letsencrypt/privkey.key',
-      cert: rootPath + '/config/sslcert/letsencrypt/fullchain.crt'
-    }
+      key: rootPath + '/config/sslcert/letsencrypt/privkey.pem',
+      cert: rootPath + '/config/sslcert/letsencrypt/fullchain.pem'
+    },
+    
+    letsencryptDir: rootPath + '/config/sslcert/letsencrypt/etc'
   },
   hostname: process.env.HOST || process.env.HOSTNAME,
   db: process.env.MONGOHQ_URL,

@@ -13,11 +13,32 @@ var mean = require('meanio'),
   flash = require('connect-flash'),
   modRewrite = require('connect-modrewrite'),
   // seo = require('mean-seo'),
-  config = mean.loadConfig();
-    //LE = require('letsencrypt')
-    //lex = require('letsencrypt-express').testing();
+  appConfig = mean.loadConfig();
+
 
 module.exports = function(app, db) {
+
+  /* Note: using staging server url, remove .testing() for production
+   Using .testing() will overwrite the debug flag with true */
+  /*var LEX = require('letsencrypt-express').testing();
+
+  // Change these two lines!
+  var DOMAIN = 'localhost';
+  var EMAIL = 'mahaofeng81@163.com';
+
+  var lex = LEX.create({
+    configDir: appConfig.https.letsencryptDir
+    , onRequest: app
+    , approveRegistration: function (hostname, approve) { // leave `null` to disable automatic registration
+      if (hostname === DOMAIN) { // Or check a database or list of allowed domains
+        approve(null, {
+          domains: [DOMAIN]
+          , email: EMAIL
+          , agreeTos: true
+        });
+      }
+    }
+  });*/
 
   app.set('showStackError', true);
 
@@ -36,20 +57,20 @@ module.exports = function(app, db) {
   }));
 
   // Enable compression on bower_components
-  app.use('/bower_components', express.static(config.root + '/bower_components'));
+  app.use('/bower_components', express.static(appConfig.root + '/bower_components'));
 
   // Adds logging based on logging config in config/env/ entry
-  require('./middlewares/logging')(app, config.logging);
+  require('./middlewares/logging')(app, appConfig.logging);
 
   // assign the template engine to .html files
-  app.engine('html', consolidate[config.templateEngine]);
+  app.engine('html', consolidate[appConfig.templateEngine]);
 
   // set .html as the default extension
   app.set('view engine', 'html');
 
 
   // Dynamic helpers
-  app.use(helpers(config.app.name));
+  app.use(helpers(appConfig.app.name));
 
   // Connect flash for flash messages
   app.use(flash());
@@ -62,61 +83,58 @@ module.exports = function(app, db) {
 
   // app.use(seo());
 
-  /*// Note: you should make this special dir in your product and leave it empty
-  config.le.webrootPath = __dirname + '/../test/acme-challenge';
-  config.le.server = LE.stagingServer;
+  /*var LE = require('letsencrypt');
 
-  var le = LE.create(config.le, {
-    sniRegisterCallback: function (args, expiredCert, cb) {
-      // In theory you should never get an expired certificate because
-      // the certificates automatically renew in the background starting
-      // about a week before they expire.
-      // (the default behavior is to randomly stagger renewals)
-      // so in this case we'll just return the expired certificate
-      if (expiredCert) { return cb(null, expiredCert); }
 
-      // If we get here that means this domain hasn't been registered yet
-      // Security Warning: you should either manually register domains
-      // and return null here or check that the sni header isn't being
-      // spoofed and this is actually a domain you own before registering
-      //
-      //   cb(null, null);
+  var leConfig = {
+    server: LE.stagingServerUrl                               // or LE.productionServerUrl
 
-      var hostname = args.domains[0];
-      console.log("[TODO] check that '" + hostname + "' is one I expect");
+    , configDir: './letsencrypt/etc'      // or /etc/letsencrypt or wherever
 
-      args.agreeTos = true;
-      args.email = 'mahaofeng81@163.com';
+    , privkeyPath: ':config/live/:hostname/privkey.pem'         //
+    , fullchainPath: ':config/live/:hostname/fullchain.pem'     // Note: both that :config and :hostname
+    , certPath: ':config/live/:hostname/cert.pem'               //       will be templated as expected
+    , chainPath: ':config/live/:hostname/chain.pem'             //
 
-      le.register(args, cb);
+    , debug: false
+  };
+
+
+  var handlers = {
+    setChallenge: function (opts, hostname, key, val, cb) {}  // called during the ACME server handshake, before validation
+    , removeChallenge: function (opts, hostname, key, cb) {}    // called after validation on both success and failure
+    , getChallenge: function (opts, hostname, key, cb) {}       // this is special because it is called by the webserver
+                                                                // (see letsencrypt-cli/bin & letsencrypt-express/standalone),
+                                                                // not by the library itself
+
+    , agreeToTerms: function (tosUrl, cb) {}                    // gives you an async way to expose the legal agreement
+                                                                // (terms of use) to your users before accepting
+  };
+
+
+  var le = LE.create(leConfig, handlers);
+
+  // checks :conf/renewal/:hostname.conf
+  le.register({                                                 // and either renews or registers
+
+    domains: ['localhost']                                    // CHANGE TO YOUR DOMAIN
+    , email: 'mahaofeng81@163.com'                                     // CHANGE TO YOUR EMAIL
+    , agreeTos: true                                             // set to true to automatically accept an agreement
+                                                                  // which you have pre-approved (not recommended)
+  }, function (err) {
+
+    if (err) {
+      // Note: you must have a webserver running
+      // and expose handlers.getChallenge to it
+      // in order to pass validation
+      // See letsencrypt-cli and or letsencrypt-express
+      console.error('[Error]: node-letsencrypt/examples/standalone');
+      console.error(err.stack);
+    } else {
+      console.log('success');
     }
   });
 
-  app.use('/', le.middleware());
-
-  require('https').createServer({
-    key: config.le.daplieTLSKey,
-    cert: config.le.daplieTLSCert,
-    SNICallback: le.sniCallback
-  }, app).listen(config.le.tlsPort, function () {
-    console.log('Listening https: ', this.address());
-  });*/
-
-  /*lex.create({
-    configDir: './letsencrypt.config',                 // ~/letsencrypt, /etc/letsencrypt, whatever you want
-    onRequest: app,                                    // your express app (or plain node http app)
-    letsencrypt: null,                                // you can provide your own instance of letsencrypt
-                                                        // if you need to configure it (with an agreeToTerms
-                                                        // callback, for example)
-    /!*approveRegistration: function (hostname, cb) {    // PRODUCTION MODE needs this function, but only if you want automatic registration (usually not necessary) renewals for registered domains will still be automatic
-      cb(null, {
-        domains: [hostname],
-        email: 'mahaofeng81@163.com',
-        agreeTos: true
-      });
-    }*!/
-  }).listen([80], [443, 5001], function () {
-    console.log('LetsEncrypt protected https server listening on: ', this.address());
-  });*/
+  app.use('/', le.middleware());*/
 
 };
