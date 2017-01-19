@@ -41,7 +41,84 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', '$transl
                 var tryingToTakeSeatTime;
                 var tryingTakeSeatObj = {};
 
+                var oldOnlineStatus = navigator.onLine;
+                var continuousOfflineCount = 0;
+                
+                function reload() {
+                    window.location.reload(true);
+                }
+
+                function reInitiate() {
+                    wvrmitConnection.sendCustomMessage({
+                        msgType: 'reInitiateRTCRoom',
+                        roomId: mname,
+                        requestor: wvrmitConnection.userid
+                    });
+                }
+
+                function processOnlineStatusChange() {
+
+                    if(!navigator.onLine && !oldOnlineStatus) {
+                        continuousOfflineCount = continuousOfflineCount + 1;
+                    }
+
+                    if(oldOnlineStatus !== navigator.onLine) {
+                        oldOnlineStatus = navigator.onLine;
+                        scope.$apply(function() {
+                            if(navigator.onLine) {
+                                scope.operationInfo = 'You are back online. Recovering...  :)';
+                                scope.alertStyle = 'alert-info';
+
+                                if(wvrmitConnection && wvrmitConnection.isInitiator) {
+
+                                    if(continuousOfflineCount >=3) {
+                                        scope.operationInfo = 'You are offline for too long. Reloading...  :)';
+                                        scope.alertStyle = 'alert-warning';
+
+                                        fixRTCRoom();
+
+                                        /*reInitiate();
+
+                                        setTimeout(reload, 3000);*/
+                                    } else {
+                                        continuousOfflineCount = 0;
+
+                                        wvrmitConnection.playRoleOfInitiator();
+
+                                        setTimeout(reInitiate, 3000);
+                                    }
+
+                                } else {
+                                    setTimeout(reload, 1000);
+                                }
+                            } else {
+                                scope.operationInfo = 'You are offline!!! We will try to recover when you are back online.  :(';
+                                scope.alertStyle = 'alert-warning';
+                            }
+                        });
+                    }
+
+                    setTimeout(processOnlineStatusChange, 6000);
+                }
+
                 activateRTCRoom();
+
+                function fixRTCRoom() {
+                    actionButton.unbind();
+
+                    wvrmitConnection.sendCustomMessage({
+                        msgType: 'fixRTCRoom',
+                        roomId: mname
+                    });
+
+                    setButton(actionButton, 'TXT_TAKECHARGEING', true);
+
+                    setTimeout(function() {
+                        if(!roomFixed) {
+                            setButton(actionButton, 'TXT_TAKECHARGE_FAILED', true);
+                        }
+                    }, 60000);
+                }
 
                 function activateRTCRoom() {
 
@@ -64,23 +141,6 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', '$transl
 
                             actionButton.unbind();
                             actionButton.bind('click', fixRTCRoom);
-
-                            function fixRTCRoom() {
-                                actionButton.unbind();
-
-                                wvrmitConnection.sendCustomMessage({
-                                    msgType: 'fixRTCRoom',
-                                    roomId: mname
-                                });
-
-                                setButton(actionButton, 'TXT_TAKECHARGEING', true);
-
-                                setTimeout(function() {
-                                    if(!roomFixed) {
-                                        setButton(actionButton, 'TXT_TAKECHARGE_FAILED', true);
-                                    }
-                                }, 60000);
-                            }
                         }
                     }
 
@@ -90,6 +150,68 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', '$transl
                         wvrmitConnection.openSignalingChannel = window.openSignalingChannel;
                     } else if(window.customSignaling && window.customSignaling === 'firebase' && window.signalingServer) {
                         wvrmitConnection.firebase = window.signalingServer;
+                    }
+
+                    function isEmpty(session) {
+                        if (!session) {
+                            throw 'Parameter is requried.';
+                        }
+
+                        var stringified = JSON.stringify(session);
+                        if (stringified === '{}' || !stringified.split(',').length) {
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    wvrmitConnection.ondisconnected = function (event) {
+                        if(navigator.onLine) {
+                            scope.$apply(function() {
+                                scope.operationInfo = 'Peer[' + event.userid + '] disconnected! Checking presence...';
+                                scope.alertStyle = 'alert-warning';
+                            });
+                        }
+
+                        if (isEmpty(wvrmitConnection.channels)) {
+                            return;
+                        }
+                        if (!wvrmitConnection.channels[event.userid]) {
+                            return;
+                        }
+
+                        // use WebRTC data channels to detect user's presence
+                        wvrmitConnection.channels[event.userid].send({
+                            checkingPresence: true
+                        });
+
+                        // wait 6 seconds, if target peer didn't response, simply disconnect
+                        setTimeout(function() {
+                            // iceConnectionState === 'disconnected' occurred out of low-bandwidth
+                            // or internet connectivity issues
+                            if (wvrmitConnection.peers[event.userid].connected) {
+                                scope.$apply(function() {
+                                    scope.operationInfo = 'Peer[' + event.userid + '] reconnected!';
+                                    scope.alertStyle = 'alert-info';
+                                });
+
+                                delete wvrmitConnection.peers[event.userid].connected;
+                                return;
+                            }
+
+                            scope.$apply(function() {
+                                scope.operationInfo = 'Peer[' + event.userid + '] left!';
+                                scope.alertStyle = 'alert-warning';
+                            });
+
+                            // to make sure this user's all remote streams are removed.
+                            wvrmitConnection.streams.remove({
+                                remote: true,
+                                userid: event.userid
+                            });
+
+                            wvrmitConnection.remove(event.userid);
+
+                        }, 6000);
                     }
 
                     wvrmitConnection.onstatechange = function(state) {
@@ -114,7 +236,7 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', '$transl
                         // request-rejected
 
                         if(state.name == 'detecting-room-presence') {
-                            setButton(actionButton, 'TXT_CHECKING', true);
+                            //setButton(actionButton, 'TXT_CHECKING', true);
                         }
 
                         if(state.name == 'room-available') {
@@ -122,7 +244,7 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', '$transl
                         }
 
                         if(state.name == 'room-not-available') {
-                            setButton(actionButton, 'TXT_NOTACCESSIBLE', true);
+                            //setButton(actionButton, 'TXT_NOTACCESSIBLE', true);
                         }
 
                         if(state.name == 'connected-with-initiator') {
@@ -250,6 +372,21 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', '$transl
 
                     };
 
+                    /*wvrmitConnection.onSessionClosed = function(session) {
+                        if (session.isEjected) {
+                            console.log(session.userid, 'ejected you.  :(');
+                        } else {
+                            scope.$apply(function() {
+                                scope.operationInfo = 'Encountered problem!!! Recovering...';
+                                scope.alertStyle = 'alert-warning';
+                            });
+
+                            if(wvrmitConnection && !wvrmitConnection.isInitiator) {
+                                setTimeout(recover, 6000);
+                            }
+                        }
+                    };*/
+
                     sendMsgButton.on('click', function() {
                         var msgBody = $('#message-text').val() || '';
                         if (msgBody && msgBody !== '') {
@@ -295,7 +432,7 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', '$transl
 
                     wvrmitConnection.onCustomMessage = function(msg) {
 
-                        /*console.log('onCustomMessage: ' + JSON.stringify(msg));*/
+                        //console.log('onCustomMessage: ' + JSON.stringify(msg));
 
                         if(msg.msgType === 'TryingToTakeSeat') {
                             if(!tryingTakeSeatObj[msg.seatID] || msg.triedTime < tryingTakeSeatObj[msg.seatID]) {
@@ -331,7 +468,17 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', '$transl
                         if(msg.msgType === 'rtcRoomFixed' && msg.roomId === mname && msg.requester === wvrmitConnection.userid) {
                             roomFixed = true;
                             setButton(actionButton, '', true, true);
-                            window.location.reload(true);
+                            reload();
+                            /*reInitiate();
+                            setTimeout(reload, 3000);*/
+                        }
+
+                        if(msg.msgType === 'reInitiateRTCRoom' && msg.roomId === mname && msg.requester !== wvrmitConnection.userid) {
+                            /*var numOfSeconds = Math.round((Math.random()*1000)%10);
+
+                            setTimeout(reload, numOfSeconds*1000);*/
+                            //alert('Reset!!!');
+                            reload();
                         }
 
                         if(msg.msgType === 'RoomStatusChange' && msg.roomId === mname) {
@@ -644,6 +791,8 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', '$transl
 
                     setTimeout(doMasonry, 1);
 
+                    setTimeout(processOnlineStatusChange, 6000);
+
                 }
 
                 function enableScreen() {
@@ -724,26 +873,29 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', '$transl
 
                 function enableScreenSharing() {
 
-                    wvrmitScreenConnection.refresh();
+                    if(wvrmitScreenConnection) {
 
-                    setTimeout(function() {
-                        wvrmitScreenConnection.sdpConstraints.mandatory = {
-                            OfferToReceiveAudio: false,
-                            OfferToReceiveVideo: true
-                        };
+                        wvrmitScreenConnection.refresh();
 
-                        wvrmitScreenConnection.session = {
-                            screen: true,
-                            oneway: true
-                        };
+                        setTimeout(function() {
+                            wvrmitScreenConnection.sdpConstraints.mandatory = {
+                                OfferToReceiveAudio: false,
+                                OfferToReceiveVideo: true
+                            };
 
-                        scope.$apply(function() {
-                            scope.screenAction = startSharing;
-                            scope.shareText = 'TXT_SHARE';
-                        });
-                        setButton($('#screenActionButton'), '', false);
-                        screenSharingDisabled = true;
-                    }, 3000);
+                            wvrmitScreenConnection.session = {
+                                screen: true,
+                                oneway: true
+                            };
+
+                            scope.$apply(function() {
+                                scope.screenAction = startSharing;
+                                scope.shareText = 'TXT_SHARE';
+                            });
+                            setButton($('#screenActionButton'), '', false);
+                            screenSharingDisabled = true;
+                        }, 3000);
+                    }
 
                 }
 
