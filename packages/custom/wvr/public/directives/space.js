@@ -72,7 +72,7 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', '$transl
                                 if(wvrmitConnection && wvrmitConnection.isInitiator) {
 
                                     if(continuousOfflineCount >=3) {
-                                        scope.operationInfo = 'You are offline for too long. Reloading...  :)';
+                                        scope.operationInfo = 'You are offline for too long. Resetting...  :)';
                                         scope.alertStyle = 'alert-warning';
 
                                         fixRTCRoom();
@@ -81,6 +81,9 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', '$transl
 
                                         setTimeout(reload, 3000);*/
                                     } else {
+                                        scope.operationInfo = 'Recovered from offline...  :)';
+                                        scope.alertStyle = 'alert-info';
+
                                         continuousOfflineCount = 0;
 
                                         wvrmitConnection.playRoleOfInitiator();
