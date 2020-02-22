@@ -31,7 +31,7 @@
     "gridfs-stream": "1.1.1",
     "jsonwebtoken": "5.0.5",
     "letsencrypt-express": "1.0.3",
-    "lodash": "3.10.1",
+    "lodash": "4.17.13",
     "meanio": "0.8.82",
     "mongoose": "4.1.7",
     "morgan": "1.6.1",
