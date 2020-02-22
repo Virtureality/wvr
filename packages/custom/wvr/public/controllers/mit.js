@@ -1,7 +1,6 @@
 'use strict';
 
-/* jshint -W098 */
-angular.module('wvr.mit')
+angular.module('mean.wvr')
     .controller('MitListController', ['$scope', '$rootScope', 'MeanUser',
       function($scope, $rootScope, MeanUser) {
           $scope.loginUser = MeanUser.user;
@@ -27,5 +26,4 @@ angular.module('wvr.mit')
             $rootScope.$on('loggedin', function() {
                 $scope.loginUser = MeanUser.user;
             });
-        }]);
-
+    }]);

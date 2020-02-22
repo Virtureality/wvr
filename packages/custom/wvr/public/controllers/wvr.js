@@ -1,7 +1,8 @@
 'use strict';
 
 /* jshint -W098 */
-angular.module('mean.wvr').controller('WvrController', ['$scope', 'Global', 'Wvr',
+angular.module('mean.wvr')
+.controller('WvrController', ['$scope', 'Global', 'Wvr',
   function($scope, Global, Wvr) {
     $scope.global = Global;
     $scope.package = {
@@ -10,7 +11,8 @@ angular.module('mean.wvr').controller('WvrController', ['$scope', 'Global', 'Wvr
   }
 ]);
 
-angular.module('mean.wvr').controller('WvrHeaderController', ['$scope', '$rootScope', 'Menus', 'MeanUser', '$state', '$cookies', '$location', '$translate',
+angular.module('mean.wvr')
+.controller('WvrHeaderController', ['$scope', '$rootScope', 'Menus', 'MeanUser', '$state', '$cookies', '$location', '$translate',
   function($scope, $rootScope, Menus, MeanUser, $state, $cookies, $location, $translate) {
 
     var vm = this;

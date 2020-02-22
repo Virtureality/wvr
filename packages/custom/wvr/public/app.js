@@ -302,22 +302,13 @@ var translations_en = {
     TXT_RESET: 'Reset'
 };
 
-angular.module('mean.wvr').config(['$translateProvider', function ($translateProvider) {
+angular.module('mean.wvr')
+.config(['$translateProvider', function ($translateProvider) {
     // add translation table
     $translateProvider
         .translations('zh', translations_zh)
         .translations('en', translations_en)
         .determinePreferredLanguage()
-        //.preferredLanguage('zh')
-        //.fallbackLanguage('en')
         .fallbackLanguage('zh')
         ;
 }]);
-
-var spaceApp = angular.module('wvr.space', ['ngDragDrop', 'pageslide-directive']);
-
-spaceApp.run(['$http', function($http){
-    $http.defaults.headers.common.fabala = 'U2FsdGVkX18JP//uQdpiPtgZhamanCbwmNLvFuvpDM7yXEi7HtTyZRGSZadLCyukzuTJppCkjjEV1QXqplPiAA==';
-}]);
-
-var mitApp = angular.module('wvr.mit', []);

@@ -1,4 +1,5 @@
-angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', '$translate', function($timeout, $http, $translate) {
+angular.module('mean.wvr')
+.directive('wvrSpace', ['$timeout', '$http', '$translate', function($timeout, $http, $translate) {
     return {
         priority: 10,
         link: function(scope, elm, attrs) {
@@ -523,7 +524,8 @@ angular.module('wvr.space').directive('wvrSpace', ['$timeout', '$http', '$transl
                 function processKey(key) {
 
                     $http
-                        .post('/api/proxy/wvr/space/key', {
+                        .post('/api/wvr/space/key', {
+                        //.post('/api/proxy/wvr/space/key', {
                             spaceId: mname,
                             key: key
                         })

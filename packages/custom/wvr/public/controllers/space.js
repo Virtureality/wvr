@@ -1,10 +1,19 @@
 'use strict';
 
-/* jshint -W098 */
+/*angular.module('wvr.space', ['ngDragDrop', 'pageslide-directive']);
+
 angular.module('wvr.space')
+  .run(['$http', function($http){
+      $http.defaults.headers.common.fabala = 'U2FsdGVkX18JP//uQdpiPtgZhamanCbwmNLvFuvpDM7yXEi7HtTyZRGSZadLCyukzuTJppCkjjEV1QXqplPiAA==';
+  }]);
+
+angular.module('wvr.space')*/
+
+angular.module('mean.wvr')
     .controller('SpaceListController', ['$scope', 'Space',
       function($scope, Space) {
-        $scope.url = '/api/proxy/wvr/space/spaces';
+        $scope.url = '/api/wvr/space/spaces';
+        //$scope.url = '/api/proxy/wvr/space/spaces';
         $scope.search = function() {
           $scope.urlParams = {
             q: $scope.q
@@ -33,8 +42,9 @@ angular.module('wvr.space')
           //$scope.operationInfo = 'Searching for users ...';
           $scope.operationInfo = '';
 
-          $http.post('/api/proxy/wvr/user/users', { "keywords" : $scope.keywords}).
-              success(function(data, status) {
+          $http.post('/api/wvr/user/users', { "keywords" : $scope.keywords})
+          //$http.post('/api/proxy/wvr/user/users', { "keywords" : $scope.keywords})
+              .success(function(data, status) {
                 $scope.userSearchStatus = status;
                 $scope.userSearchData = data;
                 $scope.resultUserList = data;
@@ -482,4 +492,3 @@ angular.module('wvr.space')
         );
 
     }]);
-

@@ -57,7 +57,7 @@ module.exports = function(Wvr, app, auth, database, passport) {
 	 	next();
 	 });*/
 
-	router.all('*', passport.authenticate('bearer', { session: false }));
+	//router.all('*', passport.authenticate('bearer', { session: false }));
 
 	router.route('/spaces')
 		.get(function(req, res, next) {
@@ -216,6 +216,6 @@ module.exports = function(Wvr, app, auth, database, passport) {
 				});
 		});
 
+  //app.use('/api/proxy/wvr/space/', router);
 	app.use('/api/wvr/space', router);
-
 };
