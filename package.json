@@ -33,7 +33,7 @@
     "letsencrypt-express": "1.0.3",
     "lodash": "3.10.1",
     "meanio": "0.8.82",
-    "mongoose": "4.1.7",
+    "mongoose": "5.7.5",
     "morgan": "1.6.1",
     "ms": "0.7.1",
     "node-cryptojs-aes": "0.4.0",
