@@ -1,5 +1,9 @@
 > A memorial appreciation for the [revival](https://github.com/Virtureality)
 
+:whale: **#Won't be maintained any longer!!!#**
+
+---
+
 # Getting Started ：）
 
 -> Set up prerequisites for [MEAN.IO](https://github.com/Virtureality/wvr#mean-stack)
