@@ -1,0 +1,31 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>WVR » World Virtual Reality</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+        <link rel="author" type="text/html" href="https://edening.cn">
+        <meta name="author" content="Edening">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    </head>
+
+    <body>
+        <article>
+            <div>Great! You should be redirected back shortly. If not, please revisit the original address.</div>
+        </article>
+        <script>
+
+            var oldLocation = window.location;
+            //console.log('oldLocation.href: ' + oldLocation.href);
+            var redirectURL = getURLParam(oldLocation, 'redirect');
+            //console.log('redirectURL: ' + redirectURL);
+            window.location.replace(redirectURL);
+
+            function getURLParam (oTarget, sVar) {
+                return decodeURI(oTarget.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURI(sVar).replace(/[\.\+\*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1"));
+            }
+
+        </script>
+    </body>
+</html>

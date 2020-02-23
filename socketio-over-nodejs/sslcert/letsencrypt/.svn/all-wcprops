@@ -1,0 +1,17 @@
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/1916948586110141/!svn/ver/160/165841/1/sslcert/letsencrypt
+END
+privkey.key
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/1916948586110141/!svn/ver/160/165841/1/sslcert/letsencrypt/privkey.key
+END
+fullchain.crt
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/1916948586110141/!svn/ver/160/165841/1/sslcert/letsencrypt/fullchain.crt
+END

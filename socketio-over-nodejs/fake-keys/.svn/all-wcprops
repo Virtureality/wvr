@@ -1,0 +1,17 @@
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/1916948586110141/!svn/ver/109/165841/1/fake-keys
+END
+certificate.pem
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/1916948586110141/!svn/ver/109/165841/1/fake-keys/certificate.pem
+END
+privatekey.pem
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/1916948586110141/!svn/ver/109/165841/1/fake-keys/privatekey.pem
+END

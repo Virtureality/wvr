@@ -1,0 +1,32 @@
+{
+  "name": "wvr-signaling-socketio-over-nodejs",
+  "subdomain": "wvr-signaling-socketio-over-nodejs",
+  "preferGlobal": true,
+  "version": "1.0.0",
+  "author": {
+    "name": "WVR",
+    "email": "wvr@fbl.com"
+  },
+  "description": "socketio-over-nodejs for WVR.",
+  "contributors": [
+    {
+      "name": "Haofeng Ma",
+      "email": "mahaofeng81@163.com"
+    }
+  ],
+  "scripts": {
+    "start": "node signaler-wvr.js"
+  },
+  "main": "signaler-wvr.js",
+  "analyze": false,
+  "engines": {
+    "node": ">=0.6"
+  },
+  "dependencies": {
+    "socket.io": "0.9.x",
+    "node-static": "0.7.x"
+  },
+  "aceenv": {
+    
+  }
+}
