@@ -304,5 +304,4 @@ nspScreen.on('connection', function (socket) {
 
 });
 
-//app.listen(8888);
-app.listen();
+app.listen(8888);
