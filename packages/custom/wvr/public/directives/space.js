@@ -248,14 +248,16 @@ angular.module('mean.wvr')
                         }
 
                         if(state.name == 'room-not-available') {
-                            //setButton(actionButton, 'TXT_NOTACCESSIBLE', true);
+                            setButton(actionButton, 'TXT_NOTACCESSIBLE', true);
                         }
 
                         if(state.name == 'connected-with-initiator') {
-                            displaySpace();
+                            //displaySpace();
                         }
 
                         if(state.name == 'request-accepted') {
+                            displaySpace();
+
                             var useKeyBtn = $('#askForKeyActionBtn');
                             if(useKeyBtn.size() === 1) {
                                 setButton(useKeyBtn, '', true, true);
