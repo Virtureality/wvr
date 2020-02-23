@@ -5137,7 +5137,8 @@
         }
 
         // "mozSrcObject" is always preferred over "src"!!
-        mediaElement[isFirefox ? 'mozSrcObject' : 'src'] = isFirefox ? stream : window.webkitURL.createObjectURL(stream);
+        mediaElement[isFirefox ? 'mozSrcObject' : 'srcObject'] = stream;
+        //mediaElement[isFirefox ? 'mozSrcObject' : 'src'] = isFirefox ? stream : window.webkitURL.createObjectURL(stream);
 
         mediaElement.controls = true;
         mediaElement.autoplay = !!session.remote;
@@ -5788,7 +5789,8 @@
 
             var video = options.video;
             if (video) {
-                video[isFirefox ? 'mozSrcObject' : 'src'] = isFirefox ? stream : window.webkitURL.createObjectURL(stream);
+                video[isFirefox ? 'mozSrcObject' : 'srcObject'] = stream;
+                //video[isFirefox ? 'mozSrcObject' : 'src'] = isFirefox ? stream : window.webkitURL.createObjectURL(stream);
                 video.play();
             }
 
