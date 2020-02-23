@@ -1,0 +1,13 @@
+{
+  "version": 3,
+  "sources": [
+    "throws.js"
+  ],
+  "names": [],
+  "mappings": ";;;;;AAAA,IAAM,CAAC,GAAG,YAAM;AAAE,QAAM,IAAI,KAAK,CAAC,+BAA+B,CAAC,CAAA;CAAE,CAAA;QACtD,GAAG,GAAR,CAAC",
+  "file": "throws.js",
+  "sourceRoot": "../src",
+  "sourcesContent": [
+    "const t = () => { throw new Error('Thrown by source-map-fixtures') }\nexport { t as run }\n"
+  ]
+}

@@ -1,0 +1,12 @@
+{
+    "name": "sinon-restore",
+    "description" : "simply adds restoreAll() to sinon",
+    "keywords" : ["sinon", "mock", "fake", "stub", "spy"],
+    "version": "1.0.0",
+    "bugs": {
+     "url": "https://github.com/cainus/sinon-restore/issues"
+    },
+    "dependencies": {
+        "sinon" : "1.5.2"
+    }
+}

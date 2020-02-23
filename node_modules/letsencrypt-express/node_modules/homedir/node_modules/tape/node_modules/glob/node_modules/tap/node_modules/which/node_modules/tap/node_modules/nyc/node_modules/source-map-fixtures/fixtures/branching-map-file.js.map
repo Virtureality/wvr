@@ -1,0 +1,13 @@
+{
+  "version": 3,
+  "sources": [
+    "branching.js"
+  ],
+  "names": [],
+  "mappings": ";;;;;AAAA,IAAM,CAAC,GAAG,UAAA,CAAC,EAAI;AACb,MAAI,CAAC,KAAK,EAAE,EAAE;AACZ,WAAO,IAAI,CAAA;GACZ;CACF,CAAA;QACa,GAAG,GAAR,CAAC",
+  "file": "branching.js",
+  "sourceRoot": "../src",
+  "sourcesContent": [
+    "const q = a => {\n  if (a === 42) {\n    return true\n  }\n}\nexport { q as run }\n"
+  ]
+}

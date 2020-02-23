@@ -1,0 +1,13 @@
+{
+  "version": 3,
+  "sources": [
+    "simple.js"
+  ],
+  "names": [],
+  "mappings": ";;;;;AAAA,IAAM,CAAC,GAAG;SAAM,EAAE;CAAA,CAAA;QACJ,GAAG,GAAR,CAAC",
+  "file": "simple.js",
+  "sourceRoot": "../src",
+  "sourcesContent": [
+    "const i = () => 42\nexport { i as run }\n"
+  ]
+}
