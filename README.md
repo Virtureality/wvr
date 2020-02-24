@@ -2,7 +2,7 @@
 
 :heavy_exclamation_mark:**No Longer Maintained**:heavy_exclamation_mark:
 
-:whale:[iSpace](https://github.com/Virtureality/iSpace):rocket:
+:whale:  *[iSpace](https://github.com/Virtureality/iSpace)  :rocket:
 
 :dragon:`Be aware of potential dragons`:dragon:
 
@@ -14,7 +14,7 @@
 
 ---
 
-# Playing @ [World Virtual Reality](https://wvr.edening.net)
+### Playing @ [World Virtual Reality](https://wvr.edening.net)
 
 :dolphin:  [Surfing](https://wvr.edening.net)
 
@@ -22,7 +22,7 @@
 
 :shipit:  [Who](https://wvr.edening.net/know-us)
 
-# DIY ：）
+### DIY ：）
 
 :running: Clone the Repository
 
@@ -48,7 +48,7 @@
 - `certbot --nginx`  // [LetsEncrypt](https://letsencrypt.org/)
 - `nginx -s reload` // [Nginx](https://nginx.org/en/docs/) - [WebSocket](https://nginx.org/en/docs/http/websocket.html)
 
-# Development???  Don't! Please! Archived!
+### Development???  Don't! Please! Archived!
 
 :running: Setting up prerequisites for [MEAN.IO](https://github.com/Virtureality/wvr#mean-stack)
 
