@@ -4,7 +4,15 @@
 
 ---
 
-# Getting Started ：）
+# Playing @ [World Virtual Reality](https://wvr.edening.net)
+
+:dolphin:  [Surfing](https://wvr.edening.net)
+
+:milky_way:  [Trial](https://wvr.edening.net/spaces/trial)｜[Edening](https://wvr.edening.net/spaces/edening)｜[@HenryMa](https://wvr.edening.net/spaces/mhf)
+
+:shipit:  [Who](https://wvr.edening.net/know-us)
+
+# DIY ：）
 
 :running: Clone the Repository
 
