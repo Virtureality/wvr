@@ -5137,12 +5137,12 @@
         }
 
         // "mozSrcObject" is always preferred over "src"!!
-        /*try {
+        try {
           mediaElement[isFirefox ? 'mozSrcObject' : 'srcObject'] = stream;
-        } catch (error) {// backward compatibility
+        } catch (error) {
           mediaElement[isFirefox ? 'mozSrcObject' : 'src'] = isFirefox ? stream : window.webkitURL.createObjectURL(stream);
-        }*/
-        mediaElement[isFirefox ? 'mozSrcObject' : 'srcObject'] = stream;
+        }
+        //mediaElement[isFirefox ? 'mozSrcObject' : 'srcObject'] = stream;
         //mediaElement[isFirefox ? 'mozSrcObject' : 'src'] = isFirefox ? stream : window.webkitURL.createObjectURL(stream);
 
         mediaElement.controls = true;
@@ -5794,12 +5794,12 @@
 
             var video = options.video;
             if (video) {
-                /*try {
+                try {
                   video[isFirefox ? 'mozSrcObject' : 'srcObject'] = stream;
-                } catch (error) {// backward compatibility
+                } catch (error) {
                   video[isFirefox ? 'mozSrcObject' : 'src'] = isFirefox ? stream : window.webkitURL.createObjectURL(stream);
-                }*/
-                video[isFirefox ? 'mozSrcObject' : 'srcObject'] = stream;
+                }
+                //video[isFirefox ? 'mozSrcObject' : 'srcObject'] = stream;
                 //video[isFirefox ? 'mozSrcObject' : 'src'] = isFirefox ? stream : window.webkitURL.createObjectURL(stream);
                 video.play();
             }
