@@ -1,6 +1,6 @@
 > A memorial appreciation for the [revival](https://github.com/Virtureality)
 
-:whale: **#Won't be maintained any longer!!!#**
+:whale: **#No Longer Maintained#**  =====>  [iSpace](https://github.com/Virtureality/iSpace)  :rocket:
 
 ---
 
