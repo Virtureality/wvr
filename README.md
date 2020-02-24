@@ -1,6 +1,16 @@
 > A memorial appreciation for the [revival](https://github.com/Virtureality)
 
-:whale: **#No Longer Maintained#**  =====>  [iSpace](https://github.com/Virtureality/iSpace)  :rocket:
+:heavy_exclamation_mark:**No Longer Maintained**:heavy_exclamation_mark:
+
+:whale:[iSpace](https://github.com/Virtureality/iSpace):rocket:
+
+:dragon:`Be aware of potential dragons`:dragon:
+
+:memo:  *The Original Idea @ Early 2013*
+
+:memo:  *The Startup Journey @ Early 2015*
+
+:memo:  *[Milestones](https://bitbucket.org/Sharphill/le-jing-edening/wiki/Milestones)*
 
 ---
 
