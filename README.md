@@ -26,6 +26,8 @@
 
 :shipit:  [Who](https://wvr.edening.net/know-us)
 
+---
+
 ### DIY ：）
 
 :running: Clone the Repository
@@ -40,7 +42,7 @@
 
 `cd wvr`
 
-`CUSTOM_SIGNALING=socketio SIGNALING_SERVER=https://sig.edening.net/ PORT=6000 SSL_PORT=6443 node server.js`
+`CUSTOM_SIGNALING=socketio SIGNALING_SERVER=https://sig.edening.net/ node server.js`
 
 :running: (***optional***) Setting up your own signaling
 
@@ -51,6 +53,8 @@
 :traffic_light:
 - `certbot --nginx`  // [LetsEncrypt](https://letsencrypt.org/)
 - `nginx -s reload` // [Nginx](https://nginx.org/en/docs/) - [WebSocket](https://nginx.org/en/docs/http/websocket.html)
+
+---
 
 ### Development???  Don't! Please! Archived!
 
