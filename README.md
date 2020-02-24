@@ -2,7 +2,9 @@
 
 :heavy_exclamation_mark:**No Longer Maintained**:heavy_exclamation_mark:
 
-:whale:  *[iSpace](https://github.com/Virtureality/iSpace)  :rocket:
+:whale:
+
+:rocket:  **[iSpace](https://github.com/Virtureality/iSpace)**  :rocket:
 
 :dragon:`Be aware of potential dragons`:dragon:
 
@@ -11,6 +13,8 @@
 :memo:  *The Startup Journey @ Early 2015*
 
 :memo:  *[Milestones](https://bitbucket.org/Sharphill/le-jing-edening/wiki/Milestones)*
+
+:whale:
 
 ---
 
