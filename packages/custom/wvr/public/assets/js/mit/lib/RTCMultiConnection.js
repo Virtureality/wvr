@@ -1172,7 +1172,8 @@
         // www.RTCMultiConnection.org/docs/caniuse/
         connection.caniuse = {
             RTCPeerConnection: DetectRTC.isWebRTCSupported,
-            getUserMedia: !!navigator.webkitGetUserMedia || !!navigator.mozGetUserMedia,
+            getUserMedia: !!navigator.webkitGetUserMedia || !!navigator.mediaDevices.getUserMedia || !!navigator.mozGetUserMedia,
+            //getUserMedia: !!navigator.webkitGetUserMedia || !!navigator.mozGetUserMedia,
             AudioContext: DetectRTC.isAudioContextSupported,
 
             // there is no way to check whether "getUserMedia" flag is enabled or not!
@@ -5819,7 +5820,8 @@
         if (currentUserMediaRequest.streams[idInstance]) {
             streaming(currentUserMediaRequest.streams[idInstance].stream, true, currentUserMediaRequest.streams[idInstance].streamid);
         } else {
-            n.getMedia = n.webkitGetUserMedia || n.mozGetUserMedia;
+            n.getMedia = n.webkitGetUserMedia || n.mediaDevices.getUserMedia || n.mozGetUserMedia,
+            //n.getMedia = n.webkitGetUserMedia || n.mozGetUserMedia;
 
             // http://goo.gl/eETIK4
             n.getMedia(hints, streaming, function(error) {
@@ -6637,7 +6639,8 @@
         DetectRTC.isAudioContextSupported = (!!window.AudioContext || !!window.webkitAudioContext) && !!AudioContext.prototype.createMediaStreamSource;
         DetectRTC.isScreenCapturingSupported = (isFirefox && firefoxVersion >= 33 && location.protocol === 'https:') || (isChrome && chromeVersion >= 26 && (isNodeWebkit ? true : location.protocol === 'https:'));
 
-        DetectRTC.isSctpDataChannelsSupported = !!navigator.mozGetUserMedia || (isChrome && chromeVersion >= 25);
+        DetectRTC.isSctpDataChannelsSupported = !!navigator.mediaDevices.getUserMedia || !!navigator.mozGetUserMedia || (isChrome && chromeVersion >= 25);
+        //DetectRTC.isSctpDataChannelsSupported = !!navigator.mozGetUserMedia || (isChrome && chromeVersion >= 25);
         DetectRTC.isRtpDataChannelsSupported = isChrome && chromeVersion >= 31;
 
         // check for microphone/camera support!
