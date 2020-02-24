@@ -6,14 +6,24 @@
 
 # Getting Started ：）
 
-:running: `git clone https://github.com/Virtureality/wvr.git --verbose`
+:running: Clone the Repository
 
-:running: `mongod --dbpath .mongodb/` // [MongoDB(2.6.8)](https://docs.mongodb.com/v2.6/)
+`git clone https://github.com/Virtureality/wvr.git --verbose`
 
-:running: `CUSTOM_SIGNALING=socketio SIGNALING_SERVER=https://sig.edening.net/ PORT=6000 SSL_PORT=6443 node server.js`
+:running: Run the DB
+
+`mongod --dbpath .mongodb/` // [MongoDB(2.6.8)](https://docs.mongodb.com/v2.6/)
+
+:running: Run the Server
+
+`cd wvr`
+
+`CUSTOM_SIGNALING=socketio SIGNALING_SERVER=https://sig.edening.net/ PORT=6000 SSL_PORT=6443 node server.js`
 
 :running: (***optional***) Setting up your own signaling
+
 `cd socketio-over-nodejs`
+
 `nvm run 0.10.35 signaler-wvr.js`  //  [NVM](https://github.com/nvm-sh/nvm)
 
 :traffic_light:
