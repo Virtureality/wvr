@@ -6,17 +6,23 @@
 
 # Getting Started ：）
 
--> Set up prerequisites for [MEAN.IO](https://github.com/Virtureality/wvr#mean-stack)
+:running: `git clone https://github.com/Virtureality/wvr.git --verbose`
 
--> git clone https://github.com/Virtureality/wvr.git
+:running: `mongod --dbpath .mongodb/` // [MongoDB(2.6.8)](https://docs.mongodb.com/v2.6/)
 
--> npm install --verbose
+:running: `CUSTOM_SIGNALING=socketio SIGNALING_SERVER=https://sig.edening.net/ PORT=6000 SSL_PORT=6443 node server.js`
 
--> bower install --verbose
+:running: (***optional***) Setting up your own signaling
+`cd socketio-over-nodejs`
+`nvm run 0.10.35 signaler-wvr.js`  //  [NVM](https://github.com/nvm-sh/nvm)
 
--> node server
+:traffic_light:
+- `certbot --nginx`  // [LetsEncrypt](https://letsencrypt.org/)
+- `nginx -s reload` // [Nginx](https://nginx.org/en/docs/) - [WebSocket](https://nginx.org/en/docs/http/websocket.html)
 
--> ...
+# Development???  Don't! Please! Archived!
+
+:running: Setting up prerequisites for [MEAN.IO](https://github.com/Virtureality/wvr#mean-stack)
 
 ---
 
