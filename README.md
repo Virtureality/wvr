@@ -10,9 +10,9 @@
 
 :memo:  *The Original Idea @ Early 2013*
 
-:memo:  *The Startup Journey @ Early 2015*
+:sailboat:  *Startup @ Early 2015*
 
-:memo:  *[Milestones](https://bitbucket.org/Sharphill/le-jing-edening/wiki/Milestones)*
+:station:  *[Milestones](https://bitbucket.org/Sharphill/le-jing-edening/wiki/Milestones)*
 
 :whale:
 
